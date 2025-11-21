@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Eldelala — Admin</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#9aa4b2;--accent:#06b6d4;--danger:#ef4444;--success:#10b981}
+    body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial; background:linear-gradient(180deg,#071026, #051022);color:#e6eef6;margin:0;padding:16px}
+    header{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
+    h1{font-size:18px;margin:0}
+    .controls{display:flex;gap:8px;align-items:center}
+    input,button,select{padding:8px;border-radius:8px;border:0;background:#071726;color:#e6eef6}
+    input[placeholder]{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+    .card{background:var(--card);padding:10px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,.6);display:flex;flex-direction:column}
+    .thumb{width:100%;height:160px;object-fit:cover;border-radius:8px;background:#111}
+    .meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+    .meta small{color:var(--muted)}
+    .btns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+    .btn{background:transparent;border:1px solid rgba(255,255,255,.06);padding:6px 8px;border-radius:8px;color:#e6eef6;cursor:pointer}
+    .btn.danger{border-color:rgba(239,68,68,.2)}
+    .btn.success{border-color:rgba(16,185,129,.16)}
+    .panel{background:linear-gradient(180deg,#06121b,#03131a);padding:12px;border-radius:10px;margin-bottom:12px}
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+    .row{display:flex;gap:8px;align-items:center}
+    .hidden{display:none}
+    .progress{height:6px;background:#08131a;border-radius:6px;overflow:hidden}
+    .progress > i{display:block;height:6px;background:var(--accent);width:0}
+    label{font-size:13px}
+    @media (max-width:520px){header{flex-direction:column;align-items:flex-start} .controls{flex-wrap:wrap}}
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>لوحة تحكم الدلالة — Admin</h1>
+      <small style="color:var(--muted)">تحكم كامل من الموبايل أو الكمبيوتر — الصق توكن GitHub مؤقتًا (session)</small>
+    </div>
+
+    <div class="controls">
+      <input id="repoInput" placeholder="user/repo" style="width:150px" />
+      <input id="tokenInput" placeholder="Paste PAT (session only)" style="width:220px" />
+      <button id="loginBtn" class="btn">اتصل</button>
+      <button id="importZipBtn" class="btn">Import ZIP</button>
+      <button id="exportZipBtn" class="btn">Export ZIP</button>
+      <button id="refreshBtn" class="btn">تحديث</button>
+    </div>
+  </header>
+
+  <div class="panel row" style="gap:10px">
+    <input id="search" placeholder="بحث عن إعلان أو ID أو عنوان" style="flex:1" />
+    <select id="filterStatus"><option value="all">كل الإعلانات</option><option value="pending">معلقة</option><option value="accepted">مقبولة</option><option value="rejected">مرفوضة</option></select>
+    <button id="newAdBtn" class="btn">إضافة إعلان</button>
+  </div>
+
+  <div id="grid" class="grid"></div>
+
+  <div id="editorModal" class="hidden panel">
+    <h3 id="editorTitle">تحرير إعلان</h3>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <input id="e_title" placeholder="العنوان" />
+      <textarea id="e_desc" placeholder="الوصف" rows="4"></textarea>
+      <input id="e_price" placeholder="السعر" />
+      <input id="e_location" placeholder="الموقع" />
+      <input id="e_phone" placeholder="الهاتف/واتساب" />
+      <div class="row">
+        <input type="file" id="e_images" multiple />
+        <button id="saveEditBtn" class="btn success">حفظ</button>
+        <button id="cancelEditBtn" class="btn">إلغاء</button>
+      </div>
+      <div class="progress"><i id="uploadProgress"></i></div>
+    </div>
+  </div>
+
+  <footer>مبني للعمل مع GitHub Pages وGitHub API. تفعيل 2FA موصى به. اسحب ZIP أو اضغط Import.</footer>
+
+  <!-- External libs -->
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
+  <script>
+  // ----- Minimal helpers & config -----
+  const repoInput = document.getElementById('repoInput');
+  const tokenInput = document.getElementById('tokenInput');
+  const loginBtn = document.getElementById('loginBtn');
+  const grid = document.getElementById('grid');
+  const searchInput = document.getElementById('search');
+  const filterStatus = document.getElementById('filterStatus');
+  const refreshBtn = document.getElementById('refreshBtn');
+  const importZipBtn = document.getElementById('importZipBtn');
+  const exportZipBtn = document.getElementById('exportZipBtn');
+  const newAdBtn = document.getElementById('newAdBtn');
+
+  let REPO = '';
+  let TOKEN = '';
+  let FILES_CACHE = []; // list of ad objects
+
+  function setStatus(msg){ console.log(msg) }
+
+  loginBtn.onclick = ()=>{
+    REPO = repoInput.value.trim();
+    TOKEN = tokenInput.value.trim();
+    if(!REPO || !TOKEN){ alert('ادخل repo و token'); return}
+    sessionStorage.setItem('eld_repo', REPO);
+    sessionStorage.setItem('eld_token', TOKEN);
+    loadAds();
+  }
+
+  refreshBtn.onclick = loadAds;
+  searchInput.oninput = ()=> renderGrid();
+  filterStatus.onchange = ()=> renderGrid();
+
+  // init from session if any
+  if(sessionStorage.getItem('eld_repo')){
+    repoInput.value = sessionStorage.getItem('eld_repo');
+    tokenInput.value = sessionStorage.getItem('eld_token') || '';
+    REPO = repoInput.value;
+    TOKEN = tokenInput.value;
+    if(REPO && TOKEN) loadAds();
+  }
+
+  // ----- GitHub API helpers -----
+  async function ghList(path){
+    const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
+    const res = await fetch(url, {headers:{Authorization:`token ${TOKEN}`}});
+    if(!res.ok) return null;
+    return res.json();
+  }
+
+  async function ghGetFile(path){
+    const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
+    const res = await fetch(url, {headers:{Authorization:`token ${TOKEN}`}});
+    if(!res.ok) return null;
+    return res.json();
+  }
+
+  async function ghPutFile(path, contentArrayBuffer, message, sha){
+    // contentArrayBuffer may be ArrayBuffer or string
+    let base64;
+    if(contentArrayBuffer instanceof ArrayBuffer){
+      const bytes = new Uint8Array(contentArrayBuffer);
+      let binary='';
+      const chunk = 0x8000;
+      for(let i=0;i<bytes.length;i+=chunk) binary += String.fromCharCode.apply(null, bytes.subarray(i, i+chunk));
+      base64 = btoa(binary);
+    } else {
+      base64 = btoa(unescape(encodeURIComponent(contentArrayBuffer)));
+    }
+    const body = { message, content: base64 };
+    if(sha) body.sha = sha;
+    const url = `https://api.github.com/repos/${REPO}/contents/${encodeURIComponent(path)}`;
+    const res = await fetch(url, { method:'PUT', headers:{Authorization:`token ${TOKEN}`, 'Content-Type':'application/json'}, body: JSON.stringify(body)});
+    return res.json();
+  }
+
+  async function ghDeleteFile(path, sha, message){
+    const url = `https://api.github.com/repos/${REPO}/contents/${encodeURIComponent(path)}`;
+    const res = await fetch(url, { method:'DELETE', headers:{Authorization:`token ${TOKEN}`, 'Content-Type':'application/json'}, body: JSON.stringify({message, sha}) });
+    return res.json();
+  }
+
+  // ----- PNG metadata embed/extract (tEXt chunk) -----
+  function crc32(buf){ if(!crc32.table){ crc32.table = new Uint32Array(256).map((_,n)=>{let c=n; for(let k=0;k<8;k++) c = (c&1)?(0xEDB88320^(c>>>1)):(c>>>1); return c>>>0}); } let crc=0xffffffff; for(let i=0;i<buf.length;i++){ crc=(crc>>>8) ^ crc32.table[(crc ^ buf[i]) & 0xff]; } return (crc ^ 0xffffffff)>>>0 }
+
+  function embedTextChunkInPng(arrayBuffer, key, value){
+    const data = new Uint8Array(arrayBuffer);
+    function readU32(pos){ return (data[pos]<<24)|(data[pos+1]<<16)|(data[pos+2]<<8)|data[pos+3]; }
+    let pos=8; while(pos < data.length){ const len = readU32(pos); const type = String.fromCharCode(...data.slice(pos+4,pos+8)); if(type==='IEND') break; pos += 8 + len + 4; }
+    const before = data.slice(0,pos); const after = data.slice(pos);
+    const encoder = new TextEncoder(); const textData = encoder.encode(key + '\0' + value);
+    const len = textData.length; const lenBuf = new Uint8Array([ (len>>>24)&255, (len>>>16)&255, (len>>>8)&255, len&255 ]);
+    const typeBuf = new Uint8Array([116,69,88,116]); // 'tEXt'
+    const crcInput = new Uint8Array(typeBuf.length + textData.length); crcInput.set(typeBuf,0); crcInput.set(textData,typeBuf.length);
+    const crc = crc32(crcInput); const crcBuf = new Uint8Array([ (crc>>>24)&255, (crc>>>16)&255, (crc>>>8)&255, crc&255 ]);
+    const newBytes = new Uint8Array(before.length + 4 + 4 + textData.length + 4 + after.length);
+    let off=0; newBytes.set(before,off); off+=before.length; newBytes.set(lenBuf,off); off+=4; newBytes.set(typeBuf,off); off+=4; newBytes.set(textData,off); off+=textData.length; newBytes.set(crcBuf,off); off+=4; newBytes.set(after,off);
+    return newBytes.buffer;
+  }
+
+  function extractMetaFromPng(arrayBuffer){
+    const data = new Uint8Array(arrayBuffer);
+    function readU32(pos){ return (data[pos]<<24)|(data[pos+1]<<16)|(data[pos+2]<<8)|data[pos+3]; }
+    let pos=8; while(pos < data.length){ const len = readU32(pos); const type = String.fromCharCode(...data.slice(pos+4,pos+8)); const start = pos+8; if(type==='tEXt'){ const textBytes = data.slice(start, start+len); const decoder = new TextDecoder(); const txt = decoder.decode(textBytes); const sep = txt.indexOf('\0'); if(sep!=-1){ const key = txt.slice(0,sep); const val = txt.slice(sep+1); if(key==='eldelala-meta'){ try{ return JSON.parse(val); }catch(e){ return null } } } }
+      pos += 8 + len + 4;
+    }
+    return null;
+  }
+
+  // ----- image helpers -----
+  async function fileToArrayBuffer(file){ return await file.arrayBuffer(); }
+
+  async function canvasCreateConfirmationPng(mainFileArrayBuffer, meta){
+    // draw image on canvas + footer text + thumb + return PNG ArrayBuffer with embedded meta
+    const blob = new Blob([mainFileArrayBuffer]);
+    const img = await createImageBitmap(blob);
+    const maxW = Math.min(1200, img.width);
+    const scale = maxW / img.width; const h = Math.round(img.height * scale);
+    const canvas = document.createElement('canvas'); canvas.width = maxW; canvas.height = h + 90; const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#000'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(img,0,0,maxW,h);
+    // footer
+    ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(0,h,canvas.width,90);
+    ctx.fillStyle = '#fff'; ctx.textAlign='center'; ctx.font = '24px sans-serif'; ctx.fillText('شكرا على استعمال موقع الدلالة', canvas.width/2, h+40);
+    ctx.font = '18px sans-serif'; ctx.fillText('ID: '+meta.id, canvas.width/2, h+66);
+    // thumb small at top-left
+    const tw=120; const th = Math.round(tw * (h/maxW)); ctx.drawImage(img, 8,8, tw, th);
+    const blobOut = await new Promise(r=>canvas.toBlob(r,'image/png',1)); const ab = await blobOut.arrayBuffer(); const withMeta = embedTextChunkInPng(ab, 'eldelala-meta', JSON.stringify(meta));
+    return withMeta;
+  }
+
+  async function createFallbackPngWithTitle(title, meta){
+    // black canvas, white title text
+    const canvas = document.createElement('canvas'); canvas.width = 800; canvas.height = 600; const ctx = canvas.getContext('2d'); ctx.fillStyle='#000'; ctx.fillRect(0,0,800,600);
+    ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.font='bold 36px sans-serif'; wrapText(ctx, title, 400, 250, 36, 40);
+    ctx.font='18px sans-serif'; ctx.fillText('شكرا على استعمال موقع الدلالة', 400, 560);
+    const blobOut = await new Promise(r=>canvas.toBlob(r,'image/png',1)); const ab = await blobOut.arrayBuffer(); return embedTextChunkInPng(ab,'eldelala-meta', JSON.stringify(meta));
+  }
+
+  function wrapText(ctx, text, x, y, maxWidth, lineHeight){
+    var words = text.split(' '); var line = ''; var test, metrics, testWidth; let curY = y; for(let n = 0; n < words.length; n++){
+      test = line + words[n] + ' '; metrics = ctx.measureText(test); testWidth = metrics.width; if (testWidth > maxWidth && n > 0) { ctx.fillText(line, x, curY); line = words[n] + ' '; curY += lineHeight; } else { line = test; } }
+    ctx.fillText(line, x, curY);
+  }
+
+  // ----- load & render ads -----
+  async function loadAds(){
+    if(!REPO || !TOKEN) { alert('set repo and token first'); return }
+    setStatus('جلب قائمة الإعلانات...');
+    // ensure ads folder exists
+    const list = await ghList('ads');
+    if(!list){ alert('فشل جلب الملفات — تأكد من صلاحيات التوكن والمسار'); return }
+    FILES_CACHE = [];
+    for(const f of list){ if(f.type !== 'file') continue; if(!f.name.endsWith('.json')) continue; try{
+        const raw = await ghGetFile(f.path);
+        const json = JSON.parse(atob(raw.content)); // ads JSON stored base64
+        json._sha = raw.sha; json._path = f.path; FILES_CACHE.push(json);
+      }catch(e){ console.warn('skip', f.name, e) }
+    }
+    // sort by created_at desc
+    FILES_CACHE.sort((a,b)=> new Date(b.created_at) - new Date(a.created_at));
+    renderGrid();
+    setStatus('تم التحميل');
+  }
+
+  function renderGrid(){
+    const q = searchInput.value.trim().toLowerCase(); const status = filterStatus.value;
+    grid.innerHTML = '';
+    let items = FILES_CACHE.filter(ad => {
+      if(status !== 'all' && ad.status !== status) return false;
+      if(!q) return true;
+      return String(ad.id||'').includes(q) || (ad.title||'').toLowerCase().includes(q) || (ad.description||'').toLowerCase().includes(q);
+    });
+    items.forEach(ad=> grid.appendChild(renderCard(ad)));
+  }
+
+  function renderCard(ad){
+    const el = document.createElement('div'); el.className='card';
+    const img = document.createElement('img'); img.className='thumb';
+    // try primary_image URL if exists (use raw.githubusercontent URL)
+    if(ad.primary_image){
+      img.src = `https://raw.githubusercontent.com/${REPO}/main/${ad.primary_image}`;
+    } else {
+      // fallback generated canvas: but we want public view to show original image; since none we use fallback black canvas with title
+      // create data URL from canvas on the fly
+      const c = document.createElement('canvas'); c.width=800;c.height=600; const ctx=c.getContext('2d'); ctx.fillStyle='#000'; ctx.fillRect(0,0,800,600); ctx.fillStyle='#fff'; ctx.font='bold 36px sans-serif'; ctx.textAlign='center'; ctx.fillText(ad.title||'بدون عنوان', 400,300); img.src = c.toDataURL('image/png');
+    }
+    el.appendChild(img);
+    const h = document.createElement('div'); h.style.marginTop='8px'; h.innerHTML = `<strong>${escapeHtml(ad.title||'بدون عنوان')}</strong><div style="color:var(--muted)">${escapeHtml(ad.location||'')} • ${escapeHtml(String(ad.price||''))}</div>`;
+    el.appendChild(h);
+    const meta = document.createElement('div'); meta.className='meta'; meta.innerHTML = `<small>ID: ${ad.id}</small><small>${ad.status||'pending'}</small>`;
+    el.appendChild(meta);
+    const btns = document.createElement('div'); btns.className='btns';
+    // view
+    const v = document.createElement('button'); v.className='btn'; v.textContent='عرض'; v.onclick = ()=> viewAd(ad); btns.appendChild(v);
+    // edit
+    const e = document.createElement('button'); e.className='btn'; e.textContent='تعديل'; e.onclick = ()=> openEditor(ad); btns.appendChild(e);
+    // accept
+    const a = document.createElement('button'); a.className='btn success'; a.textContent='قبول'; a.onclick = ()=> setStatusAd(ad,'accepted'); btns.appendChild(a);
+    // reject
+    const r = document.createElement('button'); r.className='btn'; r.textContent='رفض'; r.onclick = ()=> setStatusAd(ad,'rejected'); btns.appendChild(r);
+    // delete
+    const d = document.createElement('button'); d.className='btn danger'; d.textContent='حذف'; d.onclick = ()=> deleteAd(ad); btns.appendChild(d);
+    // reorder up/down
+    const up = document.createElement('button'); up.className='btn'; up.textContent='⬆'; up.onclick = ()=> moveAd(ad,'up'); btns.appendChild(up);
+    const down = document.createElement('button'); down.className='btn'; down.textContent='⬇'; down.onclick = ()=> moveAd(ad,'down'); btns.appendChild(down);
+    // extract json
+    const ex = document.createElement('button'); ex.className='btn'; ex.textContent='استخراج JSON'; ex.onclick = ()=> downloadJson(ad); btns.appendChild(ex);
+    // download confirmation png
+    const conf = document.createElement('button'); conf.className='btn'; conf.textContent='تنزيل صورة التأكيد'; conf.onclick = ()=> downloadConfirmation(ad); btns.appendChild(conf);
+
+    el.appendChild(btns);
+    return el;
+  }
+
+  function escapeHtml(s){ return String(s).replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  async function viewAd(ad){ // show quick preview in new window
+    const win = window.open('','_blank'); win.document.write(`<h2>${escapeHtml(ad.title||'')}</h2><img src="https://raw.githubusercontent.com/${REPO}/main/${ad.primary_image||''}" style="max-width:95%"/>`);
+  }
+
+  function openEditor(ad){
+    document.getElementById('editorModal').classList.remove('hidden');
+    document.getElementById('e_title').value = ad.title||'';
+    document.getElementById('e_desc').value = ad.description||'';
+    document.getElementById('e_price').value = ad.price||'';
+    document.getElementById('e_location').value = ad.location||'';
+    document.getElementById('e_phone').value = ad.whatsapp||ad.phone||'';
+    // save handler
+    document.getElementById('saveEditBtn').onclick = async ()=>{
+      const t = document.getElementById('e_title').value.trim(); const desc = document.getElementById('e_desc').value.trim();
+      ad.title = t; ad.description = desc; ad.price = document.getElementById('e_price').value; ad.location = document.getElementById('e_location').value; ad.phone = document.getElementById('e_phone').value;
+      // handle new images if any
+      const files = document.getElementById('e_images').files;
+      if(files && files.length>0){
+        // upload files to images/<id>-N.ext
+        let idx=1; const imagesPaths = [];
+        for(const f of files){ const ab = await fileToArrayBuffer(f); const ext = f.name.split('.').pop().toLowerCase(); const path = `images/${ad.id}-${idx}.${ext}`; await ghPutFile(path, ab, `upload image ${path}`); imagesPaths.push(path); idx++; }
+        ad.images = imagesPaths; ad.primary_image = imagesPaths[0];
+      }
+      ad.updated_at = new Date().toISOString();
+      // update ads/<id>.json
+      const path = `ads/${ad.id}.json`;
+      const existing = await ghGetFile(path); const sha = existing? existing.sha : undefined;
+      await ghPutFile(path, JSON.stringify(ad, null, 2), `update ad ${ad.id}`, sha);
+      // regenerate confirmation png
+      // fetch primary image bytes
+      let mainAb;
+      if(ad.primary_image){ const url = `https://raw.githubusercontent.com/${REPO}/main/${ad.primary_image}`; const r = await fetch(url); mainAb = await r.arrayBuffer(); }
+      let confAb = mainAb? await canvasCreateConfirmationPng(mainAb, ad) : await createFallbackPngWithTitle(ad.title, ad);
+      await ghPutFile(`confirmations/${ad.id}.png`, confAb, `update confirmation ${ad.id}`);
+      alert('تم الحفظ'); document.getElementById('editorModal').classList.add('hidden'); loadAds();
+    }
+    document.getElementById('cancelEditBtn').onclick = ()=> document.getElementById('editorModal').classList.add('hidden');
+  }
+
+  async function setStatusAd(ad, st){ ad.status = st; ad.updated_at = new Date().toISOString(); const path = `ads/${ad.id}.json`; const existing = await ghGetFile(path); await ghPutFile(path, JSON.stringify(ad,null,2), `set status ${st} for ${ad.id}`, existing.sha); alert('status updated'); loadAds(); }
+
+  async function deleteAd(ad){ if(!confirm('تأكيد حذف الإعلان؟ سيحذف JSON والصور وصورة التأكيد')) return;
+    // delete images
+    if(ad.images && ad.images.length){
+      for(const p of ad.images){ const f = await ghGetFile(p); if(f && f.sha) await ghDeleteFile(p, f.sha, `delete image ${p}`); }
+    }
+    // delete primary image if separate
+    if(ad.primary_image){ const f = await ghGetFile(ad.primary_image); if(f && f.sha) await ghDeleteFile(ad.primary_image, f.sha, `delete primary ${ad.primary_image}`); }
+    // delete confirmation
+    const c = await ghGetFile(`confirmations/${ad.id}.png`); if(c && c.sha) await ghDeleteFile(`confirmations/${ad.id}.png`, c.sha, `delete confirmation ${ad.id}`);
+    // delete ad json
+    const j = await ghGetFile(`ads/${ad.id}.json`); if(j && j.sha) await ghDeleteFile(`ads/${ad.id}.json`, j.sha, `delete ad ${ad.id}`);
+    // update order.json
+    const order = await ghGetFile('order.json'); let arr=[]; let sha; if(order){ arr = JSON.parse(atob(order.content)); sha = order.sha; }
+    arr = arr.filter(x=> x !== ad.id);
+    await ghPutFile('order.json', JSON.stringify(arr,null,2), `remove ${ad.id} from order`, sha);
+    alert('تم الحذف'); loadAds();
+  }
+
+  async function moveAd(ad, dir){ const orderFile = await ghGetFile('order.json'); let arr=[]; let sha = undefined; if(orderFile){ arr = JSON.parse(atob(orderFile.content)); sha = orderFile.sha; }else{ arr = FILES_CACHE.map(a=>a.id); }
+    const idx = arr.indexOf(ad.id); if(idx===-1) arr.unshift(ad.id); else{
+      if(dir==='up' && idx>0){ const t = arr[idx-1]; arr[idx-1]=arr[idx]; arr[idx]=t; }
+      if(dir==='down' && idx < arr.length-1){ const t=arr[idx+1]; arr[idx+1]=arr[idx]; arr[idx]=t; }
+    }
+    await ghPutFile('order.json', JSON.stringify(arr,null,2), `reorder ${ad.id}`, sha);
+    loadAds();
+  }
+
+  async function downloadJson(ad){ const data = JSON.stringify(ad, null, 2); const blob = new Blob([data], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = `${ad.id}.json`; a.click(); URL.revokeObjectURL(url); }
+
+  async function downloadConfirmation(ad){ // fetch primary image bytes
+    let mainAb;
+    if(ad.primary_image){ try{ const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${ad.primary_image}`); mainAb = await r.arrayBuffer(); }catch(e){ mainAb=null } }
+    let confAb = mainAb? await canvasCreateConfirmationPng(mainAb, ad) : await createFallbackPngWithTitle(ad.title, ad);
+    // force download
+    const blob = new Blob([confAb], {type:'image/png'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = `${ad.id}-confirmation.png`; a.click(); URL.revokeObjectURL(url);
+    // after download reveal whatsapp link
+    setTimeout(()=>{
+      const phone = ad.whatsapp || ad.phone || '';
+      const msg = encodeURIComponent(`السلام عليكم\nهذا اعلان رقم ${ad.id} على موقع الدلالة\n`);
+      const wa = `https://wa.me/${phone.replace(/[^0-9+]/g,'')}?text=${msg}`;
+      if(confirm('فتح رابط واتساب لمشاركة؟')) window.open(wa,'_blank');
+    },500);
+  }
+
+  // ----- Import ZIP (client-side) -----
+  importZipBtn.onclick = async ()=>{
+    const input = document.createElement('input'); input.type='file'; input.accept='.zip'; input.onchange = async ()=>{
+      const f = input.files[0]; if(!f) return; const buf = await f.arrayBuffer(); const zip = await JSZip.loadAsync(buf);
+      // preview list
+      const files = Object.keys(zip.files);
+      if(!confirm('استيراد '+files.length+' ملف؟ تأكد من بنية ZIP.')) return;
+      for(const name of files){ const item = zip.files[name]; if(item.dir) continue; if(name.startsWith('images/') || name.startsWith('public/')){
+          const ab = await item.async('arraybuffer'); await ghPutFile(name, ab, `import ${name}`);
+        } else if(name.startsWith('ads/') && name.endsWith('.json')){
+          const txt = await item.async('string'); const obj = JSON.parse(txt);
+          const path = `ads/${obj.id}.json`; await ghPutFile(path, JSON.stringify(obj,null,2), `import ad ${obj.id}`);
+        } else if(name === 'order.json' || name === 'zip_index.json' || name.endsWith('.html')){
+          const txt = await item.async('string'); await ghPutFile(name, txt, `import ${name}`);
+        }
+      }
+      alert('تم الاستيراد — تحديث القائمة'); loadAds();
+    }; input.click();
+  }
+
+  // export zip
+  exportZipBtn.onclick = async ()=>{
+    const zip = new JSZip();
+    // add ads
+    for(const ad of FILES_CACHE){ const path = `ads/${ad.id}.json`; const f = await ghGetFile(path); if(f && f.content) zip.file(`ads/${ad.id}.json`, atob(f.content)); if(ad.images){ for(const im of ad.images){ const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${im}`); const ab = await r.arrayBuffer(); zip.file(im, ab); } }
+    }
+    const content = await zip.generateAsync({type:'blob'}); const url = URL.createObjectURL(content); const a = document.createElement('a'); a.href=url; a.download='eldelala_export.zip'; a.click(); URL.revokeObjectURL(url);
+  }
+
+  // new ad flow (quick modal simplified)
+  newAdBtn.onclick = ()=>{
+    const formHtml = `
+      <h3>إضافة إعلان جديد</h3>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <input id="n_title" placeholder="العنوان" />
+        <textarea id="n_desc" placeholder="الوصف" rows="3"></textarea>
+        <input id="n_price" placeholder="السعر" />
+        <input id="n_location" placeholder="الموقع" />
+        <input id="n_phone" placeholder="واتساب" />
+        <input id="n_files" type="file" multiple />
+        <button id="n_submit" class="btn success">نشر</button>
+      </div>
+    `;
+    const w = window.open('','_blank','width=420,height=680'); w.document.body.style.direction='rtl'; w.document.body.style.fontFamily='sans-serif'; w.document.body.innerHTML = formHtml;
+    w.document.getElementById('n_submit').onclick = async ()=>{
+      const t = w.document.getElementById('n_title').value.trim(); if(!t){ alert('اكتب عنوان'); return }
+      const desc = w.document.getElementById('n_desc').value; const price = w.document.getElementById('n_price').value; const loc = w.document.getElementById('n_location').value; const phone = w.document.getElementById('n_phone').value;
+      const files = w.document.getElementById('n_files').files; const id = 'eld-'+(new Date()).toISOString().replace(/[:.]/g,'')+'-'+Math.floor(Math.random()*9000+1000);
+      const ad = { id, title:t, description:desc, price:price, currency:'SDG', category:'', images:[], primary_image:null, thumbnail:null, location:loc, phone:phone, whatsapp:phone, status:'pending', created_at:new Date().toISOString(), updated_at:new Date().toISOString(), meta:{views:0} };
+      // upload images
+      if(files && files.length>0){ let idx=1; for(const f of files){ const ab = await f.arrayBuffer(); const ext = f.name.split('.').pop().toLowerCase(); const path = `images/${id}-${idx}.${ext}`; await ghPutFile(path, ab, `upload ${path}`); ad.images.push(path); if(idx===1) ad.primary_image = path; idx++; } }
+      // create thumbnail optionally (skip heavy processing for brevity)
+      // upload ad json
+      await ghPutFile(`ads/${id}.json`, JSON.stringify(ad,null,2), `create ad ${id}`);
+      // create confirmation png (from primary image if exists)
+      let mainAb = null; if(ad.primary_image){ const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${ad.primary_image}`); mainAb = await r.arrayBuffer(); }
+      let confAb = mainAb? await canvasCreateConfirmationPng(mainAb, ad) : await createFallbackPngWithTitle(ad.title, ad);
+      await ghPutFile(`confirmations/${id}.png`, confAb, `create confirmation ${id}`);
+      // update order.json
+      const orderFile = await ghGetFile('order.json'); let arr=[]; let sha; if(orderFile){ arr = JSON.parse(atob(orderFile.content)); sha = orderFile.sha; }
+      arr.unshift(id); await ghPutFile('order.json', JSON.stringify(arr,null,2), `add ${id} to order`, sha);
+      alert('تم النشر. ننتقل إلى تحميل صورة التأكيد');
+      // trigger download of confirmation
+      const blob = new Blob([confAb], {type:'image/png'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = `${id}-confirmation.png`; a.click(); URL.revokeObjectURL(url);
+      // show whatsapp link
+      setTimeout(()=>{ const msg = encodeURIComponent(`السلام عليكم\nهذا اعلان رقم ${id} على موقع الدلالة`); const wa = `https://wa.me/${phone.replace(/[^0-9+]/g,'')}?text=${msg}`; if(confirm('فتح رابط واتساب لمشاركة؟')) window.open(wa,'_blank'); },500);
+      w.close(); loadAds();
+    }
+  }
+
+  </script>
+</body>
+</html>
