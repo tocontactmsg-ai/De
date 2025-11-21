@@ -31,6 +31,7 @@
     label{font-size:13px}
     .stage{border:1px dashed #e6eef6;padding:10px;border-radius:10px;background:#fbfdff}
     .file-drop{border:2px dashed #e6eef6;padding:12px;border-radius:12px;text-align:center;color:var(--muted);cursor:pointer}
+    .file-drop:hover{background:#f9fcff}
     .flex{display:flex;gap:12px}
     .mobile-toggle{border:1px solid #e6eef6;padding:6px 10px;border-radius:8px}
     .mobile-sim{max-width:420px;margin:8px auto;border:1px solid #eef2f7;border-radius:12px;padding:8px}
@@ -38,6 +39,7 @@
     /* mobile-mode style (simulate) */
     body.mobile-mode{background:#ffffff}
     body.mobile-mode .container{max-width:420px}
+    .count-badge{background:var(--accent);color:#fff;padding:4px 8px;border-radius:999px;font-size:13px}
   </style>
 </head>
 <body>
@@ -67,8 +69,11 @@
 
   <!-- Stage area for extracted PNGs -->
   <div class="panel">
-    <h3>المدرج المؤقت للصور المستخرجة (Staged PNGs)</h3>
-    <div id="fileDrop" class="file-drop">اسحب PNG هنا أو اضغط للتصفح</div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3>المدرج المؤقت للصور المستخرجة (Staged PNGs)</h3>
+      <div class="flex"><span id="stagedCount" class="count-badge">0</span><button id="uploadPngsBtn" class="btn">اختيار PNGs (دفعي)</button></div>
+    </div>
+    <div id="fileDrop" class="file-drop" title="اسحب PNG هنا أو اضغط للتصفح">اسحب PNG هنا أو اضغط للتصفح</div>
     <div id="stagedGrid" class="grid" style="margin-top:12px"></div>
   </div>
 
@@ -115,25 +120,35 @@
   const mobileViewBtn = document.getElementById('mobileViewBtn');
   const fileDrop = document.getElementById('fileDrop');
   const stagedGrid = document.getElementById('stagedGrid');
+  const stagedCount = document.getElementById('stagedCount');
+  const uploadPngsBtn = document.getElementById('uploadPngsBtn');
 
   let REPO = '';
   let TOKEN = '';
   let FILES_CACHE = [];
-  let STAGED = []; // {id, pngArrayBuffer, meta}
+  let STAGED = []; // {id, pngAb, meta, name}
 
   // session init
   if(sessionStorage.getItem('eld_repo')){ repoInput.value = sessionStorage.getItem('eld_repo'); tokenInput.value = sessionStorage.getItem('eld_token') || ''; REPO = repoInput.value; TOKEN = tokenInput.value; if(REPO && TOKEN) loadAds(); }
 
   loginBtn.onclick = ()=>{ REPO = repoInput.value.trim(); TOKEN = tokenInput.value.trim(); if(!REPO || !TOKEN){ alert('ادخل repo و token'); return } sessionStorage.setItem('eld_repo', REPO); sessionStorage.setItem('eld_token', TOKEN); loadAds(); }
-  refreshBtn.onclick = loadAds; searchInput.oninput = ()=> renderGrid(); filterStatus.onchange = ()=> renderGrid(); mobileViewBtn.onclick = ()=> document.body.classList.toggle('mobile-mode');
+  refreshBtn.onclick = loadAds; searchInput.oninput = ()=> renderGrid(); filterStatus.onchange = ()=> renderGrid();
 
-  // ===== GitHub helpers (same as before) =====
+  // mobile view toggle (now functional)
+  mobileViewBtn.onclick = ()=>{
+    const active = document.body.classList.toggle('mobile-mode');
+    mobileViewBtn.textContent = active ? 'الخروج من عرض الموبايل' : 'عرض موبايل';
+    // scroll to top for mobile simulation
+    window.scrollTo(0,0);
+  };
+
+  // ===== GitHub helpers =====
   async function ghList(path){ const url = `https://api.github.com/repos/${REPO}/contents/${path}`; const res = await fetch(url, {headers:{Authorization:`token ${TOKEN}`}}); if(!res.ok) return null; return res.json(); }
   async function ghGetFile(path){ const url = `https://api.github.com/repos/${REPO}/contents/${path}`; const res = await fetch(url, {headers:{Authorization:`token ${TOKEN}`}}); if(!res.ok) return null; return res.json(); }
   async function ghPutFile(path, contentArrayBuffer, message, sha){ let base64; if(contentArrayBuffer instanceof ArrayBuffer){ const bytes = new Uint8Array(contentArrayBuffer); let binary=''; const chunk = 0x8000; for(let i=0;i<bytes.length;i+=chunk) binary += String.fromCharCode.apply(null, bytes.subarray(i, i+chunk)); base64 = btoa(binary); } else { base64 = btoa(unescape(encodeURIComponent(contentArrayBuffer))); } const body = { message, content: base64 }; if(sha) body.sha = sha; const url = `https://api.github.com/repos/${REPO}/contents/${encodeURIComponent(path)}`; const res = await fetch(url, { method:'PUT', headers:{Authorization:`token ${TOKEN}`, 'Content-Type':'application/json'}, body: JSON.stringify(body)}); return res.json(); }
   async function ghDeleteFile(path, sha, message){ const url = `https://api.github.com/repos/${REPO}/contents/${encodeURIComponent(path)}`; const res = await fetch(url, { method:'DELETE', headers:{Authorization:`token ${TOKEN}`, 'Content-Type':'application/json'}, body: JSON.stringify({message, sha}) }); return res.json(); }
 
-  // ===== PNG metadata helpers (embed/extract) =====
+  // ===== PNG metadata helpers =====
   function crc32(buf){ if(!crc32.table){ crc32.table = new Uint32Array(256).map((_,n)=>{let c=n; for(let k=0;k<8;k++) c = (c&1)?(0xEDB88320^(c>>>1)):(c>>>1); return c>>>0}); } let crc=0xffffffff; for(let i=0;i<buf.length;i++){ crc=(crc>>>8) ^ crc32.table[(crc ^ buf[i]) & 0xff]; } return (crc ^ 0xffffffff)>>>0 }
   function embedTextChunkInPng(arrayBuffer, key, value){ const data = new Uint8Array(arrayBuffer); function readU32(pos){ return (data[pos]<<24)|(data[pos+1]<<16)|(data[pos+2]<<8)|data[pos+3]; } let pos=8; while(pos < data.length){ const len = readU32(pos); const type = String.fromCharCode(...data.slice(pos+4,pos+8)); if(type==='IEND') break; pos += 8 + len + 4; } const before = data.slice(0,pos); const after = data.slice(pos); const encoder = new TextEncoder(); const textData = encoder.encode(key + '' + value); const len = textData.length; const lenBuf = new Uint8Array([ (len>>>24)&255, (len>>>16)&255, (len>>>8)&255, len&255 ]); const typeBuf = new Uint8Array([116,69,88,116]); const crcInput = new Uint8Array(typeBuf.length + textData.length); crcInput.set(typeBuf,0); crcInput.set(textData,typeBuf.length); const crc = crc32(crcInput); const crcBuf = new Uint8Array([ (crc>>>24)&255, (crc>>>16)&255, (crc>>>8)&255, crc&255 ]); const newBytes = new Uint8Array(before.length + 4 + 4 + textData.length + 4 + after.length); let off=0; newBytes.set(before,off); off+=before.length; newBytes.set(lenBuf,off); off+=4; newBytes.set(typeBuf,off); off+=4; newBytes.set(textData,off); off+=textData.length; newBytes.set(crcBuf,off); off+=4; newBytes.set(after,off); return newBytes.buffer; }
   function extractMetaFromPng(arrayBuffer){ const data = new Uint8Array(arrayBuffer); function readU32(pos){ return (data[pos]<<24)|(data[pos+1]<<16)|(data[pos+2]<<8)|data[pos+3]; } let pos=8; while(pos < data.length){ const len = readU32(pos); const type = String.fromCharCode(...data.slice(pos+4,pos+8)); const start = pos+8; if(type==='tEXt'){ const textBytes = data.slice(start, start+len); const decoder = new TextDecoder(); const txt = decoder.decode(textBytes); const sep = txt.indexOf(''); if(sep!=-1){ const key = txt.slice(0,sep); const val = txt.slice(sep+1); if(key==='eldelala-meta'){ try{ return JSON.parse(val); }catch(e){ return null } } } } pos += 8 + len + 4; } return null; }
@@ -167,41 +182,54 @@
 هذا اعلان رقم ${ad.id} على موقع الدلالة
 `); const wa = `https://wa.me/${phone.replace(/[^0-9+]/g,'')}?text=${msg}`; if(confirm('فتح رابط واتساب لمشاركة؟')) window.open(wa,'_blank'); },500); }
 
-  // ===== Staged PNG handling (drag/drop or browse) =====
-  fileDrop.onclick = ()=>{ const i = document.createElement('input'); i.type='file'; i.accept='image/png'; i.onchange = async ()=>{ const f = i.files[0]; if(f) handlePngFile(f); }; i.click(); };
+  // ===== Staged PNG handling (drag/drop or browse/batch) =====
+  fileDrop.onclick = ()=>{ const i = document.createElement('input'); i.type='file'; i.accept='image/png'; i.multiple = false; i.onchange = async ()=>{ const files = i.files; if(files && files.length) await handleMultiplePngFiles(files); }; i.click(); };
+  uploadPngsBtn.onclick = ()=>{ const i = document.createElement('input'); i.type='file'; i.accept='image/png'; i.multiple = true; i.onchange = async ()=>{ const files = i.files; if(files && files.length) await handleMultiplePngFiles(files); }; i.click(); };
   fileDrop.ondragover = (e)=>{ e.preventDefault(); fileDrop.style.background='#f8fdff'; }
   fileDrop.ondragleave = (e)=>{ fileDrop.style.background=''; }
-  fileDrop.ondrop = async (e)=>{ e.preventDefault(); fileDrop.style.background=''; const f = e.dataTransfer.files[0]; if(f && f.type === 'image/png') await handlePngFile(f); }
+  fileDrop.ondrop = async (e)=>{ e.preventDefault(); fileDrop.style.background=''; const files = e.dataTransfer.files; if(files && files.length) await handleMultiplePngFiles(files); }
+
+  async function handleMultiplePngFiles(fileList){ for(const f of fileList){ if(f.type !== 'image/png') continue; await handlePngFile(f); } }
 
   async function handlePngFile(file){ try{ const ab = await file.arrayBuffer(); const meta = extractMetaFromPng(ab); const id = meta && meta.id ? meta.id : 'staged-'+Date.now(); const entry = { id, pngAb: ab, meta: meta || { title: file.name, id }, name: file.name }; STAGED.unshift(entry); renderStaged(); }catch(e){ alert('فشل قراءة PNG'); console.error(e) } }
 
-  function renderStaged(){ stagedGrid.innerHTML = ''; for(const s of STAGED){ const el = document.createElement('div'); el.className='card'; const img = document.createElement('img'); img.className='thumb'; img.src = URL.createObjectURL(new Blob([s.pngAb], {type:'image/png'})); el.appendChild(img); const h = document.createElement('div'); h.style.marginTop='8px'; h.innerHTML = `<strong>${escapeHtml(s.meta.title||s.name||s.id)}</strong><div style="color:var(--muted)">${escapeHtml(s.meta.location||'')}</div>`; el.appendChild(h); const btns = document.createElement('div'); btns.className='btns'; const acceptBtn = document.createElement('button'); acceptBtn.className='btn success'; acceptBtn.textContent='قبول (استيراد)'; acceptBtn.onclick = ()=> acceptStaged(s); btns.appendChild(acceptBtn); const delBtn = document.createElement('button'); delBtn.className='btn danger'; delBtn.textContent='حذف من المدرج'; delBtn.onclick = ()=> { STAGED = STAGED.filter(x=> x !== s); renderStaged(); }; const extractBtn = document.createElement('button'); extractBtn.className='btn'; extractBtn.textContent='عرض البيانات'; extractBtn.onclick = ()=> alert(JSON.stringify(s.meta,null,2)); btns.appendChild(extractBtn); btns.appendChild(delBtn); el.appendChild(btns); stagedGrid.appendChild(el); }
-  }
+  function renderStaged(){ stagedGrid.innerHTML = ''; stagedCount.textContent = String(STAGED.length); for(const s of STAGED){ const el = document.createElement('div'); el.className='card'; const img = document.createElement('img'); img.className='thumb'; img.src = URL.createObjectURL(new Blob([s.pngAb], {type:'image/png'})); el.appendChild(img); const h = document.createElement('div'); h.style.marginTop='8px'; h.innerHTML = `<strong>${escapeHtml(s.meta.title||s.name||s.id)}</strong><div style="color:var(--muted)">${escapeHtml(s.meta.location||'')}</div>`; el.appendChild(h); const btns = document.createElement('div'); btns.className='btns'; const acceptBtn = document.createElement('button'); acceptBtn.className='btn success'; acceptBtn.textContent='قبول (استيراد)'; acceptBtn.onclick = ()=> acceptStaged(s); btns.appendChild(acceptBtn); const delBtn = document.createElement('button'); delBtn.className='btn danger'; delBtn.textContent='حذف من المدرج'; delBtn.onclick = ()=> { STAGED = STAGED.filter(x=> x !== s); renderStaged(); }; const extractBtn = document.createElement('button'); extractBtn.className='btn'; extractBtn.textContent='عرض البيانات'; extractBtn.onclick = ()=> alert(JSON.stringify(s.meta,null,2)); btns.appendChild(extractBtn); btns.appendChild(delBtn); el.appendChild(btns); stagedGrid.appendChild(el); } }
 
-  async function acceptStaged(s){ // upload confirmation PNG to confirmations/, and create ads/<id>.json if meta exists
-    const id = s.meta.id || ('eld-'+Date.now());
-    // upload confirmation PNG
-    await ghPutFile(`confirmations/${id}.png`, s.pngAb, `import confirmation ${id}`);
-    // if meta has images paths embedded, we assume meta.images already point to existing images; otherwise keep minimal JSON
-    const ad = s.meta;
-    ad.id = id; ad.status = ad.status || 'pending'; ad.created_at = ad.created_at || new Date().toISOString(); ad.updated_at = new Date().toISOString(); // ensure structure
-    // if meta includes image data as base64 we could extract and upload, but for simplicity we only create ads JSON and expect images to be uploaded separately or exist
-    await ghPutFile(`ads/${id}.json`, JSON.stringify(ad,null,2), `import ad ${id}`);
-    // update order.json
-    const orderFile = await ghGetFile('order.json'); let arr=[]; let sha; if(orderFile){ arr = JSON.parse(atob(orderFile.content)); sha = orderFile.sha; }
-    arr.unshift(id); await ghPutFile('order.json', JSON.stringify(arr,null,2), `add ${id} to order`, sha);
-    // remove from staged
-    STAGED = STAGED.filter(x=> x !== s); renderStaged(); loadAds(); alert('تم استيراد الإعلان'); }
+  async function acceptStaged(s){ const id = s.meta.id || ('eld-'+Date.now()); await ghPutFile(`confirmations/${id}.png`, s.pngAb, `import confirmation ${id}`); const ad = s.meta; ad.id = id; ad.status = ad.status || 'pending'; ad.created_at = ad.created_at || new Date().toISOString(); ad.updated_at = new Date().toISOString(); await ghPutFile(`ads/${id}.json`, JSON.stringify(ad,null,2), `import ad ${id}`); const orderFile = await ghGetFile('order.json'); let arr=[]; let sha; if(orderFile){ arr = JSON.parse(atob(orderFile.content)); sha = orderFile.sha; } arr.unshift(id); await ghPutFile('order.json', JSON.stringify(arr,null,2), `add ${id} to order`, sha); STAGED = STAGED.filter(x=> x !== s); renderStaged(); loadAds(); alert('تم استيراد الإعلان'); }
 
   // ===== Import ZIP =====
-  importZipBtn.onclick = async ()=>{ const input = document.createElement('input'); input.type='file'; input.accept='.zip'; input.onchange = async ()=>{ const f = input.files[0]; if(!f) return; const buf = await f.arrayBuffer(); const zip = await JSZip.loadAsync(buf); const files = Object.keys(zip.files); if(!confirm('استيراد '+files.length+' ملف؟ تأكد من بنية ZIP.')) return; for(const name of files){ const item = zip.files[name]; if(item.dir) continue; if(name.startsWith('images/') || name.startsWith('public/') || name.startsWith('confirmations/')){ const ab = await item.async('arraybuffer'); await ghPutFile(name, ab, `import ${name}`); } else if(name.startsWith('ads/') && name.endsWith('.json')){ const txt = await item.async('string'); const obj = JSON.parse(txt); const path = `ads/${obj.id}.json`; await ghPutFile(path, JSON.stringify(obj,null,2), `import ad ${obj.id}`); } else if(name === 'order.json' || name === 'zip_index.json' || name.endsWith('.html')){ const txt = await item.async('string'); await ghPutFile(name, txt, `import ${name}`); } }
-      alert('تم الاستيراد — تحديث القائمة'); loadAds(); }; input.click(); }
+  importZipBtn.onclick = async ()=>{ const input = document.createElement('input'); input.type='file'; input.accept='.zip'; input.onchange = async ()=>{ const f = input.files[0]; if(!f) return; const buf = await f.arrayBuffer(); const zip = await JSZip.loadAsync(buf); const files = Object.keys(zip.files); if(!confirm('استيراد '+files.length+' ملف؟ تأكد من بنية ZIP.')) return; for(const name of files){ const item = zip.files[name]; if(item.dir) continue; if(name.startsWith('images/') || name.startsWith('public/') || name.startsWith('confirmations/')){ const ab = await item.async('arraybuffer'); await ghPutFile(name, ab, `import ${name}`); } else if(name.startsWith('ads/') && name.endsWith('.json')){ const txt = await item.async('string'); const obj = JSON.parse(txt); const path = `ads/${obj.id}.json`; await ghPutFile(path, JSON.stringify(obj,null,2), `import ad ${obj.id}`); } else if(name === 'order.json' || name === 'zip_index.json' || name.endsWith('.html')){ const txt = await item.async('string'); await ghPutFile(name, txt, `import ${name}`); } } alert('تم الاستيراد — تحديث القائمة'); loadAds(); }; input.click(); }
 
-  // export zip (same as before)
-  exportZipBtn.onclick = async ()=>{ const zip = new JSZip(); for(const ad of FILES_CACHE){ const path = `ads/${ad.id}.json`; const f = await ghGetFile(path); if(f && f.content) zip.file(`ads/${ad.id}.json`, atob(f.content)); if(ad.images){ for(const im of ad.images){ const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${im}`); const ab = await r.arrayBuffer(); zip.file(im, ab); } } const conf = await ghGetFile(`confirmations/${ad.id}.png`); if(conf && conf.content){ zip.file(`confirmations/${ad.id}.png`, atob(conf.content), {binary:true}); } } const content = await zip.generateAsync({type:'blob'}); const url = URL.createObjectURL(content); const a = document.createElement('a'); a.href=url; a.download='eldelala_export.zip'; a.click(); URL.revokeObjectURL(url); }
+  // export zip
+  exportZipBtn.onclick = async ()=>{ const zip = new JSZip(); for(const ad of FILES_CACHE){ const path = `ads/${ad.id}.json`; const f = await ghGetFile(path); if(f && f.content) zip.file(`ads/${ad.id}.json`, atob(f.content)); if(ad.images){ for(const im of ad.images){ try{ const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${im}`); const ab = await r.arrayBuffer(); zip.file(im, ab); }catch(e){ console.warn('missing', im) } } } const conf = await ghGetFile(`confirmations/${ad.id}.png`); if(conf && conf.content){ zip.file(`confirmations/${ad.id}.png`, atob(conf.content), {binary:true}); } } const content = await zip.generateAsync({type:'blob'}); const url = URL.createObjectURL(content); const a = document.createElement('a'); a.href=url; a.download='eldelala_export.zip'; a.click(); URL.revokeObjectURL(url); }
 
-  // new ad quick flow uses same logic as before (omitted for brevity - use previous file)
-  newAdBtn.onclick = ()=>{ alert('Use Submit page for full user-facing submission. Admin quick-add coming soon.') }
+  // new ad quick flow uses popup (works on mobile if allowed)
+  newAdBtn.onclick = ()=>{ const w = window.open('','_blank','width=420,height=680'); w.document.body.style.direction='rtl'; w.document.body.style.fontFamily='sans-serif'; w.document.body.innerHTML = `
+    <h3>إضافة إعلان جديد</h3>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <input id="n_title" placeholder="العنوان" />
+      <textarea id="n_desc" placeholder="الوصف" rows="3"></textarea>
+      <input id="n_price" placeholder="السعر" />
+      <input id="n_location" placeholder="الموقع" />
+      <input id="n_phone" placeholder="واتساب" />
+      <input id="n_files" type="file" multiple />
+      <button id="n_submit" style="padding:8px;border-radius:8px;margin-top:6px">نشر</button>
+    </div>
+  `; w.document.getElementById('n_submit').onclick = async ()=>{
+      const t = w.document.getElementById('n_title').value.trim(); if(!t){ alert('اكتب عنوان'); return }
+      const desc = w.document.getElementById('n_desc').value; const price = w.document.getElementById('n_price').value; const loc = w.document.getElementById('n_location').value; const phone = w.document.getElementById('n_phone').value;
+      const files = w.document.getElementById('n_files').files; const id = 'eld-'+(new Date()).toISOString().replace(/[:.]/g,'')+'-'+Math.floor(Math.random()*9000+1000);
+      const ad = { id, title:t, description:desc, price:price, currency:'SDG', category:'', images:[], primary_image:null, thumbnail:null, location:loc, phone:phone, whatsapp:phone, status:'pending', created_at:new Date().toISOString(), updated_at:new Date().toISOString(), meta:{views:0} };
+      if(files && files.length>0){ let idx=1; for(const f of files){ const ab = await f.arrayBuffer(); const ext = f.name.split('.').pop().toLowerCase(); const path = `images/${id}-${idx}.${ext}`; await ghPutFile(path, ab, `upload ${path}`); ad.images.push(path); if(idx===1) ad.primary_image = path; idx++; } }
+      await ghPutFile(`ads/${id}.json`, JSON.stringify(ad,null,2), `create ad ${id}`);
+      let mainAb = null; if(ad.primary_image){ try{ const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${ad.primary_image}`); mainAb = await r.arrayBuffer(); }catch(e){ mainAb=null } }
+      let confAb = mainAb? await canvasCreateConfirmationPng(mainAb, ad) : await createFallbackPngWithTitle(ad.title, ad);
+      await ghPutFile(`confirmations/${id}.png`, confAb, `create confirmation ${id}`);
+      const orderFile = await ghGetFile('order.json'); let arr=[]; let sha; if(orderFile){ arr = JSON.parse(atob(orderFile.content)); sha = orderFile.sha; } arr.unshift(id); await ghPutFile('order.json', JSON.stringify(arr,null,2), `add ${id} to order`, sha);
+      alert('تم النشر. سيتم تنزيل صورة التأكيد الآن'); const blob = new Blob([confAb], {type:'image/png'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = `${id}-confirmation.png`; a.click(); URL.revokeObjectURL(url);
+      setTimeout(()=>{ const msg = encodeURIComponent(`السلام عليكم
+هذا اعلان رقم ${id} على موقع الدلالة`); const wa = `https://wa.me/${phone.replace(/[^0-9+]/g,'')}?text=${msg}`; if(confirm('فتح رابط واتساب لمشاركة؟')) window.open(wa,'_blank'); },500);
+      w.close(); loadAds(); } }
 
   // helper status
   function setStatus(msg){ console.log(msg) }
