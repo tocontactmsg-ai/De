@@ -7,46 +7,159 @@
 <meta name="description" content="لوحة تحكم الدلالة — إدارة الإعلانات، استيراد PNG، استخراج JSON، رفع للـ GitHub" />
 <style>
   :root{
-    --bg:#ffffff; --card:#ffffff; --muted:#64748b; --accent:#06b6d4;
-    --danger:#ef4444; --success:#10b981; --inset:rgba(2,6,23,.04);
+    --bg:#f3f7fc;
+    --card:#ffffff;
+    --muted:#64748b;
+    --accent:#06b6d4;
+    --accent-dark:#0f766e;
+    --danger:#ef4444;
+    --success:#10b981;
+    --inset:rgba(2,6,23,.04);
   }
   html,body{height:100%}
-  body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial;background:var(--bg);color:#071426;margin:0;padding:16px;box-sizing:border-box}
+  body{
+    font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial;
+    background:radial-gradient(circle at top,#e0f2fe,#f3f7fc 45%,#eef2ff 100%);
+    color:#071426;
+    margin:0;padding:16px;box-sizing:border-box;
+    transition:background .2s ease;
+  }
   .container{max-width:1200px;margin:0 auto}
-  header{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
+  header{
+    display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px;
+    padding:10px 14px;
+    border-radius:14px;
+    background:linear-gradient(120deg,#0ea5e9,#0369a1);
+    color:#ecfeff;
+    box-shadow:0 14px 35px rgba(15,23,42,.35);
+  }
   h1{font-size:18px;margin:0}
   .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  input,button,select,textarea{padding:8px;border-radius:8px;border:1px solid var(--inset);background:transparent;color:inherit}
+  input,button,select,textarea{
+    padding:8px;border-radius:8px;border:1px solid var(--inset);
+    background:rgba(255,255,255,0.85);color:inherit;
+    backdrop-filter:blur(4px);
+  }
   input[placeholder]{color:var(--muted)}
+  input:focus,select:focus,textarea:focus{
+    outline:none;border-color:var(--accent);
+    box-shadow:0 0 0 1px rgba(6,182,212,.25);
+    background:#fff;
+  }
+  button.btn{
+    background:linear-gradient(135deg,#e0f2fe,#eff6ff);
+    border:1px solid rgba(7,20,38,.08);
+    color:#0f172a;
+    cursor:pointer;
+    transition:transform .1s, box-shadow .1s, background .1s;
+  }
+  button.btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 8px 18px rgba(15,23,42,.15);
+    background:#f9fbff;
+  }
+  .btn.danger{border-color:rgba(239,68,68,.22);color:#b91c1c;background:#fef2f2}
+  .btn.danger:hover{background:#fee2e2}
+  .btn.success{border-color:rgba(16,185,129,.22);color:#047857;background:#ecfdf5}
+  .btn.success:hover{background:#d1fae5}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-  .card{background:#fff;padding:10px;border-radius:12px;border:1px solid #eef2f7;box-shadow:0 6px 18px rgba(15,20,36,.04);display:flex;flex-direction:column}
-  .thumb{width:100%;height:160px;object-fit:cover;border-radius:8px;background:#f3f4f6}
+  .card{
+    background:var(--card);padding:10px;border-radius:14px;border:1px solid #e2e8f0;
+    box-shadow:0 8px 22px rgba(15,20,36,.06);display:flex;flex-direction:column;
+    transition:transform .12s,box-shadow .12s, border-color .12s;
+  }
+  .card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 14px 32px rgba(15,23,42,.14);
+    border-color:#c7d2fe;
+  }
+  .thumb{width:100%;height:160px;object-fit:cover;border-radius:10px;background:#0f172a}
   .meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
   .meta small{color:var(--muted)}
   .btns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
-  .btn{background:transparent;border:1px solid rgba(7,20,38,.06);padding:6px 8px;border-radius:8px;color:inherit;cursor:pointer}
-  .btn.danger{border-color:rgba(239,68,68,.12)}
-  .btn.success{border-color:rgba(16,185,129,.12)}
-  .panel{background:#fff;padding:12px;border-radius:10px;margin-bottom:12px;border:1px solid #eef2f7}
+  .btn{border-radius:999px;font-size:12px;padding:5px 9px}
+  .panel{
+    background:rgba(255,255,255,0.9);padding:12px;border-radius:14px;margin-bottom:12px;
+    border:1px solid #e2e8f0;
+    box-shadow:0 10px 26px rgba(15,23,42,.06);
+  }
   footer{margin-top:18px;color:var(--muted);font-size:13px}
   .row{display:flex;gap:8px;align-items:center}
   .hidden{display:none}
   .progress{height:6px;background:#f1f5f9;border-radius:6px;overflow:hidden}
-  .progress > i{display:block;height:6px;background:var(--accent);width:0}
+  .progress > i{display:block;height:6px;background:var(--accent);width:0;transition:width .15s}
   label{font-size:13px}
-  .file-drop{border:2px dashed #e6eef6;padding:12px;border-radius:12px;text-align:center;color:var(--muted);cursor:pointer}
-  .file-drop:hover{background:#f9fcff}
+  .file-drop{
+    border:2px dashed #e6eef6;padding:12px;border-radius:12px;text-align:center;
+    color:var(--muted);cursor:pointer;background:#f8fafc;
+    transition:background .1s,border-color .1s,transform .1s;
+  }
+  .file-drop:hover{background:#f1f5ff;border-color:#bfdbfe;transform:translateY(-1px)}
   .flex{display:flex;gap:12px}
-  .mobile-toggle{border:1px solid #e6eef6;padding:6px 10px;border-radius:8px}
+  .mobile-toggle{border:1px solid #e6eef6;padding:6px 10px;border-radius:999px}
   .mobile-sim{max-width:420px;margin:8px auto;border:1px solid #eef2f7;border-radius:12px;padding:8px}
-  .count-badge{background:var(--accent);color:#fff;padding:4px 8px;border-radius:999px;font-size:13px}
-  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;background:#042a44;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 8px 30px rgba(2,6,23,.15);display:none;z-index:9999}
-  @media (max-width:520px){header{flex-direction:column;align-items:flex-start} .controls{flex-wrap:wrap}}
+  .count-badge{
+    background:linear-gradient(135deg,var(--accent),var(--accent-dark));
+    color:#fff;padding:4px 10px;border-radius:999px;font-size:13px;font-weight:600;
+    box-shadow:0 4px 10px rgba(6,182,212,.35);
+  }
+  .toast{
+    position:fixed;left:50%;transform:translateX(-50%);bottom:20px;
+    background:#042a44;color:#fff;padding:10px 14px;border-radius:10px;
+    box-shadow:0 8px 30px rgba(2,6,23,.35);display:none;z-index:9999;
+  }
+  @media (max-width:520px){
+    header{flex-direction:column;align-items:flex-start}
+    .controls{flex-wrap:wrap}
+  }
   body.mobile-mode{background:#ffffff}
   body.mobile-mode .container{max-width:420px}
   .small-muted{color:var(--muted);font-size:13px}
   .file-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
   .file-item{display:flex;align-items:center;justify-content:space-between;padding:8px;border-radius:8px;border:1px solid #eef2f7;background:#fbfdff}
+  .stagedCard{border:1px solid #e0f2fe;background:#f9fdff}
+  .pill-status{
+    padding:3px 8px;border-radius:999px;font-size:11px;
+    background:#e0f2fe;color:#0369a1;
+  }
+  .pill-id{
+    padding:3px 8px;border-radius:999px;font-size:11px;
+    background:#0f172a;color:#e5e7eb;
+  }
+  /* Modal for staged PNG edit */
+  .modalOverlay{
+    position:fixed;inset:0;background:rgba(15,23,42,.55);
+    display:none;align-items:center;justify-content:center;
+    z-index:9998;
+  }
+  .modalOverlay.active{display:flex}
+  .modalCard{
+    background:#ffffff;border-radius:16px;
+    max-width:520px;width:96%;max-height:90vh;overflow:auto;
+    padding:14px;box-shadow:0 20px 45px rgba(15,23,42,.55);
+  }
+  .modalHeader{
+    display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;
+  }
+  .modalTitle{font-size:16px;font-weight:700}
+  .modalSub{font-size:12px;color:var(--muted)}
+  .modalBody{display:flex;flex-direction:column;gap:8px}
+  .field{display:flex;flex-direction:column;gap:4px}
+  .field label{font-size:12px;color:#4b5563}
+  .field input,.field textarea, .field select{
+    padding:8px;border-radius:9px;border:1px solid #e2e8f0;background:#f9fbff;font-size:13px;
+  }
+  .field textarea{min-height:80px;resize:vertical}
+  .modalFooter{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .modalPreview{
+    display:flex;gap:10px;align-items:center;margin-bottom:8px;
+  }
+  .modalPreview img{
+    width:72px;height:72px;border-radius:12px;object-fit:cover;border:1px solid #e2e8f0;
+  }
+  .badgeSoft{
+    padding:2px 7px;border-radius:999px;font-size:11px;background:#eff6ff;color:#0369a1;
+  }
 </style>
 </head>
 <body>
@@ -71,26 +184,37 @@
 
   <div class="panel row" style="gap:10px">
     <input id="search" placeholder="بحث عن إعلان أو ID أو عنوان" style="flex:1" />
-    <select id="filterStatus"><option value="all">كل الإعلانات</option><option value="pending">معلقة</option><option value="accepted">مقبولة</option><option value="rejected">مرفوضة</option></select>
+    <select id="filterStatus">
+      <option value="all">كل الإعلانات</option>
+      <option value="pending">معلقة</option>
+      <option value="accepted">مقبولة</option>
+      <option value="rejected">مرفوضة</option>
+    </select>
     <button id="newAdBtn" class="btn">إضافة إعلان</button>
   </div>
 
   <!-- Stage area for extracted PNGs -->
   <div class="panel">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <h3>المدرج المؤقت للصور المستخرجة (Staged PNGs)</h3>
-      <div class="flex"><span id="stagedCount" class="count-badge">0</span>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+      <div>
+        <h3 style="margin:0">المدرج المؤقت للصور المستخرجة (Staged PNGs)</h3>
+        <div class="small-muted">أي PNG فيه meta من الدلالة يظهر هنا لتراجعه وتعدّله قبل القبول.</div>
+      </div>
+      <div class="flex" style="align-items:center;flex-wrap:wrap">
+        <span id="stagedCount" class="count-badge">0</span>
         <button id="uploadPngsBtn" class="btn">اختيار PNGs (دفعي)</button>
         <button id="acceptAllBtn" class="btn success">قبول الكل</button>
         <button id="clearAllBtn" class="btn danger">حذف الكل</button>
       </div>
     </div>
-    <div id="fileDrop" class="file-drop" title="اسحب PNG هنا أو اضغط للتصفح">اسحب PNG هنا أو اضغط للتصفح</div>
+    <div id="fileDrop" class="file-drop" title="اسحب PNG هنا أو اضغط للتصفح">
+      اسحب PNG هنا أو اضغط للتصفح — سيتم استخراج البيانات من داخل الصورة ويمكنك تعديلها قبل الإضافة
+    </div>
     <div id="stagedGrid" class="grid" style="margin-top:12px"></div>
   </div>
 
   <div class="panel">
-    <h3>قائمة الإعلانات</h3>
+    <h3 style="margin-top:0">قائمة الإعلانات</h3>
     <div id="grid" class="grid"></div>
   </div>
 
@@ -112,6 +236,72 @@
   </div>
 
   <footer>مبني للعمل مع GitHub Pages وGitHub API. استخدم PAT بصلاحية repo:contents فقط وفعّل 2FA لحماية الحساب.</footer>
+  </div>
+
+  <!-- Modal to edit staged PNG meta -->
+  <div id="stagedModal" class="modalOverlay">
+    <div class="modalCard">
+      <div class="modalHeader">
+        <div>
+          <div class="modalTitle">تعديل بيانات البطاقة المستخرجة</div>
+          <div class="modalSub">يمكنك تعديل الحقول التي تم استخراجها من داخل صورة الـ PNG قبل قبولها كإعلان.</div>
+        </div>
+        <button id="sm_close" class="btn small">✕</button>
+      </div>
+      <div class="modalPreview">
+        <img id="sm_img" alt="معاينة">
+        <div>
+          <div id="sm_title_preview" style="font-size:14px;font-weight:600"></div>
+          <div id="sm_id_preview" class="pill-id" style="display:inline-block;margin-top:4px"></div>
+          <div style="margin-top:4px"><span class="badgeSoft">تم الاستخراج من PNG</span></div>
+        </div>
+      </div>
+      <div class="modalBody">
+        <div class="field">
+          <label for="sm_id">رقم الإعلان (ID)</label>
+          <input id="sm_id" placeholder="مثال: ELD1234">
+        </div>
+        <div class="field">
+          <label for="sm_title">العنوان</label>
+          <input id="sm_title" placeholder="عنوان مختصر وواضح">
+        </div>
+        <div class="field">
+          <label for="sm_desc">الوصف</label>
+          <textarea id="sm_desc" placeholder="تفاصيل إضافية عن الإعلان (اختياري)"></textarea>
+        </div>
+        <div class="field">
+          <label for="sm_price">السعر</label>
+          <input id="sm_price" placeholder="مثال: 120000 SDG">
+        </div>
+        <div class="field">
+          <label for="sm_location">الموقع</label>
+          <input id="sm_location" placeholder="مثال: الخرطوم بحري">
+        </div>
+        <div class="field">
+          <label for="sm_phone">رقم الهاتف / واتساب</label>
+          <input id="sm_phone" placeholder="مثال: 2499XXXXXXXX">
+        </div>
+        <div class="field">
+          <label for="sm_category">التصنيف</label>
+          <input id="sm_category" placeholder="مثال: الكترونيات، أثاث، مركبات...">
+        </div>
+        <div class="field">
+          <label for="sm_status">الحالة</label>
+          <select id="sm_status">
+            <option value="pending">قيد المراجعة</option>
+            <option value="accepted">مقبول</option>
+            <option value="rejected">مرفوض</option>
+          </select>
+        </div>
+      </div>
+      <div class="modalFooter">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button id="sm_save" class="btn success">حفظ التعديلات</button>
+          <button id="sm_cancel" class="btn">إلغاء</button>
+        </div>
+        <div class="modalSub">لن يتم إنشاء الإعلان إلا عند الضغط على "قبول (استيراد)" من بطاقة المدرج.</div>
+      </div>
+    </div>
   </div>
 
   <div id="toast" class="toast"></div>
@@ -146,6 +336,24 @@ let REPO = '';
 let TOKEN = '';
 let FILES_CACHE = []; // loaded ads JSON
 let STAGED = []; // staged PNGs {id, pngAb, meta, name}
+let CURRENT_STAGED = null;
+
+/* staged modal DOM */
+const stagedModal = document.getElementById('stagedModal');
+const sm_close = document.getElementById('sm_close');
+const sm_img = document.getElementById('sm_img');
+const sm_id = document.getElementById('sm_id');
+const sm_title = document.getElementById('sm_title');
+const sm_desc = document.getElementById('sm_desc');
+const sm_price = document.getElementById('sm_price');
+const sm_location = document.getElementById('sm_location');
+const sm_phone = document.getElementById('sm_phone');
+const sm_category = document.getElementById('sm_category');
+const sm_status = document.getElementById('sm_status');
+const sm_save = document.getElementById('sm_save');
+const sm_cancel = document.getElementById('sm_cancel');
+const sm_title_preview = document.getElementById('sm_title_preview');
+const sm_id_preview = document.getElementById('sm_id_preview');
 
 /* ============================
    Helpers: toast & mask token
@@ -170,7 +378,8 @@ if(sessionStorage.getItem('eld_repo')){
   REPO = repoInput.value;
 }
 if(sessionStorage.getItem('eld_token')){
-  tokenInput.value = sessionStorage.getItem('eld_token').slice(0,4) + '...' + sessionStorage.getItem('eld_token').slice(-4);
+  const raw = sessionStorage.getItem('eld_token');
+  tokenInput.value = maskToken(raw);
 }
 
 /* ============================
@@ -178,7 +387,7 @@ if(sessionStorage.getItem('eld_token')){
    ============================ */
 loginBtn.onclick = ()=> {
   const repo = repoInput.value.trim();
-  const tokenRaw = prompt('ألصق PAT هنا (سيحفظ في الجلسة لمرة واحدة):',''); // keep token out of visible input
+  const tokenRaw = prompt('ألصق PAT هنا (سيحفظ في الجلسة لمرة واحدة):','');
   if(!repo || !tokenRaw){ alert('يرجى إدخال repo و PAT'); return; }
   REPO = repo;
   TOKEN = tokenRaw.trim();
@@ -189,7 +398,7 @@ loginBtn.onclick = ()=> {
 }
 
 /* ============================
-   GitHub API helpers (safe)
+   GitHub API helpers
    ============================ */
 async function ghFetch(url, options = {}){
   const headers = options.headers || {};
@@ -222,7 +431,7 @@ async function ghGetFile(path){
   }catch(e){ return null; }
 }
 
-/* chunked ArrayBuffer -> base64 to avoid apply() limits */
+/* chunked ArrayBuffer -> base64 */
 function arrayBufferToBase64(arrayBuffer){
   const bytes = new Uint8Array(arrayBuffer);
   const chunkSize = 0x8000;
@@ -260,7 +469,7 @@ async function ghDeleteFile(path, sha, message){
 }
 
 /* ============================
-   PNG metadata helpers (fixed)
+   PNG metadata helpers
    ============================ */
 function crc32(buf){
   if(!crc32.table){
@@ -286,7 +495,7 @@ function embedTextChunkInPng(arrayBuffer, key, value){
   const before = data.slice(0,pos);
   const after = data.slice(pos);
   const encoder = new TextEncoder();
-  const textData = encoder.encode(key + '\0' + value); // NUL separator
+  const textData = encoder.encode(key + '\0' + value);
   const len = textData.length;
   const lenBuf = new Uint8Array([ (len>>>24)&255, (len>>>16)&255, (len>>>8)&255, len&255 ]);
   const typeBuf = new Uint8Array([116,69,88,116]); // 'tEXt'
@@ -317,7 +526,7 @@ function extractMetaFromPng(arrayBuffer){
       const textBytes = data.slice(start, start + len);
       const decoder = new TextDecoder();
       const txt = decoder.decode(textBytes);
-      const sep = txt.indexOf('\0'); // look for NUL separator
+      const sep = txt.indexOf('\0');
       if(sep !== -1){
         const key = txt.slice(0, sep);
         const val = txt.slice(sep + 1);
@@ -366,7 +575,7 @@ async function createFallbackPngWithTitle(title, meta){
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = '#000'; ctx.fillRect(0,0,800,600);
   ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.font = 'bold 36px sans-serif';
-  wrapText(ctx, title, 400, 250, 36, 40);
+  wrapText(ctx, title||'إعلان', 400, 250, 36, 40);
   ctx.font = '18px sans-serif'; ctx.fillText('شكرا على استعمال موقع الدلالة', 400, 560);
   const blobOut = await new Promise(r=>canvas.toBlob(r,'image/png',1));
   const ab = await blobOut.arrayBuffer();
@@ -374,7 +583,7 @@ async function createFallbackPngWithTitle(title, meta){
 }
 
 function wrapText(ctx, text, x, y, maxWidth, lineHeight){
-  var words = text.split(' ');
+  var words = String(text||'').split(' ');
   var line = '';
   var curY = y;
   for(var n = 0; n < words.length; n++){
@@ -406,12 +615,12 @@ async function loadAds(){
     if(!f.name.endsWith('.json')) continue;
     try{
       const raw = await ghGetFile(f.path);
-      const json = JSON.parse(atob(raw.content));
+      const json = JSON.parse(atob(raw.content.replace(/\n/g,'')));
       json._sha = raw.sha; json._path = f.path;
       FILES_CACHE.push(json);
     }catch(e){ console.warn('skip', f.name, e); }
   }
-  FILES_CACHE.sort((a,b)=> new Date(b.created_at) - new Date(a.created_at));
+  FILES_CACHE.sort((a,b)=> new Date(b.created_at||0) - new Date(a.created_at||0));
   renderGrid();
   setStatus('تم التحميل');
 }
@@ -436,16 +645,21 @@ function renderCard(ad){
     img.src = `https://raw.githubusercontent.com/${REPO}/main/${ad.primary_image}`;
     img.onerror = ()=> { img.src = ''; img.style.background = '#000'; img.alt = ad.title || ''; };
   } else {
-    // draw placeholder
     const c = document.createElement('canvas'); c.width=800; c.height=600;
     const ctx = c.getContext('2d'); ctx.fillStyle='#000'; ctx.fillRect(0,0,800,600);
-    ctx.fillStyle='#fff'; ctx.font='bold 36px sans-serif'; ctx.textAlign='center'; ctx.fillText(ad.title||'بدون عنوان',400,300);
+    ctx.fillStyle='#fff'; ctx.font='bold 30px sans-serif'; ctx.textAlign='center'; wrapText(ctx, ad.title||'بدون عنوان',400,300,580,34);
     img.src = c.toDataURL('image/png');
   }
   el.appendChild(img);
-  const h = document.createElement('div'); h.style.marginTop='8px'; h.innerHTML = `<strong>${escapeHtml(ad.title||'بدون عنوان')}</strong><div style="color:var(--muted)">${escapeHtml(ad.location||'')} • ${escapeHtml(String(ad.price||''))}</div>`;
+  const h = document.createElement('div'); h.style.marginTop='8px';
+  h.innerHTML = `<strong>${escapeHtml(ad.title||'بدون عنوان')}</strong>
+    <div style="color:var(--muted);font-size:13px">${escapeHtml(ad.location||'')} • ${escapeHtml(String(ad.price||''))}</div>`;
   el.appendChild(h);
-  const meta = document.createElement('div'); meta.className='meta'; meta.innerHTML = `<small>ID: ${ad.id}</small><small>${ad.status||'pending'}</small>`; el.appendChild(meta);
+  const meta = document.createElement('div'); meta.className='meta';
+  const st = (ad.status||'pending');
+  meta.innerHTML = `<small>ID: <span class="pill-id">${escapeHtml(ad.id||'')}</span></small>
+                    <small><span class="pill-status">${st==='accepted'?'مقبول':st==='rejected'?'مرفوض':'معلق'}</span></small>`;
+  el.appendChild(meta);
   const btns = document.createElement('div'); btns.className='btns';
   const v = document.createElement('button'); v.className='btn'; v.textContent='عرض'; v.onclick = ()=> viewAd(ad); btns.appendChild(v);
   const e = document.createElement('button'); e.className='btn'; e.textContent='تعديل'; e.onclick = ()=> openEditor(ad); btns.appendChild(e);
@@ -460,7 +674,7 @@ function renderCard(ad){
   return el;
 }
 
-function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
 
 /* ============================
    Ad actions
@@ -534,7 +748,7 @@ async function deleteAd(ad){
     const c = await ghGetFile(`confirmations/${ad.id}.png`); if(c && c.sha) await ghDeleteFile(`confirmations/${ad.id}.png`, c.sha, `delete confirmation ${ad.id}`);
     const j = await ghGetFile(`ads/${ad.id}.json`); if(j && j.sha) await ghDeleteFile(`ads/${ad.id}.json`, j.sha, `delete ad ${ad.id}`);
     const order = await ghGetFile('order.json'); let arr=[]; let sha;
-    if(order){ arr = JSON.parse(atob(order.content)); sha = order.sha; }
+    if(order){ arr = JSON.parse(atob(order.content.replace(/\n/g,''))); sha = order.sha; }
     arr = arr.filter(x=> x !== ad.id); await ghPutFile('order.json', JSON.stringify(arr,null,2), `remove ${ad.id} from order`, sha);
     showToast('تم الحذف');
     loadAds();
@@ -543,7 +757,7 @@ async function deleteAd(ad){
 
 async function moveAd(ad, dir){
   const orderFile = await ghGetFile('order.json'); let arr=[]; let sha = undefined;
-  if(orderFile){ arr = JSON.parse(atob(orderFile.content)); sha = orderFile.sha; } else { arr = FILES_CACHE.map(a=>a.id); }
+  if(orderFile){ arr = JSON.parse(atob(orderFile.content.replace(/\n/g,''))); sha = orderFile.sha; } else { arr = FILES_CACHE.map(a=>a.id); }
   const idx = arr.indexOf(ad.id);
   if(idx===-1) arr.unshift(ad.id);
   else{
@@ -581,8 +795,8 @@ async function downloadConfirmation(ad){
 
 fileDrop.onclick = ()=>{ const i = document.createElement('input'); i.type='file'; i.accept='image/png'; i.multiple = false; i.onchange = async ()=>{ const f = i.files[0]; if(f) await handleMultiplePngFiles([f]); }; i.click(); };
 uploadPngsBtn.onclick = ()=>{ const i = document.createElement('input'); i.type='file'; i.accept='image/png'; i.multiple = true; i.onchange = async ()=>{ const files = Array.from(i.files); if(files && files.length) await handleMultiplePngFiles(files); }; i.click(); };
-fileDrop.ondragover = (e)=>{ e.preventDefault(); fileDrop.style.background='#f8fdff'; }
-fileDrop.ondragleave = (e)=>{ fileDrop.style.background=''; }
+fileDrop.ondragover = (e)=>{ e.preventDefault(); fileDrop.style.background='#f1f5ff'; }
+fileDrop.ondragleave = (e)=>{ e.preventDefault(); fileDrop.style.background=''; }
 fileDrop.ondrop = async (e)=>{ e.preventDefault(); fileDrop.style.background=''; const files = Array.from(e.dataTransfer.files); if(files && files.length) await handleMultiplePngFiles(files); }
 
 async function handleMultiplePngFiles(fileList){
@@ -607,19 +821,80 @@ async function handlePngFile(file){
 function renderStaged(){
   stagedGrid.innerHTML = ''; stagedCount.textContent = String(STAGED.length);
   for(const s of STAGED){
-    const el = document.createElement('div'); el.className='card';
-    const img = document.createElement('img'); img.className='thumb'; img.src = URL.createObjectURL(new Blob([s.pngAb], {type:'image/png'})); img.loading='lazy';
+    const el = document.createElement('div'); el.className='card stagedCard';
+    const img = document.createElement('img'); img.className='thumb';
+    img.src = URL.createObjectURL(new Blob([s.pngAb], {type:'image/png'})); img.loading='lazy';
     el.appendChild(img);
-    const h = document.createElement('div'); h.style.marginTop='8px'; h.innerHTML = `<strong>${escapeHtml(s.meta.title||s.name||s.id)}</strong><div style="color:var(--muted)">${escapeHtml(s.meta.location||'')}</div>`;
+    const h = document.createElement('div'); h.style.marginTop='8px';
+    const title = s.meta.title || s.name || s.id;
+    const loc = s.meta.location || '';
+    h.innerHTML = `<strong>${escapeHtml(title)}</strong>
+      <div style="color:var(--muted);font-size:13px">${escapeHtml(loc)}</div>`;
     el.appendChild(h);
+    const metaLine = document.createElement('div'); metaLine.className='meta';
+    metaLine.innerHTML = `<small><span class="pill-id">${escapeHtml(s.meta.id||s.id)}</span></small>
+                          <small class="small-muted">من ملف: ${escapeHtml(s.name||'')}</small>`;
+    el.appendChild(metaLine);
     const btns = document.createElement('div'); btns.className='btns';
     const acceptBtn = document.createElement('button'); acceptBtn.className='btn success'; acceptBtn.textContent='قبول (استيراد)'; acceptBtn.onclick = ()=> acceptStaged(s); btns.appendChild(acceptBtn);
-    const delBtn = document.createElement('button'); delBtn.className='btn danger'; delBtn.textContent='حذف من المدرج'; delBtn.onclick = ()=> { STAGED = STAGED.filter(x=> x !== s); renderStaged(); };
-    const extractBtn = document.createElement('button'); extractBtn.className='btn'; extractBtn.textContent='عرض البيانات'; extractBtn.onclick = ()=> alert(JSON.stringify(s.meta,null,2));
-    btns.appendChild(extractBtn); btns.appendChild(delBtn); el.appendChild(btns);
+    const editBtn = document.createElement('button'); editBtn.className='btn'; editBtn.textContent='تعديل البيانات'; editBtn.onclick = ()=> openStagedEditor(s); btns.appendChild(editBtn);
+    const extractBtn = document.createElement('button'); extractBtn.className='btn'; extractBtn.textContent='عرض JSON'; extractBtn.onclick = ()=> alert(JSON.stringify(s.meta,null,2)); btns.appendChild(extractBtn);
+    const delBtn = document.createElement('button'); delBtn.className='btn danger'; delBtn.textContent='حذف من المدرج'; delBtn.onclick = ()=> { STAGED = STAGED.filter(x=> x !== s); renderStaged(); }; btns.appendChild(delBtn);
+    el.appendChild(btns);
     stagedGrid.appendChild(el);
   }
 }
+
+/* Staged editor modal logic */
+function openStagedEditor(s){
+  CURRENT_STAGED = s;
+  const m = s.meta || {};
+  sm_id.value = m.id || s.id || '';
+  sm_title.value = m.title || '';
+  sm_desc.value = m.description || '';
+  sm_price.value = m.price || '';
+  sm_location.value = m.location || '';
+  sm_phone.value = m.phone || m.whatsapp || '';
+  sm_category.value = m.category || '';
+  sm_status.value = (m.status || 'pending');
+  sm_img.src = URL.createObjectURL(new Blob([s.pngAb], {type:'image/png'}));
+  sm_title_preview.textContent = m.title || s.name || s.id;
+  sm_id_preview.textContent = m.id || s.id || '';
+  stagedModal.classList.add('active');
+}
+
+function applyStagedEdits(){
+  if(!CURRENT_STAGED) return;
+  const m = CURRENT_STAGED.meta || {};
+  const newId = sm_id.value.trim() || m.id || CURRENT_STAGED.id;
+  m.id = newId;
+  CURRENT_STAGED.id = newId;
+  m.title = sm_title.value.trim();
+  m.description = sm_desc.value.trim();
+  m.price = sm_price.value.trim();
+  m.location = sm_location.value.trim();
+  const phone = sm_phone.value.trim();
+  if(phone){ m.phone = phone; m.whatsapp = phone;}
+  m.category = sm_category.value.trim();
+  m.status = sm_status.value;
+  CURRENT_STAGED.meta = m;
+  sm_title_preview.textContent = m.title || CURRENT_STAGED.name || CURRENT_STAGED.id;
+  sm_id_preview.textContent = m.id;
+}
+
+sm_save.onclick = ()=>{
+  applyStagedEdits();
+  stagedModal.classList.remove('active');
+  CURRENT_STAGED = null;
+  renderStaged();
+};
+
+sm_cancel.onclick = ()=>{
+  stagedModal.classList.remove('active');
+  CURRENT_STAGED = null;
+};
+
+sm_close.onclick = sm_cancel;
 
 /* Bulk actions */
 acceptAllBtn.onclick = async ()=>{
@@ -634,13 +909,17 @@ clearAllBtn.onclick = ()=>{ if(confirm('حذف كل عناصر المدرج؟'))
 /* Accept staged single item -> upload confirmation PNG and create ads/<id>.json */
 async function acceptStaged(s){
   try{
-    const id = s.meta.id || ('eld-'+Date.now());
+    const meta = s.meta || {};
+    const id = meta.id || s.id || ('eld-'+Date.now());
     await ghPutFile(`confirmations/${id}.png`, s.pngAb, `import confirmation ${id}`);
-    const ad = s.meta;
-    ad.id = id; ad.status = ad.status || 'pending'; ad.created_at = ad.created_at || new Date().toISOString(); ad.updated_at = new Date().toISOString();
+    const ad = Object.assign({}, meta);
+    ad.id = id;
+    ad.status = ad.status || 'pending';
+    ad.created_at = ad.created_at || new Date().toISOString();
+    ad.updated_at = new Date().toISOString();
     await ghPutFile(`ads/${id}.json`, JSON.stringify(ad,null,2), `import ad ${id}`);
     const orderFile = await ghGetFile('order.json'); let arr=[]; let sha;
-    if(orderFile){ arr = JSON.parse(atob(orderFile.content)); sha = orderFile.sha; }
+    if(orderFile){ arr = JSON.parse(atob(orderFile.content.replace(/\n/g,''))); sha = orderFile.sha; }
     arr.unshift(id); await ghPutFile('order.json', JSON.stringify(arr,null,2), `add ${id} to order`, sha);
     STAGED = STAGED.filter(x=> x !== s); renderStaged(); loadAds(); showToast(`تم استيراد ${id}`);
   }catch(e){ alert('فشل استيراد العنصر: ' + e.message); console.error(e); }
@@ -673,9 +952,9 @@ exportZipBtn.onclick = async ()=>{
   const zip = new JSZip(); let added=0;
   for(const ad of FILES_CACHE){
     try{
-      const path = `ads/${ad.id}.json`; const f = await ghGetFile(path); if(f && f.content) zip.file(`ads/${ad.id}.json`, atob(f.content));
+      const path = `ads/${ad.id}.json`; const f = await ghGetFile(path); if(f && f.content) zip.file(`ads/${ad.id}.json`, atob(f.content.replace(/\n/g,'')));
       if(ad.images){ for(const im of ad.images){ try{ const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${im}`); const ab = await r.arrayBuffer(); zip.file(im, ab); }catch(e){ console.warn('missing', im); } } }
-      const conf = await ghGetFile(`confirmations/${ad.id}.png`); if(conf && conf.content) zip.file(`confirmations/${ad.id}.png`, atob(conf.content), {binary:true});
+      const conf = await ghGetFile(`confirmations/${ad.id}.png`); if(conf && conf.content) zip.file(`confirmations/${ad.id}.png`, atob(conf.content.replace(/\n/g,'')), {binary:true});
       added++;
     }catch(e){ console.warn('export fail', e); }
   }
@@ -686,7 +965,7 @@ exportZipBtn.onclick = async ()=>{
 };
 
 /* ============================
-   Auto-scan confirmations/ in repo (pull PNGs into staged)
+   Auto-scan confirmations/ in repo
    ============================ */
 scanConfirmationsBtn.onclick = async ()=>{
   if(!REPO || !TOKEN){ alert('حدد repo و PAT أولاً'); return; }
@@ -699,10 +978,9 @@ scanConfirmationsBtn.onclick = async ()=>{
     try{
       const fileMeta = await ghGetFile(p.path);
       if(!fileMeta || !fileMeta.content) continue;
-      const ab = base64ToArrayBuffer(fileMeta.content);
+      const ab = base64ToArrayBuffer(fileMeta.content.replace(/\n/g,''));
       const meta = extractMetaFromPng(ab);
       const id = (meta && meta.id) ? meta.id : p.name.replace('.png','');
-      // avoid duplicates in staged (by checking id)
       if(STAGED.some(s => s.id === id)) continue;
       STAGED.unshift({ id, pngAb: ab, meta: meta || { title: p.name, id }, name: p.name });
       added++;
@@ -712,7 +990,7 @@ scanConfirmationsBtn.onclick = async ()=>{
   showToast(`تم إضافة ${added} ملفات من confirmations/ إلى المدرج`);
 };
 
-/* base64 content (from GitHub API) -> ArrayBuffer */
+/* base64 -> ArrayBuffer */
 function base64ToArrayBuffer(b64){
   const binary_string = atob(b64);
   const len = binary_string.length;
@@ -722,7 +1000,7 @@ function base64ToArrayBuffer(b64){
 }
 
 /* ============================
-   New ad quick-add (popup)
+   New ad quick-add
    ============================ */
 newAdBtn.onclick = ()=> {
   const w = window.open('','_blank','width=420,height=680');
@@ -752,7 +1030,7 @@ newAdBtn.onclick = ()=> {
     let mainAb = null; if(ad.primary_image){ try{ const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${ad.primary_image}`); mainAb = await r.arrayBuffer(); }catch(e){ mainAb=null } }
     let confAb = mainAb? await canvasCreateConfirmationPng(mainAb, ad) : await createFallbackPngWithTitle(ad.title, ad);
     await ghPutFile(`confirmations/${id}.png`, confAb, `create confirmation ${id}`);
-    const orderFile = await ghGetFile('order.json'); let arr=[]; let sha; if(orderFile){ arr = JSON.parse(atob(orderFile.content)); sha = orderFile.sha; } arr.unshift(id); await ghPutFile('order.json', JSON.stringify(arr,null,2), `add ${id} to order`, sha);
+    const orderFile = await ghGetFile('order.json'); let arr=[]; let sha; if(orderFile){ arr = JSON.parse(atob(orderFile.content.replace(/\n/g,''))); sha = orderFile.sha; } arr.unshift(id); await ghPutFile('order.json', JSON.stringify(arr,null,2), `add ${id} to order`, sha);
     alert('تم النشر. سيتم تنزيل صورة التأكيد الآن');
     const blob = new Blob([confAb], {type:'image/png'}); const url = URL.createObjectURL(blob); const a = w.document.createElement('a'); a.href = url; a.download = `${id}-confirmation.png`; a.click(); w.close();
     loadAds();
@@ -760,7 +1038,7 @@ newAdBtn.onclick = ()=> {
 };
 
 /* ============================
-   Utility: setStatus (console)
+   Utility: setStatus
    ============================ */
 function setStatus(msg){ console.log(msg); }
 
@@ -773,7 +1051,6 @@ filterStatus.onchange = ()=> renderGrid();
 mobileViewBtn.onclick = ()=>{ const active = document.body.classList.toggle('mobile-mode'); mobileViewBtn.textContent = active ? 'الخروج من عرض الموبايل' : 'عرض موبايل'; window.scrollTo(0,0); };
 
 renderStaged();
-
 </script>
 </body>
 </html>
