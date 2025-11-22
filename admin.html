@@ -3,48 +3,60 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>الدلالة — لوحة الإدارة (نسخة بسيطة)</title>
+<title>الدلالة — لوحة الإدارة (GitHub + PAT)</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box;font-family:"Tajawal",system-ui,-apple-system,"Segoe UI",sans-serif}
   body{margin:0;background:#f3f7fc;color:#0b1220;line-height:1.5}
-  .shell{max-width:1100px;margin:0 auto;padding:12px}
+  a{text-decoration:none;color:inherit}
+  code{background:#e2e8f0;border-radius:4px;padding:0 4px;font-size:12px}
+  .shell{max-width:1150px;margin:0 auto;padding:12px}
   header{background:linear-gradient(135deg,#0ea5e9,#0369a1);color:#fff;border-radius:16px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
   .brand{display:flex;align-items:center;gap:10px}
   .logo{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.14);display:flex;align-items:center;justify-content:center;font-weight:800}
   .brandTitle{font-size:20px;font-weight:800}
   .brandSub{font-size:13px;opacity:.9}
-  .hint{font-size:13px;color:#e0f2fe}
-  .panel{background:#ffffff;border-radius:16px;padding:12px;border:1px solid #e2e8f0;box-shadow:0 10px 26px rgba(15,23,42,.06);margin-bottom:12px}
+  .connectBox{display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+  .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
   .small{font-size:13px}
-  .muted{color:#64748b}
-  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
-  .controls input{padding:8px 10px;border-radius:10px;border:1px solid #d4dbe9;background:#f9fbff;font-size:13px;min-width:140px}
-  .controls input:focus{outline:none;border-color:#0ea5e9;box-shadow:0 0 0 1px rgba(14,165,233,.22)}
-  .btn{padding:8px 10px;border-radius:10px;border:1px solid #dbeafe;background:#eff6ff;color:#0369a1;font-size:13px;cursor:pointer}
+  .muted{color:#e0f2fe}
+  .mutedDark{color:#64748b}
+  input,select{padding:7px 9px;border-radius:9px;border:1px solid #d4dbe9;background:#f9fbff;font-size:13px}
+  input:focus,select:focus{outline:none;border-color:#0ea5e9;box-shadow:0 0 0 1px rgba(14,165,233,.22)}
+  .tokenInput{min-width:180px}
+  .btn{padding:7px 10px;border-radius:9px;border:1px solid #dbeafe;background:#eff6ff;color:#0369a1;font-size:13px;cursor:pointer}
   .btn.primary{background:#0ea5e9;border-color:#0284c7;color:#fff}
+  .btn.ghost{background:transparent;border-color:rgba(255,255,255,0.3);color:#e0f2fe}
   .btn.danger{background:#fee2e2;border-color:#fecaca;color:#b91c1c}
+  .btn.small{font-size:12px;padding:5px 8px;border-radius:999px}
+  .panel{background:#ffffff;border-radius:16px;padding:12px;border:1px solid #e2e8f0;box-shadow:0 10px 26px rgba(15,23,42,.06);margin-bottom:12px}
+  .panelHead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+  .panelTitle{font-weight:700;font-size:15px}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+  .filters input{min-width:160px}
+  .filters select{min-width:120px}
+  .tag{font-size:12px;color:#6b7280}
   .grid{display:grid;grid-template-columns:repeat(1,1fr);gap:10px}
   @media(min-width:720px){.grid{grid-template-columns:repeat(2,1fr)}}
-  @media(min-width:980px){.grid{grid-template-columns:repeat(3,1fr)}}
+  @media(min-width:1000px){.grid{grid-template-columns:repeat(3,1fr)}}
   .card{background:#fff;border-radius:14px;border:1px solid #e5e7eb;box-shadow:0 8px 22px rgba(15,23,42,.05);padding:10px;display:flex;flex-direction:column;gap:6px}
   .cardTitle{font-weight:700;font-size:15px;color:#0f172a}
   .cardDesc{font-size:13px;color:#4b5563;max-height:3.4em;overflow:hidden;text-overflow:ellipsis}
+  .cardFooter{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
   .badge{background:#eff6ff;color:#0369a1;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:600}
   .pill{background:#f3f4f6;color:#4b5563;border-radius:999px;padding:3px 7px;font-size:11px}
   .ref{margin-right:auto;font-size:12px;color:#0f172a;font-weight:600}
-  .cardFooter{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-  .btnRow{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-  .empty{padding:16px;text-align:center}
-  .empty span{display:block;margin-top:4px}
   .statusChip{padding:3px 7px;border-radius:999px;font-size:11px;font-weight:600}
   .statusChip.accepted{background:#dcfce7;color:#16a34a}
   .statusChip.pending{background:#fef9c3;color:#854d0e}
   .statusChip.rejected{background:#fee2e2;color:#b91c1c}
+  .btnRow{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+  .empty{padding:16px;text-align:center}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;background:#0f172a;color:#f9fafb;padding:8px 12px;border-radius:10px;font-size:13px;box-shadow:0 12px 30px rgba(15,23,42,.45);display:none;z-index:60}
   /* modal */
   .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(15,23,42,.55);z-index:50}
   .modal.open{display:flex}
-  .modalCard{background:#ffffff;border-radius:16px;max-width:800px;width:96%;max-height:92vh;overflow:auto;padding:14px;box-shadow:0 18px 40px rgba(15,23,42,.4)}
+  .modalCard{background:#ffffff;border-radius:16px;max-width:900px;width:96%;max-height:92vh;overflow:auto;padding:14px;box-shadow:0 18px 40px rgba(15,23,42,.4)}
   .modalHead{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;flex-wrap:wrap}
   .modalTitle{font-size:18px;font-weight:800;color:#020617}
   .modalMeta{font-size:13px;color:#6b7280;margin-top:4px}
@@ -56,8 +68,6 @@
   .field textarea{min-height:80px;resize:vertical}
   .field input:focus,.field textarea:focus{outline:none;border-color:#0ea5e9;box-shadow:0 0 0 1px rgba(14,165,233,.22)}
   .modalFooter{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
-  .tag{font-size:12px;color:#6b7280}
-  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;background:#0f172a;color:#f9fafb;padding:8px 12px;border-radius:10px;font-size:13px;box-shadow:0 12px 30px rgba(15,23,42,.45);display:none;z-index:60}
 </style>
 </head>
 <body>
@@ -66,22 +76,29 @@
     <div class="brand">
       <div class="logo">EL</div>
       <div>
-        <div class="brandTitle">لوحة إدارة — الدلالة (نسخة ثابتة)</div>
-        <div class="brandSub">تعمل مباشرة مع ملفات JSON في مجلد <code>ads/</code> وملف <code>order.json</code></div>
+        <div class="brandTitle">لوحة الإدارة — الدلالة</div>
+        <div class="brandSub">تتصل مباشرة بمجلد <code>ads/</code> وملف <code>order.json</code> في مستودع GitHub باستخدام PAT</div>
       </div>
     </div>
-    <div class="hint">
-      لا تحتاج توكن ولا API — فقط تأكد أن <strong>admin.html</strong> و <strong>ads/</strong> و <strong>order.json</strong> في نفس الريبو.
+    <div class="connectBox">
+      <div class="row">
+        <input id="repoInput" placeholder="user/repo" title="مثال: username/eldelala">
+        <input id="tokenInput" class="tokenInput" placeholder="GitHub PAT (لن يُحفظ دائماً)">
+        <button id="connectBtn" class="btn primary">اتصل</button>
+      </div>
+      <div class="row">
+        <span id="statusLabel" class="small muted">غير متصل</span>
+        <button id="clearSessionBtn" class="btn ghost small">مسح التخزين المؤقت</button>
+      </div>
     </div>
   </header>
 
   <section class="panel">
-    <div class="controls">
-      <button class="btn primary" id="reloadBtn">إعادة تحميل الإعلانات</button>
-      <button class="btn" id="downloadOrderBtn">تنزيل order.json (مستحدث)</button>
-      <span class="small muted" id="statusLabel">جاهز</span>
+    <div class="panelHead">
+      <div class="panelTitle">الإعلانات</div>
+      <div class="tag">يتم تحميلها من <code>order.json</code> و <code>ads/*.json</code> من نفس الريبو</div>
     </div>
-    <div class="controls">
+    <div class="filters">
       <input id="searchInput" placeholder="بحث بالعنوان أو الكود أو الموقع">
       <select id="statusFilter">
         <option value="">كل الحالات</option>
@@ -92,18 +109,20 @@
       <select id="catFilter">
         <option value="">كل الأقسام</option>
       </select>
+      <button id="reloadBtn" class="btn">إعادة تحميل من GitHub</button>
+      <button id="saveOrderBtn" class="btn">حفظ order.json على GitHub</button>
     </div>
     <div id="cardsGrid" class="grid"></div>
     <div id="emptyBox" class="empty" style="display:none">
       لا توجد إعلانات لعرضها
-      <span class="muted small">تأكد من وجود ملفات JSON داخل مجلد <code>ads/</code> وملف <code>order.json</code> في الجذر.</span>
+      <div class="mutedDark small">تأكد من وجود <code>order.json</code> ومجلد <code>ads/</code> في الريبو.</div>
     </div>
   </section>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<!-- Modal for edit/view -->
+<!-- Modal -->
 <div class="modal" id="modal">
   <div class="modalCard">
     <div class="modalHead">
@@ -157,11 +176,11 @@
     </div>
     <div class="modalFooter">
       <div style="display:flex;gap:6px;flex-wrap:wrap">
-        <button class="btn primary" id="m_save">حفظ التعديلات (تنزيل JSON)</button>
-        <button class="btn" id="m_downloadJson">تنزيل JSON فقط</button>
-        <button class="btn" id="m_makePng">توليد بطاقة PNG</button>
+        <button class="btn primary" id="m_saveGithub">حفظ في GitHub</button>
+        <button class="btn" id="m_downloadJson">تنزيل JSON</button>
+        <button class="btn" id="m_makePng">بطاقة PNG</button>
       </div>
-      <div class="tag">بعد تنزيل JSON يمكنك رفعه يدويًا إلى GitHub داخل مجلد <code>ads/</code>.</div>
+      <div class="tag">التعديل يُكتب مباشرة في ملف <code>ads/[id].json</code> في نفس المستودع.</div>
     </div>
   </div>
 </div>
@@ -170,16 +189,28 @@
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 
 <script>
-let ads = [];        // من الملفات
-let orderIds = [];   // من order.json
+let REPO = '';
+let TOKEN = '';
+let BRANCH = 'main';
+
+let ads = [];        // قائمة الإعلانات من GitHub
+let orderIds = [];   // IDs من order.json
+let ghFiles = {};    // path -> {sha}
 let currentAd = null;
+
+const repoInput   = document.getElementById('repoInput');
+const tokenInput  = document.getElementById('tokenInput');
+const connectBtn  = document.getElementById('connectBtn');
+const clearSessionBtn = document.getElementById('clearSessionBtn');
+const statusLabel = document.getElementById('statusLabel');
 
 const gridEl       = document.getElementById('cardsGrid');
 const emptyBoxEl   = document.getElementById('emptyBox');
 const searchEl     = document.getElementById('searchInput');
 const statusFilter = document.getElementById('statusFilter');
 const catFilter    = document.getElementById('catFilter');
-const statusLabel  = document.getElementById('statusLabel');
+const reloadBtn    = document.getElementById('reloadBtn');
+const saveOrderBtn = document.getElementById('saveOrderBtn');
 const toastEl      = document.getElementById('toast');
 
 // modal elements
@@ -196,7 +227,7 @@ const m_loc_in      = document.getElementById('m_loc_input');
 const m_phone_in    = document.getElementById('m_phone_input');
 const m_cat_in      = document.getElementById('m_cat_input');
 const m_status_sel  = document.getElementById('m_status_select');
-const m_saveBtn     = document.getElementById('m_save');
+const m_saveGithub  = document.getElementById('m_saveGithub');
 const m_downloadBtn = document.getElementById('m_downloadJson');
 const m_makePngBtn  = document.getElementById('m_makePng');
 
@@ -204,53 +235,145 @@ function showToast(msg){
   toastEl.textContent = msg;
   toastEl.style.display = 'block';
   clearTimeout(toastEl._t);
-  toastEl._t = setTimeout(()=> toastEl.style.display='none', 2500);
+  toastEl._t = setTimeout(()=> toastEl.style.display='none',2500);
 }
 
 function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]);}
 function debounce(fn,delay){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),delay);}}
 
-// تحميل order.json و ads/*.json
-async function loadAds(){
+// ===== GitHub helpers =====
+function getGitHubHeaders(){
+  const h = {'Accept':'application/vnd.github+json'};
+  if(TOKEN) h.Authorization = `Bearer ${TOKEN}`;
+  return h;
+}
+
+async function ghGetFile(path){
+  const url = `https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}`;
+  const res = await fetch(url,{headers:getGitHubHeaders()});
+  if(!res.ok){
+    throw new Error(`GitHub GET ${path} failed: ${res.status}`);
+  }
+  const data = await res.json();
+  const contentStr = atob((data.content || '').replace(/\n/g,''));
+  ghFiles[path] = {sha:data.sha};
+  return {text:contentStr,sha:data.sha};
+}
+
+async function ghPutFile(path, contentText, message){
+  const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
+  const sha = ghFiles[path]?.sha;
+  const b64 = btoa(unescape(encodeURIComponent(contentText)));
+  const body = {
+    message: message || `Update ${path}`,
+    content: b64,
+    branch: BRANCH
+  };
+  if(sha) body.sha = sha;
+  const res = await fetch(url,{
+    method:'PUT',
+    headers:Object.assign({'Content-Type':'application/json'}, getGitHubHeaders()),
+    body: JSON.stringify(body)
+  });
+  if(!res.ok){
+    const txt = await res.text();
+    throw new Error(`GitHub PUT ${path} failed: ${res.status} ${txt}`);
+  }
+  const data = await res.json();
+  ghFiles[path] = {sha:data.content.sha};
+  return data;
+}
+
+// ===== اتصال =====
+connectBtn.onclick = async ()=>{
+  const r = repoInput.value.trim();
+  const t = tokenInput.value.trim();
+  if(!r || !t){
+    alert('يرجى إدخال اسم الريبو والتوكن');
+    return;
+  }
+  REPO = r;
+  TOKEN = t;
+  sessionStorage.setItem('eld_repo', REPO);
+  sessionStorage.setItem('eld_token', TOKEN);
+  statusLabel.textContent = `متصل بـ ${REPO} (main)`;
+  showToast('تم الحفظ في sessionStorage — سيتم استخدام نفس القيم خلال هذه الجلسة');
+  await loadAdsFromGitHub();
+};
+
+clearSessionBtn.onclick = ()=>{
+  sessionStorage.removeItem('eld_repo');
+  sessionStorage.removeItem('eld_token');
+  REPO=''; TOKEN='';
+  repoInput.value='';
+  tokenInput.value='';
+  statusLabel.textContent='غير متصل';
+  showToast('تم مسح بيانات الاتصال من هذه الجلسة');
+};
+
+// تحميل قيم محفوظة في الجلسة
+(function initFromSession(){
+  const r = sessionStorage.getItem('eld_repo');
+  const t = sessionStorage.getItem('eld_token');
+  if(r && t){
+    REPO = r; TOKEN = t;
+    repoInput.value = r;
+    tokenInput.value = t.replace(/.(?=.{4})/g,'*'); // إخفاء تقريبي (شكل فقط)
+    statusLabel.textContent = `متصل (مخزن) — اضغط "اتصل" لتفعيل`;
+  }
+})();
+
+// ===== تحميل الإعلانات من GitHub =====
+async function loadAdsFromGitHub(){
+  if(!REPO || !TOKEN){
+    alert('أدخل اسم الريبو والتوكن ثم اضغط "اتصل" أولاً.');
+    return;
+  }
   try{
-    statusLabel.textContent = 'جاري تحميل الإعلانات...';
-    const orderRes = await fetch('order.json', {cache:'no-store'});
-    if(!orderRes.ok){
-      statusLabel.textContent = 'لا يوجد order.json';
-      ads = []; orderIds = [];
-      renderGrid();
-      return;
+    statusLabel.textContent = 'جاري تحميل order.json والإعلانات...';
+    ghFiles = {};
+    // order.json
+    const order = await ghGetFile('order.json');
+    try{
+      orderIds = JSON.parse(order.text);
+      if(!Array.isArray(orderIds)) orderIds = [];
+    }catch(e){
+      orderIds = [];
     }
-    orderIds = await orderRes.json();
     const loaded = [];
     for(const id of orderIds){
+      const path = `ads/${id}.json`;
       try{
-        const r = await fetch(`ads/${id}.json`, {cache:'no-store'});
-        if(!r.ok) continue;
-        const j = await r.json();
-        loaded.push(j);
+        const f = await ghGetFile(path);
+        const ad = JSON.parse(f.text);
+        loaded.push(ad);
       }catch(e){
-        console.warn('تخطي إعلان',id,e);
+        console.warn('skip',id,e);
       }
     }
     ads = loaded;
-    statusLabel.textContent = `تم تحميل ${ads.length} إعلان`;
+    statusLabel.textContent = `تم تحميل ${ads.length} إعلان من ${REPO}`;
     populateFilters();
     renderGrid();
   }catch(e){
     console.error(e);
-    statusLabel.textContent = 'فشل تحميل الإعلانات';
-    ads = []; orderIds = [];
+    statusLabel.textContent = 'فشل تحميل الإعلانات من GitHub';
+    showToast('خطأ أثناء الاتصال بـ GitHub — تحقق من اسم الريبو والتوكن والصلاحيات');
+    ads = [];
+    orderIds = [];
     renderGrid();
   }
 }
 
+reloadBtn.onclick = ()=> loadAdsFromGitHub();
+
 function populateFilters(){
-  const cats = Array.from(new Set(ads.map(a => a.category || 'عام')));
+  const cats = Array.from(new Set(ads.map(a=>a.category||'عام')));
   catFilter.innerHTML = '<option value="">كل الأقسام</option>' +
-    cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    cats.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
 }
 
+// ===== عرض الإعلانات =====
 function renderGrid(){
   const q = (searchEl.value || '').trim().toLowerCase();
   const st = statusFilter.value;
@@ -297,9 +420,9 @@ function renderGrid(){
         <span class="statusChip ${st}">${st === 'accepted'?'مقبول':st==='rejected'?'مرفوض':'قيد المراجعة'}</span>
       </div>
       <div class="btnRow">
-        <button class="btn btn-sm" data-action="view">عرض / تعديل</button>
-        <button class="btn btn-sm" data-action="json">تنزيل JSON</button>
-        <button class="btn btn-sm" data-action="png">بطاقة PNG</button>
+        <button class="btn small" data-action="view">عرض / تعديل</button>
+        <button class="btn small" data-action="json">تنزيل JSON</button>
+        <button class="btn small" data-action="png">بطاقة PNG</button>
       </div>
     `;
     card.querySelector('[data-action="view"]').onclick = ()=> openModal(ad);
@@ -309,6 +432,11 @@ function renderGrid(){
   });
 }
 
+searchEl.addEventListener('input', debounce(renderGrid,250));
+statusFilter.addEventListener('change', renderGrid);
+catFilter.addEventListener('change', renderGrid);
+
+// ===== مودال =====
 function openModal(ad){
   currentAd = JSON.parse(JSON.stringify(ad)); // clone
   m_title.textContent = currentAd.title || '';
@@ -331,25 +459,8 @@ function openModal(ad){
 
 m_close.onclick = ()=> modal.classList.remove('open');
 
-m_saveBtn.onclick = ()=>{
+function applyModalEdits(){
   if(!currentAd) return;
-  applyModalEdits();
-  downloadJson(currentAd);
-};
-
-m_downloadBtn.onclick = ()=>{
-  if(!currentAd) return;
-  applyModalEdits(false);
-  downloadJson(currentAd);
-};
-
-m_makePngBtn.onclick = async ()=>{
-  if(!currentAd) return;
-  applyModalEdits(false);
-  await makePngForAd(currentAd);
-};
-
-function applyModalEdits(updateStatusChip=true){
   currentAd.title       = m_title_in.value.trim() || currentAd.title;
   currentAd.description = m_desc_in.value.trim();
   currentAd.price       = m_price_in.value.trim();
@@ -359,14 +470,35 @@ function applyModalEdits(updateStatusChip=true){
   currentAd.category    = m_cat_in.value.trim() || currentAd.category || 'عام';
   currentAd.status      = m_status_sel.value;
   currentAd.updated_at  = new Date().toISOString();
-  if(updateStatusChip){
-    const st = currentAd.status.toLowerCase();
-    m_statusChip.textContent = st==='accepted'?'مقبول':st==='rejected'?'مرفوض':'قيد المراجعة';
-    m_statusChip.className = 'statusChip '+st;
-  }
+  const st = currentAd.status.toLowerCase();
+  m_statusChip.textContent = st==='accepted'?'مقبول':st==='rejected'?'مرفوض':'قيد المراجعة';
+  m_statusChip.className = 'statusChip '+st;
 }
 
-// تنزيل JSON لإعلان واحد
+// حفظ في GitHub
+m_saveGithub.onclick = async ()=>{
+  if(!currentAd){return;}
+  if(!REPO || !TOKEN){
+    alert('أدخل الريبو والتوكن واضغط "اتصل" أولاً.');
+    return;
+  }
+  applyModalEdits();
+  const path = `ads/${currentAd.id}.json`;
+  try{
+    const text = JSON.stringify(currentAd,null,2);
+    await ghPutFile(path,text,`Update ad ${currentAd.id}`);
+    showToast(`تم حفظ ${path} في GitHub`);
+    // حدث النسخة في الذاكرة
+    const idx = ads.findIndex(a=>a.id===currentAd.id);
+    if(idx>=0) ads[idx] = currentAd;
+    renderGrid();
+  }catch(e){
+    console.error(e);
+    showToast('فشل حفظ JSON في GitHub — تحقق من الصلاحيات');
+  }
+};
+
+// تنزيل JSON فقط
 function downloadJson(ad){
   const data = JSON.stringify(ad,null,2);
   const blob = new Blob([data],{type:'application/json'});
@@ -378,30 +510,38 @@ function downloadJson(ad){
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
-  showToast('تم تنزيل JSON — ارفعه إلى مجلد ads في GitHub إذا عدلت عليه.');
+  showToast('تم تنزيل JSON — يمكنك رفعه يدوياً لمجلد ads في GitHub إذا أردت.');
 }
 
-// تنزيل نسخة جديدة من order.json حسب IDs الحالية
-document.getElementById('downloadOrderBtn').onclick = ()=>{
-  if(!ads.length){
-    alert('لا توجد إعلانات في الذاكرة حالياً.');
+m_downloadBtn.onclick = ()=>{ if(currentAd) downloadJson(currentAd); };
+
+// حفظ order.json في GitHub
+saveOrderBtn.onclick = async ()=>{
+  if(!REPO || !TOKEN){
+    alert('أدخل الريبو والتوكن واضغط "اتصل" أولاً.');
     return;
   }
-  const ids = ads.map(a=>a.id).filter(Boolean);
-  const data = JSON.stringify(ids,null,2);
-  const blob = new Blob([data],{type:'application/json'});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url;
-  a.download = `order.json`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-  showToast('تم تنزيل order.json — ارفعه في جذر الريبو في GitHub.');
+  // إن لم يكن لدينا orderIds استعمل IDs الموجودة في ads:
+  if(!orderIds.length){
+    orderIds = ads.map(a=>a.id).filter(Boolean);
+  }
+  if(!orderIds.length){
+    alert('لا توجد IDs لحفظها في order.json.');
+    return;
+  }
+  const text = JSON.stringify(orderIds,null,2);
+  try{
+    await ghPutFile('order.json',text,'Update order.json');
+    showToast('تم حفظ order.json في GitHub');
+  }catch(e){
+    console.error(e);
+    showToast('فشل حفظ order.json في GitHub');
+  }
 };
 
-// توليد بطاقة PNG مع باركود حقيقي + meta داخل الصورة
+// ===== PNG card with barcode =====
+m_makePngBtn.onclick = ()=>{ if(currentAd) makePngForAd(currentAd); };
+
 async function makePngForAd(ad){
   const meta = {
     id: ad.id,
@@ -415,7 +555,7 @@ async function makePngForAd(ad){
     created_at: ad.created_at || null,
     updated_at: ad.updated_at || null
   };
-  const ab = await createCardWithBarcode(null, meta); // بدون صورة حقيقية (عنوان في كرت أسود)
+  const ab = await createCardWithBarcode(null, meta);
   const blob = new Blob([ab],{type:'image/png'});
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
@@ -425,10 +565,10 @@ async function makePngForAd(ad){
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
-  showToast('تم توليد بطاقة PNG — أرسلها لمالك الإعلان أو ارفعها في مجلد confirmations.');
+  showToast('تم توليد بطاقة PNG — يمكن إرسالها كدليل تأكيد.');
 }
 
-// ==== أدوات توليد PNG و embedMeta (نفس الفكرة التي استخدمناها في submit) ====
+// ==== embed meta in PNG ====
 function embedMeta(arrayBuffer, meta){
   const data = new Uint8Array(arrayBuffer);
   function readU32(p){return (data[p]<<24)|(data[p+1]<<16)|(data[p+2]<<8)|data[p+3];}
@@ -479,12 +619,10 @@ async function createCardWithBarcode(imageFile, meta){
   canvas.height = imgH + footerH;
   const ctx = canvas.getContext('2d');
 
-  // خلفية
   const g = ctx.createLinearGradient(0,0,width,canvas.height);
   g.addColorStop(0,'#ffffff'); g.addColorStop(1,'#e0f2fe');
-  ctx.fillStyle=g; ctx.fillRect(0,0,width,canvas.height);
+  ctx.fillStyle=g; ctx.fillRect(0,0,canvas.width,canvas.height);
 
-  // كرت أبيض
   roundedRect(ctx,40,40,width-80,imgH+footerH-60,26);
   ctx.fillStyle='#ffffff';
   ctx.shadowColor='rgba(15,23,42,.16)';
@@ -492,24 +630,20 @@ async function createCardWithBarcode(imageFile, meta){
   ctx.fill();
   ctx.shadowBlur=0;
 
-  // مساحة السوداء للعنوان (بدل صورة)
   const imgX=80,imgY=80,imgW=width-160,imgAreaH=imgH-40;
   roundedRect(ctx,imgX,imgY,imgW,imgAreaH,14);
   ctx.fillStyle='#020617'; ctx.fill();
-
   ctx.fillStyle='#f9fafb';
   ctx.font='bold 52px sans-serif';
   ctx.textAlign='center';
   wrapText(ctx, meta.title || meta.id || 'إعلان', width/2, imgY+imgAreaH/2, imgW-80, 52);
 
-  // الفوتر
   const footX=100,footY=imgY+imgAreaH+22,footW=width-200,footH=footerH-60;
   const g2 = ctx.createLinearGradient(footX,footY,footX+footW,footY+footH);
   g2.addColorStop(0,'#082f49'); g2.addColorStop(1,'#0f766e');
   roundedRect(ctx,footX,footY,footW,footH,14);
   ctx.fillStyle=g2; ctx.fill();
 
-  // شعار
   ctx.beginPath();
   ctx.arc(footX+60,footY+60,36,0,Math.PI*2);
   ctx.fillStyle='#f9fafb'; ctx.fill();
@@ -518,7 +652,6 @@ async function createCardWithBarcode(imageFile, meta){
   ctx.textAlign='center';
   ctx.fillText('EL',footX+60,footY+66);
 
-  // ID كبير
   ctx.font='bold 50px sans-serif';
   ctx.textAlign='center';
   ctx.fillStyle='rgba(0,0,0,0.22)';
@@ -526,7 +659,6 @@ async function createCardWithBarcode(imageFile, meta){
   ctx.fillStyle='#f9fafb';
   ctx.fillText(meta.id,width/2,footY+80);
 
-  // باركود حقيقي
   const bcCanvas = document.createElement('canvas');
   const bcWidth = Math.floor(footW - 260);
   const bcHeight = 100;
@@ -548,7 +680,7 @@ async function createCardWithBarcode(imageFile, meta){
   ctx.fillStyle='rgba(250,204,21,0.55)';
   ctx.fill();
 
-  const blob = await new Promise(res => canvas.toBlob(res,'image/png',1));
+  const blob = await new Promise(res=>canvas.toBlob(res,'image/png',1));
   const ab   = await blob.arrayBuffer();
   return embedMeta(ab, meta);
 }
@@ -578,15 +710,6 @@ function wrapText(ctx,text,x,y,maxWidth,lineHeight){
   }
   ctx.fillText(line,x,cy);
 }
-
-// events
-document.getElementById('reloadBtn').onclick = ()=> loadAds();
-searchEl.addEventListener('input', debounce(renderGrid,250));
-statusFilter.addEventListener('change', renderGrid);
-catFilter.addEventListener('change', renderGrid);
-
-// تشغيل أول مرة
-loadAds();
 </script>
 </body>
 </html>
