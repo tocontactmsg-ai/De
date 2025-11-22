@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Eldelala — Admin (Simple)</title>
+  <title>Eldelala — Admin (Fixed UTF-8)</title>
   <style>
     :root{
       --bg:#f3f7fc;
@@ -152,7 +152,6 @@
       display:none;
       z-index:9999;
     }
-    /* modal */
     .modal-backdrop{
       position:fixed;
       inset:0;
@@ -200,8 +199,10 @@
 <div class="container">
   <header>
     <div>
-      <h1>لوحة تحكم الدلالة — بسيطة</h1>
-      <div style="font-size:12px;opacity:.9">اتصل بالريبو، اعرض الإعلانات، عدّلها، وأضف إعلانات جديدة. يعمل على الكمبيوتر والموبايل.</div>
+      <h1>لوحة تحكم الدلالة — ثابتة</h1>
+      <div style="font-size:12px;opacity:.9">
+        UTF-8 صحيح + صور WebP + يعمل على الموبايل والكمبيوتر.
+      </div>
     </div>
     <div class="controls">
       <input id="repoInput" placeholder="user/repo" style="width:140px" />
@@ -232,7 +233,7 @@
   </div>
 
   <div style="margin-top:10px;font-size:12px;color:#64748b">
-    ملاحظة: هذه النسخة بسيطة بدون ZIP و PNG-import. أول ما تتأكد أنها تعمل، نقدر نضيف الميزات المتقدمة خطوة خطوة.
+    هذه النسخة تركز على: اتصال GitHub + عرض/تعديل/إضافة إعلانات بدون تشويه عربي. بعد ما تستقر نقدر نرجع نضيف مزايا متقدمة.
   </div>
 </div>
 
@@ -298,7 +299,7 @@
       <input id="n_phone" />
     </div>
     <div class="field">
-      <label for="n_files">صور الإعلان (اختياري) — يتم التحويل إلى WebP</label>
+      <label for="n_files">صور الإعلان (اختياري) — WebP</label>
       <input id="n_files" type="file" multiple />
     </div>
     <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px">
@@ -360,6 +361,38 @@
     toastEl._t = setTimeout(()=>{toastEl.style.display='none';}, time);
   }
 
+  // ====== Base64 / UTF-8 helpers ======
+  function arrayBufferToBase64(ab){
+    const bytes = new Uint8Array(ab);
+    let binary = '';
+    for(let i=0;i<bytes.length;i++){
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+  }
+
+  function base64ToUint8Array(b64){
+    const binary = atob(b64);
+    const len = binary.length;
+    const bytes = new Uint8Array(len);
+    for(let i=0;i<len;i++){
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes;
+  }
+
+  function textToBase64Utf8(str){
+    const encoder = new TextEncoder();
+    const bytes = encoder.encode(str);
+    return arrayBufferToBase64(bytes.buffer);
+  }
+
+  function base64ToTextUtf8(b64){
+    const bytes = base64ToUint8Array(b64);
+    const decoder = new TextDecoder('utf-8');
+    return decoder.decode(bytes);
+  }
+
   // ====== GitHub helpers ======
   async function ghFetch(url, options={}){
     const headers = options.headers ? {...options.headers} : {};
@@ -386,22 +419,16 @@
     return res.json();
   }
 
-  function arrayBufferToBase64(ab){
-    const bytes = new Uint8Array(ab);
-    let binary = '';
-    for(let i=0;i<bytes.length;i++){
-      binary += String.fromCharCode(bytes[i]);
-    }
-    return btoa(binary);
-  }
-
   async function ghPutFile(path, content, message, sha){
     let base64;
     if(content instanceof ArrayBuffer || content instanceof Uint8Array){
       const ab = content instanceof Uint8Array ? content.buffer : content;
       base64 = arrayBufferToBase64(ab);
+    }else if(typeof content === 'string'){
+      // UTF-8 آمن للنصوص (JSON بالعربي)
+      base64 = textToBase64Utf8(content);
     }else{
-      base64 = btoa(unescape(encodeURIComponent(content)));
+      base64 = textToBase64Utf8(String(content));
     }
     const body = {message, content: base64};
     if(sha) body.sha = sha;
@@ -471,7 +498,8 @@
       for(const f of list){
         if(f.type !== 'file' || !f.name.endsWith('.json')) continue;
         const file = await ghGetFile(f.path);
-        const jsonStr = atob(file.content.replace(/\n/g,''));
+        const b64 = file.content.replace(/\n/g,'');
+        const jsonStr = base64ToTextUtf8(b64);  // هنا UTF-8 الصحيح
         const ad = JSON.parse(jsonStr);
         ad._sha = file.sha;
         ad._path = f.path;
@@ -512,9 +540,9 @@
       const img = document.createElement('img');
       img.className = 'thumb';
       if(ad.primary_image){
-        img.src = `https://raw.githubusercontent.com/${REPO}/main/${ad.primary_image}`;
-      }else{
-        img.style.background = '#0f172a';
+        img.src = `images/${ad.primary_image.split('/').pop()}`; // لو index يستعمل نفس المسار، عدّل حسب طريقتك
+      }else if(ad.images && ad.images.length){
+        img.src = `images/${ad.images[0].split('/').pop()}`;
       }
       card.appendChild(img);
 
@@ -624,7 +652,6 @@
     editModalBackdrop.classList.remove('active');
     editingAd = null;
   }
-
   e_cancelBtn.onclick = closeEditModal;
 
   e_saveBtn.onclick = async ()=>{
@@ -746,10 +773,9 @@
     }
     REPO = repo;
     TOKEN = token;
-    // حفظ بسيط في sessionStorage
     try{
-      sessionStorage.setItem('eld_repo_simple', REPO);
-      sessionStorage.setItem('eld_token_simple', TOKEN);
+      sessionStorage.setItem('eld_repo_fixed', REPO);
+      sessionStorage.setItem('eld_token_fixed', TOKEN);
     }catch(e){}
     loadAds();
   };
@@ -771,11 +797,10 @@
     window.scrollTo(0,0);
   };
 
-  // ====== init (استرجاع من sessionStorage) ======
   window.addEventListener('DOMContentLoaded', ()=>{
     try{
-      const r = sessionStorage.getItem('eld_repo_simple');
-      const t = sessionStorage.getItem('eld_token_simple');
+      const r = sessionStorage.getItem('eld_repo_fixed');
+      const t = sessionStorage.getItem('eld_token_fixed');
       if(r){
         REPO = r;
         repoInput.value = r;
