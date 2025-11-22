@@ -1,17 +1,19 @@
 {
   "id": "eld-1763796747224",
-  "title": "بغعغعاب",
-  "description": "غيفغيغ6",
-  "price": "فغي7غ",
+  "title": "Ø¨ØºØ¹ØºØ¹Ø§Ø¨",
+  "description": "ØºÙÙØºÙØº6",
+  "price": "ÙØºÙ7Øº",
   "currency": "SDG",
-  "location": "5غ6ي",
-  "phone": "56غثي76",
-  "whatsapp": "56غثي76",
-  "status": "pending",
+  "location": "5Øº6Ù",
+  "phone": "56ØºØ«Ù76",
+  "whatsapp": "56ØºØ«Ù76",
+  "status": "accepted",
   "images": [
     "images/eld-1763796747224-1.webp"
   ],
   "primary_image": "images/eld-1763796747224-1.webp",
   "created_at": "2025-11-22T07:32:27.224Z",
-  "updated_at": "2025-11-22T07:32:27.224Z"
+  "updated_at": "2025-11-22T07:36:08.983Z",
+  "_sha": "9b2fe30948068462a080dc0a09f5e6c49e70e1ef",
+  "_path": "ads/eld-1763796747224.json"
 }
