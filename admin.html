@@ -97,7 +97,7 @@
   .file-drop:hover{background:#f1f5ff;border-color:#bfdbfe;transform:translateY(-1px)}
   .flex{display:flex;gap:12px}
   .mobile-toggle{border:1px solid #e6eef6;padding:6px 10px;border-radius:999px}
-  .mobile-sim{max-width:420px;margin:8px auto;border:1px solid #eef2f7;border-radius:12px;padding:8px}
+  .small-muted{color:var(--muted);font-size:13px}
   .count-badge{
     background:linear-gradient(135deg,var(--accent),var(--accent-dark));
     color:#fff;padding:4px 10px;border-radius:999px;font-size:13px;font-weight:600;
@@ -114,9 +114,7 @@
   }
   body.mobile-mode{background:#ffffff}
   body.mobile-mode .container{max-width:420px}
-  .small-muted{color:var(--muted);font-size:13px}
   .file-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-  .file-item{display:flex;align-items:center;justify-content:space-between;padding:8px;border-radius:8px;border:1px solid #eef2f7;background:#fbfdff}
   .stagedCard{border:1px solid #e0f2fe;background:#f9fdff}
   .pill-status{
     padding:3px 8px;border-radius:999px;font-size:11px;
@@ -126,7 +124,8 @@
     padding:3px 8px;border-radius:999px;font-size:11px;
     background:#0f172a;color:#e5e7eb;
   }
-  /* Modal for staged PNG edit */
+  .panelTitle{font-weight:700;font-size:15px}
+  /* Modal overlay (generic) */
   .modalOverlay{
     position:fixed;inset:0;background:rgba(15,23,42,.55);
     display:none;align-items:center;justify-content:center;
@@ -146,7 +145,7 @@
   .modalBody{display:flex;flex-direction:column;gap:8px}
   .field{display:flex;flex-direction:column;gap:4px}
   .field label{font-size:12px;color:#4b5563}
-  .field input,.field textarea, .field select{
+  .field input,.field textarea,.field select{
     padding:8px;border-radius:9px;border:1px solid #e2e8f0;background:#f9fbff;font-size:13px;
   }
   .field textarea{min-height:80px;resize:vertical}
@@ -164,78 +163,79 @@
 </head>
 <body>
   <div class="container">
-  <header>
-    <div>
-      <h1>لوحة تحكم الدلالة — Admin</h1>
-      <small class="small-muted">تحكم من الموبايل أو الكمبيوتر — التوكن يُخزن في session فقط</small>
-    </div>
-
-    <div class="controls">
-      <input id="repoInput" placeholder="user/repo" style="width:150px" />
-      <input id="tokenInput" placeholder="Paste PAT (session only)" style="width:220px" />
-      <button id="loginBtn" class="btn">اتصل</button>
-      <button id="mobileViewBtn" class="btn mobile-toggle">عرض موبايل</button>
-      <button id="scanConfirmationsBtn" class="btn">Scan confirmations/</button>
-      <button id="importZipBtn" class="btn">Import ZIP</button>
-      <button id="exportZipBtn" class="btn">Export ZIP</button>
-      <button id="refreshBtn" class="btn">تحديث</button>
-    </div>
-  </header>
-
-  <div class="panel row" style="gap:10px">
-    <input id="search" placeholder="بحث عن إعلان أو ID أو عنوان" style="flex:1" />
-    <select id="filterStatus">
-      <option value="all">كل الإعلانات</option>
-      <option value="pending">معلقة</option>
-      <option value="accepted">مقبولة</option>
-      <option value="rejected">مرفوضة</option>
-    </select>
-    <button id="newAdBtn" class="btn">إضافة إعلان</button>
-  </div>
-
-  <!-- Stage area for extracted PNGs -->
-  <div class="panel">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+    <header>
       <div>
-        <h3 style="margin:0">المدرج المؤقت للصور المستخرجة (Staged PNGs)</h3>
-        <div class="small-muted">أي PNG فيه meta من الدلالة يظهر هنا لتراجعه وتعدّله قبل القبول.</div>
+        <h1>لوحة تحكم الدلالة — Admin</h1>
+        <small class="small-muted">كل شيء يعمل داخل نفس الصفحة — التحكم كامل من الموبايل أو الكمبيوتر</small>
       </div>
-      <div class="flex" style="align-items:center;flex-wrap:wrap">
-        <span id="stagedCount" class="count-badge">0</span>
-        <button id="uploadPngsBtn" class="btn">اختيار PNGs (دفعي)</button>
-        <button id="acceptAllBtn" class="btn success">قبول الكل</button>
-        <button id="clearAllBtn" class="btn danger">حذف الكل</button>
+
+      <div class="controls">
+        <input id="repoInput" placeholder="user/repo" style="width:150px" />
+        <input id="tokenInput" placeholder="Paste PAT (session only)" style="width:220px" />
+        <button id="loginBtn" class="btn">اتصل</button>
+        <button id="mobileViewBtn" class="btn mobile-toggle">عرض موبايل</button>
+        <button id="scanConfirmationsBtn" class="btn">Scan confirmations/</button>
+        <button id="importZipBtn" class="btn">Import ZIP</button>
+        <button id="exportZipBtn" class="btn">Export ZIP</button>
+        <button id="refreshBtn" class="btn">تحديث</button>
+      </div>
+    </header>
+
+    <div class="panel row" style="gap:10px">
+      <input id="search" placeholder="بحث عن إعلان أو ID أو عنوان" style="flex:1" />
+      <select id="filterStatus">
+        <option value="all">كل الإعلانات</option>
+        <option value="pending">معلقة</option>
+        <option value="accepted">مقبولة</option>
+        <option value="rejected">مرفوضة</option>
+      </select>
+      <button id="newAdBtn" class="btn">إضافة إعلان</button>
+    </div>
+
+    <!-- Stage area for extracted PNGs -->
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+        <div>
+          <div class="panelTitle">المدرج المؤقت للصور المستخرجة (Staged PNGs)</div>
+          <div class="small-muted">أي PNG فيه meta من الدلالة يظهر هنا لتراجعه وتعدّله قبل القبول.</div>
+        </div>
+        <div class="flex" style="align-items:center;flex-wrap:wrap">
+          <span id="stagedCount" class="count-badge">0</span>
+          <button id="uploadPngsBtn" class="btn">اختيار PNGs</button>
+          <button id="acceptAllBtn" class="btn success">قبول الكل</button>
+          <button id="clearAllBtn" class="btn danger">حذف الكل</button>
+        </div>
+      </div>
+      <div id="fileDrop" class="file-drop" title="اسحب PNG هنا أو اضغط للتصفح">
+        اسحب PNG هنا أو اضغط للتصفح — سيتم استخراج البيانات من داخل الصورة ويمكنك تعديلها قبل الإضافة
+      </div>
+      <div id="stagedGrid" class="grid" style="margin-top:12px"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panelTitle" style="margin-bottom:8px">قائمة الإعلانات</div>
+      <div id="grid" class="grid"></div>
+    </div>
+
+    <!-- Editor panel (same page) -->
+    <div id="editorModal" class="panel hidden" style="position:fixed;right:50%;top:50%;transform:translate(50%,-50%);max-width:480px;width:95%;z-index:9990">
+      <h3 id="editorTitle" style="margin-top:0">تحرير إعلان</h3>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <input id="e_title" placeholder="العنوان" />
+        <textarea id="e_desc" placeholder="الوصف" rows="4"></textarea>
+        <input id="e_price" placeholder="السعر" />
+        <input id="e_location" placeholder="الموقع" />
+        <input id="e_phone" placeholder="الهاتف/واتساب" />
+        <div class="row">
+          <input type="file" id="e_images" multiple />
+          <button id="saveEditBtn" class="btn success">حفظ</button>
+          <button id="cancelEditBtn" class="btn">إلغاء</button>
+        </div>
+        <div class="progress"><i id="uploadProgress"></i></div>
       </div>
     </div>
-    <div id="fileDrop" class="file-drop" title="اسحب PNG هنا أو اضغط للتصفح">
-      اسحب PNG هنا أو اضغط للتصفح — سيتم استخراج البيانات من داخل الصورة ويمكنك تعديلها قبل الإضافة
-    </div>
-    <div id="stagedGrid" class="grid" style="margin-top:12px"></div>
-  </div>
 
-  <div class="panel">
-    <h3 style="margin-top:0">قائمة الإعلانات</h3>
-    <div id="grid" class="grid"></div>
-  </div>
-
-  <div id="editorModal" class="hidden panel">
-    <h3 id="editorTitle">تحرير إعلان</h3>
-    <div style="display:flex;flex-direction:column;gap:8px">
-      <input id="e_title" placeholder="العنوان" />
-      <textarea id="e_desc" placeholder="الوصف" rows="4"></textarea>
-      <input id="e_price" placeholder="السعر" />
-      <input id="e_location" placeholder="الموقع" />
-      <input id="e_phone" placeholder="الهاتف/واتساب" />
-      <div class="row">
-        <input type="file" id="e_images" multiple />
-        <button id="saveEditBtn" class="btn success">حفظ</button>
-        <button id="cancelEditBtn" class="btn">إلغاء</button>
-      </div>
-      <div class="progress"><i id="uploadProgress"></i></div>
-    </div>
-  </div>
-
-  <footer>مبني للعمل مع GitHub Pages وGitHub API. استخدم PAT بصلاحية repo:contents فقط وفعّل 2FA لحماية الحساب.</footer>
+    <footer>مبني للعمل مع GitHub Pages وGitHub API. استخدم PAT بصلاحية repo:contents فقط وفعّل 2FA لحماية الحساب.</footer>
   </div>
 
   <!-- Modal to edit staged PNG meta -->
@@ -246,7 +246,7 @@
           <div class="modalTitle">تعديل بيانات البطاقة المستخرجة</div>
           <div class="modalSub">يمكنك تعديل الحقول التي تم استخراجها من داخل صورة الـ PNG قبل قبولها كإعلان.</div>
         </div>
-        <button id="sm_close" class="btn small">✕</button>
+        <button id="sm_close" class="btn">✕</button>
       </div>
       <div class="modalPreview">
         <img id="sm_img" alt="معاينة">
@@ -304,9 +304,59 @@
     </div>
   </div>
 
+  <!-- New Ad modal (same page) -->
+  <div id="newAdModal" class="modalOverlay">
+    <div class="modalCard">
+      <div class="modalHeader">
+        <div>
+          <div class="modalTitle">إضافة إعلان جديد</div>
+          <div class="modalSub">أضف إعلانك مباشرة، وسيتم إنشاء JSON و بطاقة تأكيد PNG على GitHub.</div>
+        </div>
+        <button id="na_close" class="btn">✕</button>
+      </div>
+      <div class="modalBody">
+        <div class="field">
+          <label for="na_title">العنوان</label>
+          <input id="na_title" placeholder="مثال: هاتف سامسونج مستعمل بحالة ممتازة">
+        </div>
+        <div class="field">
+          <label for="na_desc">الوصف</label>
+          <textarea id="na_desc" placeholder="تفاصيل إضافية عن الإعلان"></textarea>
+        </div>
+        <div class="field">
+          <label for="na_price">السعر</label>
+          <input id="na_price" placeholder="مثال: 120000 SDG">
+        </div>
+        <div class="field">
+          <label for="na_loc">الموقع</label>
+          <input id="na_loc" placeholder="مثال: الخرطوم بحري">
+        </div>
+        <div class="field">
+          <label for="na_phone">الهاتف / واتساب</label>
+          <input id="na_phone" placeholder="مثال: 2499XXXXXXXX">
+        </div>
+        <div class="field">
+          <label for="na_cat">التصنيف</label>
+          <input id="na_cat" placeholder="مثال: الكترونيات، أثاث، مركبات...">
+        </div>
+        <div class="field">
+          <label for="na_files">صور الإعلان (اختياري)</label>
+          <input id="na_files" type="file" multiple>
+        </div>
+      </div>
+      <div class="modalFooter">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button id="na_submit" class="btn success">نشر الإعلان</button>
+          <button id="na_cancel" class="btn">إلغاء</button>
+        </div>
+        <div class="modalSub">ستتم إضافة الإعلان إلى <code>ads/</code> وتحديث <code>order.json</code> تلقائياً.</div>
+      </div>
+    </div>
+  </div>
+
   <div id="toast" class="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
 <script>
 /* ============================
@@ -354,6 +404,22 @@ const sm_save = document.getElementById('sm_save');
 const sm_cancel = document.getElementById('sm_cancel');
 const sm_title_preview = document.getElementById('sm_title_preview');
 const sm_id_preview = document.getElementById('sm_id_preview');
+
+/* editor panel */
+const editorModal = document.getElementById('editorModal');
+
+/* new ad modal */
+const newAdModal = document.getElementById('newAdModal');
+const na_close = document.getElementById('na_close');
+const na_cancel = document.getElementById('na_cancel');
+const na_submit = document.getElementById('na_submit');
+const na_title = document.getElementById('na_title');
+const na_desc = document.getElementById('na_desc');
+const na_price = document.getElementById('na_price');
+const na_loc = document.getElementById('na_loc');
+const na_phone = document.getElementById('na_phone');
+const na_cat = document.getElementById('na_cat');
+const na_files = document.getElementById('na_files');
 
 /* ============================
    Helpers: toast & mask token
@@ -489,6 +555,10 @@ function embedTextChunkInPng(arrayBuffer, key, value){
   while(pos < data.length){
     const len = readU32(pos);
     const type = String.fromCharCode(...data.slice(pos+4,pos+8));
+    const start = pos + 8;
+    if(type === 'tEXt'){
+      // just skip/continue
+    }
     if(type === 'IEND') break;
     pos += 8 + len + 4;
   }
@@ -535,6 +605,7 @@ function extractMetaFromPng(arrayBuffer){
         }
       }
     }
+    if(type === 'IEND') break;
     pos += 8 + len + 4;
   }
   return null;
@@ -605,8 +676,7 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight){
    Loading ads & rendering
    ============================ */
 async function loadAds(){
-  if(!REPO || !TOKEN) { alert('set repo and token first'); return; }
-  setStatus('جلب قائمة الإعلانات...');
+  if(!REPO || !TOKEN) { alert('حدد repo و token أولاً'); return; }
   const list = await ghList('ads');
   if(!list){ alert('فشل جلب الملفات — تأكد من صلاحيات التوكن والمسار'); return; }
   FILES_CACHE = [];
@@ -622,7 +692,7 @@ async function loadAds(){
   }
   FILES_CACHE.sort((a,b)=> new Date(b.created_at||0) - new Date(a.created_at||0));
   renderGrid();
-  setStatus('تم التحميل');
+  showToast('تم تحميل الإعلانات');
 }
 
 function renderGrid(){
@@ -632,10 +702,14 @@ function renderGrid(){
   let items = FILES_CACHE.filter(ad => {
     if(status !== 'all' && ad.status !== status) return false;
     if(!q) return true;
-    return String(ad.id||'').includes(q) || (ad.title||'').toLowerCase().includes(q) || (ad.description||'').toLowerCase().includes(q);
+    return String(ad.id||'').includes(q) ||
+      (ad.title||'').toLowerCase().includes(q) ||
+      (ad.description||'').toLowerCase().includes(q);
   });
   items.forEach(ad=> grid.appendChild(renderCard(ad)));
 }
+
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
 
 function renderCard(ad){
   const el = document.createElement('div'); el.className='card';
@@ -661,7 +735,7 @@ function renderCard(ad){
                     <small><span class="pill-status">${st==='accepted'?'مقبول':st==='rejected'?'مرفوض':'معلق'}</span></small>`;
   el.appendChild(meta);
   const btns = document.createElement('div'); btns.className='btns';
-  const v = document.createElement('button'); v.className='btn'; v.textContent='عرض'; v.onclick = ()=> viewAd(ad); btns.appendChild(v);
+  const v = document.createElement('button'); v.className='btn'; v.textContent='عرض'; v.onclick = ()=> openEditor(ad); btns.appendChild(v);
   const e = document.createElement('button'); e.className='btn'; e.textContent='تعديل'; e.onclick = ()=> openEditor(ad); btns.appendChild(e);
   const a = document.createElement('button'); a.className='btn success'; a.textContent='قبول'; a.onclick = ()=> setStatusAd(ad,'accepted'); btns.appendChild(a);
   const r = document.createElement('button'); r.className='btn'; r.textContent='رفض'; r.onclick = ()=> setStatusAd(ad,'rejected'); btns.appendChild(r);
@@ -674,27 +748,24 @@ function renderCard(ad){
   return el;
 }
 
-function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
-
 /* ============================
-   Ad actions
+   Ad actions (editor in same page)
    ============================ */
-async function viewAd(ad){
-  const win = window.open('','_blank');
-  win.document.write(`<h2>${escapeHtml(ad.title||'')}</h2><img src="https://raw.githubusercontent.com/${REPO}/main/${ad.primary_image||''}" style="max-width:95%"/>`);
-}
-
-function openEditor(ad){
-  document.getElementById('editorModal').classList.remove('hidden');
+async function openEditor(ad){
+  const m = editorModal;
+  m.classList.remove('hidden');
+  document.getElementById('editorTitle').textContent = `تحرير الإعلان: ${ad.id}`;
   document.getElementById('e_title').value = ad.title||'';
   document.getElementById('e_desc').value = ad.description||'';
   document.getElementById('e_price').value = ad.price||'';
   document.getElementById('e_location').value = ad.location||'';
   document.getElementById('e_phone').value = ad.whatsapp||ad.phone||'';
+
   document.getElementById('saveEditBtn').onclick = async ()=>{
     const t = document.getElementById('e_title').value.trim();
     ad.title = t; ad.description = document.getElementById('e_desc').value.trim();
-    ad.price = document.getElementById('e_price').value; ad.location = document.getElementById('e_location').value;
+    ad.price = document.getElementById('e_price').value;
+    ad.location = document.getElementById('e_location').value;
     ad.phone = document.getElementById('e_phone').value;
     const files = document.getElementById('e_images').files;
     if(files && files.length>0){
@@ -718,11 +789,14 @@ function openEditor(ad){
     }
     let confAb = mainAb? await canvasCreateConfirmationPng(mainAb, ad) : await createFallbackPngWithTitle(ad.title, ad);
     await ghPutFile(`confirmations/${ad.id}.png`, confAb, `update confirmation ${ad.id}`);
-    showToast('تم الحفظ');
-    document.getElementById('editorModal').classList.add('hidden');
+    showToast('تم حفظ الإعلان وصورة التأكيد');
+    m.classList.add('hidden');
     loadAds();
   };
-  document.getElementById('cancelEditBtn').onclick = ()=> document.getElementById('editorModal').classList.add('hidden');
+
+  document.getElementById('cancelEditBtn').onclick = ()=>{
+    m.classList.add('hidden');
+  };
 }
 
 async function setStatusAd(ad, st){
@@ -730,7 +804,7 @@ async function setStatusAd(ad, st){
     ad.status = st; ad.updated_at = new Date().toISOString();
     const path = `ads/${ad.id}.json`; const existing = await ghGetFile(path);
     await ghPutFile(path, JSON.stringify(ad,null,2), `set status ${st} for ${ad.id}`, existing.sha);
-    showToast('status updated');
+    showToast('تم تغيير حالة الإعلان');
     loadAds();
   }catch(e){ alert('فشل تغيير الحالة: ' + e.message); }
 }
@@ -785,7 +859,7 @@ async function downloadConfirmation(ad){
     const blob = new Blob([confAb], {type:'image/png'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href=url; a.download = `${ad.id}-confirmation.png`; a.click(); URL.revokeObjectURL(url);
-    setTimeout(()=>{ const phone = ad.whatsapp || ad.phone || ''; const msg = encodeURIComponent(`السلام عليكم\nهذا اعلان رقم ${ad.id} على موقع الدلالة\n`); const wa = `https://wa.me/${phone.replace(/[^0-9+]/g,'')}?text=${msg}`; if(confirm('فتح رابط واتساب لمشاركة؟')) window.open(wa,'_blank'); },500);
+    showToast('تم تنزيل صورة التأكيد — يمكنك الآن مشاركتها عبر واتساب يدويًا');
   }catch(e){ alert('خطأ تنزيل التأكيد: ' + e.message); }
 }
 
@@ -849,7 +923,8 @@ function renderStaged(){
 function openStagedEditor(s){
   CURRENT_STAGED = s;
   const m = s.meta || {};
-  sm_id.value = m.id || s.id || '';
+  const newId = m.id || s.id || '';
+  sm_id.value = newId;
   sm_title.value = m.title || '';
   sm_desc.value = m.description || '';
   sm_price.value = m.price || '';
@@ -859,7 +934,7 @@ function openStagedEditor(s){
   sm_status.value = (m.status || 'pending');
   sm_img.src = URL.createObjectURL(new Blob([s.pngAb], {type:'image/png'}));
   sm_title_preview.textContent = m.title || s.name || s.id;
-  sm_id_preview.textContent = m.id || s.id || '';
+  sm_id_preview.textContent = newId;
   stagedModal.classList.add('active');
 }
 
@@ -1000,55 +1075,123 @@ function base64ToArrayBuffer(b64){
 }
 
 /* ============================
-   New ad quick-add
+   New ad modal (same-page)
    ============================ */
-newAdBtn.onclick = ()=> {
-  const w = window.open('','_blank','width=420,height=680');
-  w.document.body.style.direction='rtl'; w.document.body.style.fontFamily='sans-serif';
-  w.document.title = 'إضافة إعلان سريع';
-  w.document.body.innerHTML = `
-    <div style="padding:16px">
-      <h3>إضافة إعلان جديد</h3>
-      <input id="n_title" placeholder="العنوان" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #eee" />
-      <textarea id="n_desc" placeholder="الوصف" rows="3" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #eee"></textarea>
-      <input id="n_price" placeholder="السعر" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #eee" />
-      <input id="n_location" placeholder="الموقع" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #eee" />
-      <input id="n_phone" placeholder="واتساب" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #eee" />
-      <input id="n_files" type="file" multiple style="margin-top:8px" />
-      <button id="n_submit" style="margin-top:10px;padding:10px;border-radius:8px;background:#06b6d4;color:#fff;border:none">نشر</button>
-    </div>
-  `;
-  w.document.getElementById('n_submit').onclick = async ()=> {
-    const t = w.document.getElementById('n_title').value.trim(); if(!t){ alert('اكتب عنوان'); return; }
-    const desc = w.document.getElementById('n_desc').value; const price = w.document.getElementById('n_price').value; const loc = w.document.getElementById('n_location').value; const phone = w.document.getElementById('n_phone').value;
-    const files = w.document.getElementById('n_files').files; const id = 'eld-'+(new Date()).toISOString().replace(/[:.]/g,'')+'-'+Math.floor(Math.random()*9000+1000);
-    const ad = { id, title:t, description:desc, price:price, currency:'SDG', category:'', images:[], primary_image:null, thumbnail:null, location:loc, phone:phone, whatsapp:phone, status:'pending', created_at:new Date().toISOString(), updated_at:new Date().toISOString(), meta:{views:0} };
+function openNewAdModal(){
+  na_title.value = '';
+  na_desc.value = '';
+  na_price.value = '';
+  na_loc.value = '';
+  na_phone.value = '';
+  na_cat.value = '';
+  na_files.value = '';
+  newAdModal.classList.add('active');
+}
+
+function closeNewAdModal(){
+  newAdModal.classList.remove('active');
+}
+
+newAdBtn.onclick = ()=>{
+  if(!REPO || !TOKEN){
+    alert('حدد repo و PAT أولاً ثم اضغط اتصل');
+    return;
+  }
+  openNewAdModal();
+};
+
+na_close.onclick = closeNewAdModal;
+na_cancel.onclick = closeNewAdModal;
+
+na_submit.onclick = async ()=>{
+  try{
+    const t = na_title.value.trim();
+    if(!t){ alert('يرجى إدخال العنوان'); return; }
+    const desc = na_desc.value.trim();
+    const price = na_price.value.trim();
+    const loc = na_loc.value.trim();
+    const phone = na_phone.value.trim();
+    const cat = na_cat.value.trim();
+    const files = na_files.files;
+
+    const id = 'eld-'+(new Date()).toISOString().replace(/[:.]/g,'')+'-'+Math.floor(Math.random()*9000+1000);
+    const ad = {
+      id,
+      title:t,
+      description:desc,
+      price:price,
+      currency:'SDG',
+      category:cat,
+      images:[],
+      primary_image:null,
+      thumbnail:null,
+      location:loc,
+      phone:phone,
+      whatsapp:phone,
+      status:'pending',
+      created_at:new Date().toISOString(),
+      updated_at:new Date().toISOString(),
+      meta:{views:0}
+    };
+
     if(files && files.length>0){
-      let idx=1; for(const f of files){ const ab = await f.arrayBuffer(); const ext = f.name.split('.').pop().toLowerCase(); const path = `images/${id}-${idx}.${ext}`; await ghPutFile(path, ab, `upload ${path}`); ad.images.push(path); if(idx===1) ad.primary_image = path; idx++; }
+      let idx=1;
+      for(const f of files){
+        const ab = await f.arrayBuffer();
+        const ext = f.name.split('.').pop().toLowerCase();
+        const path = `images/${id}-${idx}.${ext}`;
+        await ghPutFile(path, ab, `upload ${path}`);
+        ad.images.push(path);
+        if(idx===1) ad.primary_image = path;
+        idx++;
+      }
     }
+
     await ghPutFile(`ads/${id}.json`, JSON.stringify(ad,null,2), `create ad ${id}`);
-    let mainAb = null; if(ad.primary_image){ try{ const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${ad.primary_image}`); mainAb = await r.arrayBuffer(); }catch(e){ mainAb=null } }
+
+    let mainAb = null;
+    if(ad.primary_image){
+      try{
+        const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${ad.primary_image}`);
+        mainAb = await r.arrayBuffer();
+      }catch(e){ mainAb=null; }
+    }
     let confAb = mainAb? await canvasCreateConfirmationPng(mainAb, ad) : await createFallbackPngWithTitle(ad.title, ad);
     await ghPutFile(`confirmations/${id}.png`, confAb, `create confirmation ${id}`);
-    const orderFile = await ghGetFile('order.json'); let arr=[]; let sha; if(orderFile){ arr = JSON.parse(atob(orderFile.content.replace(/\n/g,''))); sha = orderFile.sha; } arr.unshift(id); await ghPutFile('order.json', JSON.stringify(arr,null,2), `add ${id} to order`, sha);
-    alert('تم النشر. سيتم تنزيل صورة التأكيد الآن');
-    const blob = new Blob([confAb], {type:'image/png'}); const url = URL.createObjectURL(blob); const a = w.document.createElement('a'); a.href = url; a.download = `${id}-confirmation.png`; a.click(); w.close();
+
+    const orderFile = await ghGetFile('order.json'); let arr=[]; let sha;
+    if(orderFile){ arr = JSON.parse(atob(orderFile.content.replace(/\n/g,''))); sha = orderFile.sha; }
+    arr.unshift(id);
+    await ghPutFile('order.json', JSON.stringify(arr,null,2), `add ${id} to order`, sha);
+
+    // download confirmation locally
+    const blob = new Blob([confAb], {type:'image/png'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${id}-confirmation.png`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    showToast('تم نشر الإعلان وتنزيل بطاقة التأكيد PNG');
+    closeNewAdModal();
     loadAds();
-  };
+  }catch(e){
+    alert('خطأ أثناء إنشاء الإعلان: ' + e.message);
+  }
 };
 
 /* ============================
-   Utility: setStatus
-   ============================ */
-function setStatus(msg){ console.log(msg); }
-
-/* ============================
-   Render initial and wire events
+   Misc wiring
    ============================ */
 refreshBtn.onclick = ()=> loadAds();
 searchInput.oninput = ()=> renderGrid();
 filterStatus.onchange = ()=> renderGrid();
-mobileViewBtn.onclick = ()=>{ const active = document.body.classList.toggle('mobile-mode'); mobileViewBtn.textContent = active ? 'الخروج من عرض الموبايل' : 'عرض موبايل'; window.scrollTo(0,0); };
+mobileViewBtn.onclick = ()=>{
+  const active = document.body.classList.toggle('mobile-mode');
+  mobileViewBtn.textContent = active ? 'الخروج من عرض الموبايل' : 'عرض موبايل';
+  window.scrollTo(0,0);
+};
 
 renderStaged();
 </script>
