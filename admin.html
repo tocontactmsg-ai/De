@@ -189,6 +189,7 @@
     <button id="newAdBtn" class="btn">إضافة إعلان</button>
   </div>
 
+  <!-- Staged PNGs -->
   <div class="panel">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
       <div>
@@ -208,6 +209,7 @@
     <div id="stagedGrid" class="grid" style="margin-top:12px"></div>
   </div>
 
+  <!-- Ads grid -->
   <div class="panel">
     <div class="panelTitle" style="margin-bottom:8px">قائمة الإعلانات</div>
     <div id="grid" class="grid"></div>
@@ -354,6 +356,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script>
+/* ========= DOM & State ========= */
 const repoInput = document.getElementById('repoInput');
 const tokenInput = document.getElementById('tokenInput');
 const loginBtn = document.getElementById('loginBtn');
@@ -380,6 +383,7 @@ let FILES_CACHE = [];
 let STAGED = [];
 let CURRENT_STAGED = null;
 
+/* staged modal DOM */
 const stagedModal = document.getElementById('stagedModal');
 const sm_close = document.getElementById('sm_close');
 const sm_img = document.getElementById('sm_img');
@@ -396,9 +400,11 @@ const sm_cancel = document.getElementById('sm_cancel');
 const sm_title_preview = document.getElementById('sm_title_preview');
 const sm_id_preview = document.getElementById('sm_id_preview');
 
+/* editor panel */
 const editorModal = document.getElementById('editorModal');
 const uploadProgress = document.getElementById('uploadProgress');
 
+/* new ad modal */
 const newAdModal = document.getElementById('newAdModal');
 const na_close = document.getElementById('na_close');
 const na_cancel = document.getElementById('na_cancel');
@@ -411,6 +417,7 @@ const na_phone = document.getElementById('na_phone');
 const na_cat = document.getElementById('na_cat');
 const na_files = document.getElementById('na_files');
 
+/* ========= Helpers ========= */
 function showToast(msg, timeout=3000){
   toastEl.textContent = msg;
   toastEl.style.display = 'block';
@@ -428,6 +435,7 @@ if(sessionStorage.getItem('eld_token')){
   tokenInput.value = maskToken(raw);
 }
 
+/* ========= Login ========= */
 loginBtn.onclick = ()=>{
   const repo = repoInput.value.trim();
   const tokenRaw = prompt('ألصق PAT هنا (سيحفظ في الجلسة لمرة واحدة):','');
@@ -440,6 +448,7 @@ loginBtn.onclick = ()=>{
   loadAds();
 };
 
+/* ========= GitHub helpers ========= */
 async function ghFetch(url, options={}){
   const headers = options.headers || {};
   if(TOKEN) headers['Authorization'] = 'token '+TOKEN;
@@ -499,6 +508,7 @@ async function ghDeleteFile(path, sha, message){
   return res.json();
 }
 
+/* ========= PNG meta helpers ========= */
 function crc32(buf){
   if(!crc32.table){
     crc32.table = new Uint32Array(256).map((_,n)=>{let c=n;for(let k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);return c>>>0;});
@@ -523,7 +533,7 @@ function embedTextChunkInPng(arrayBuffer,key,value){
   const textData=encoder.encode(key+'\0'+value);
   const len=textData.length;
   const lenBuf=new Uint8Array([(len>>>24)&255,(len>>>16)&255,(len>>>8)&255,len&255]);
-  const typeBuf=new Uint8Array([116,69,88,116]);
+  const typeBuf=new Uint8Array([116,69,88,116]); // tEXt
   const crcInput=new Uint8Array(typeBuf.length+textData.length);
   crcInput.set(typeBuf,0);crcInput.set(textData,typeBuf.length);
   const crcVal=crc32(crcInput);
@@ -564,7 +574,44 @@ function extractMetaFromPng(arrayBuffer){
   }
   return null;
 }
+
+/* ========= Image helpers (WebP + canvas) ========= */
 async function fileToArrayBuffer(file){return await file.arrayBuffer();}
+
+// convert any uploaded image to optimized WebP
+async function convertImageFileToWebP(file, maxSize = 1280, quality = 0.8) {
+  const dataUrl = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+  const img = await new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = dataUrl;
+  });
+  let { width, height } = img;
+  const ratio = Math.min(1, maxSize / Math.max(width, height));
+  width = Math.round(width * ratio);
+  height = Math.round(height * ratio);
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0, width, height);
+  const blob = await new Promise((resolve, reject) => {
+    canvas.toBlob(
+      b => b ? resolve(b) : reject(new Error('WebP conversion failed')),
+      'image/webp',
+      quality
+    );
+  });
+  const ab = await blob.arrayBuffer();
+  return ab;
+}
+
 async function canvasCreateConfirmationPng(mainFileArrayBuffer,meta){
   const blob=new Blob([mainFileArrayBuffer]);
   const img=await createImageBitmap(blob);
@@ -609,6 +656,7 @@ function wrapText(ctx,text,x,y,maxWidth,lineHeight){
   ctx.fillText(line,x,cy);
 }
 
+/* ========= Load & render ads ========= */
 async function loadAds(){
   if(!REPO || !TOKEN){alert('حدد repo و token أولاً');return;}
   const list=await ghList('ads');
@@ -677,7 +725,7 @@ function renderCard(ad){
   return el;
 }
 
-/* === تحسين حفظ الإعلان (أقل لاج) === */
+/* ========= Editor (with WebP & fast save) ========= */
 function openEditor(ad){
   editorModal.classList.remove('hidden');
   document.getElementById('editorTitle').textContent='تحرير الإعلان: '+ad.id;
@@ -719,11 +767,10 @@ function openEditor(ad){
         let idx=1;
         ad.images=[];
         for(const f of files){
-          const ab=await fileToArrayBuffer(f);
-          if(idx===1) firstImageAb=ab;
-          const ext=f.name.split('.').pop().toLowerCase();
-          const path=`images/${ad.id}-${idx}.${ext}`;
-          await ghPutFile(path,ab,`upload image ${path}`);
+          const webpAb = await convertImageFileToWebP(f);
+          if(idx===1) firstImageAb=webpAb;
+          const path=`images/${ad.id}-${idx}.webp`;
+          await ghPutFile(path,webpAb,`upload image ${path}`);
           ad.images.push(path);
           idx++;
         }
@@ -754,7 +801,6 @@ function openEditor(ad){
       await ghPutFile(`confirmations/${ad.id}.png`,confAb,`update confirmation ${ad.id}`);
       uploadProgress.style.width='100%';
 
-      // تحديث الكاش فقط بدل loadAds كامل
       const idx=FILES_CACHE.findIndex(a=>a.id===ad.id);
       if(idx>=0) FILES_CACHE[idx]=ad;
       renderGrid();
@@ -848,14 +894,326 @@ async function downloadConfirmation(ad){
   }catch(e){alert('خطأ تنزيل التأكيد: '+e.message);}
 }
 
-/* Staged PNG, ZIP, New ad ... (نفس ما سبق تقريباً) */
+/* ========= Staged PNGs ========= */
+fileDrop.onclick = ()=>{
+  const i=document.createElement('input');
+  i.type='file';i.accept='image/png';i.multiple=false;
+  i.onchange=async ()=>{const f=i.files[0];if(f) await handleMultiplePngFiles([f]);};
+  i.click();
+};
+uploadPngsBtn.onclick = ()=>{
+  const i=document.createElement('input');
+  i.type='file';i.accept='image/png';i.multiple=true;
+  i.onchange=async ()=>{const files=Array.from(i.files);if(files.length) await handleMultiplePngFiles(files);};
+  i.click();
+};
+fileDrop.ondragover = e=>{e.preventDefault();fileDrop.style.background='#f1f5ff';};
+fileDrop.ondragleave = e=>{e.preventDefault();fileDrop.style.background='';};
+fileDrop.ondrop = async e=>{
+  e.preventDefault();fileDrop.style.background='';
+  const files=Array.from(e.dataTransfer.files);
+  if(files.length) await handleMultiplePngFiles(files);
+};
 
-function handlePngFileInit(){/* اختصرنا للسعة */} // تركناه كما هو في النسخة السابقة التي عندك
+async function handleMultiplePngFiles(fileList){
+  for(const f of fileList){
+    if(f.type!=='image/png') continue;
+    await handlePngFile(f);
+  }
+  showToast(`تم استيراد ${fileList.length} ملف(ملفات) إلى المدرج`);
+}
+async function handlePngFile(file){
+  try{
+    const ab=await file.arrayBuffer();
+    const meta=extractMetaFromPng(ab);
+    const id=meta && meta.id ? meta.id : 'staged-'+Date.now();
+    const entry={id,pngAb:ab,meta:meta||{title:file.name,id},name:file.name};
+    STAGED.unshift(entry);
+    renderStaged();
+  }catch(e){alert('فشل قراءة PNG: '+e.message);console.error(e);}
+}
+function renderStaged(){
+  stagedGrid.innerHTML='';stagedCount.textContent=String(STAGED.length);
+  for(const s of STAGED){
+    const el=document.createElement('div');el.className='card stagedCard';
+    const img=document.createElement('img');img.className='thumb';
+    img.src=URL.createObjectURL(new Blob([s.pngAb],{type:'image/png'}));img.loading='lazy';
+    el.appendChild(img);
+    const info=document.createElement('div');info.style.marginTop='8px';
+    const title=s.meta.title||s.name||s.id;
+    const loc=s.meta.location||'';
+    info.innerHTML=`<strong>${escapeHtml(title)}</strong>
+      <div style="color:#64748b;font-size:13px">${escapeHtml(loc)}</div>`;
+    el.appendChild(info);
+    const meta=document.createElement('div');meta.className='meta';
+    meta.innerHTML=`<small><span class="pill-id">${escapeHtml(s.meta.id||s.id)}</span></small>
+                    <small class="small-muted">من ملف: ${escapeHtml(s.name||'')}</small>`;
+    el.appendChild(meta);
+    const btns=document.createElement('div');btns.className='btns';
+    const bAccept=document.createElement('button');bAccept.className='btn success';bAccept.textContent='قبول (استيراد)';bAccept.onclick=()=>acceptStaged(s);btns.appendChild(bAccept);
+    const bEdit=document.createElement('button');bEdit.className='btn';bEdit.textContent='تعديل البيانات';bEdit.onclick=()=>openStagedEditor(s);btns.appendChild(bEdit);
+    const bShow=document.createElement('button');bShow.className='btn';bShow.textContent='عرض JSON';bShow.onclick=()=>alert(JSON.stringify(s.meta,null,2));btns.appendChild(bShow);
+    const bDel=document.createElement('button');bDel.className='btn danger';bDel.textContent='حذف من المدرج';bDel.onclick=()=>{STAGED=STAGED.filter(x=>x!==s);renderStaged();};btns.appendChild(bDel);
+    el.appendChild(btns);
+    stagedGrid.appendChild(el);
+  }
+}
 
-/* عشان ما أطول زيادة:  
-   باقي الدوال (staged PNG, import/export ZIP, new ad modal, scanConfirmations, mobile toggle)
-   تقدر تتركها كما في آخر نسخة أرسلتها لك، لأنها ليست سبب اللاج.  
-   المهم هنا هو تعديل openEditor & setStatusAd & deleteAd & moveAd عشان السرعة. */
+/* Staged editor */
+function openStagedEditor(s){
+  CURRENT_STAGED=s;
+  const m=s.meta||{};
+  const newId=m.id||s.id||'';
+  sm_id.value=newId;
+  sm_title.value=m.title||'';
+  sm_desc.value=m.description||'';
+  sm_price.value=m.price||'';
+  sm_location.value=m.location||'';
+  sm_phone.value=m.phone||m.whatsapp||'';
+  sm_category.value=m.category||'';
+  sm_status.value=(m.status||'pending');
+  sm_img.src=URL.createObjectURL(new Blob([s.pngAb],{type:'image/png'}));
+  sm_title_preview.textContent=m.title||s.name||s.id;
+  sm_id_preview.textContent=newId;
+  stagedModal.classList.add('active');
+}
+function applyStagedEdits(){
+  if(!CURRENT_STAGED)return;
+  const m=CURRENT_STAGED.meta||{};
+  const newId=sm_id.value.trim()||m.id||CURRENT_STAGED.id;
+  m.id=newId;CURRENT_STAGED.id=newId;
+  m.title=sm_title.value.trim();
+  m.description=sm_desc.value.trim();
+  m.price=sm_price.value.trim();
+  m.location=sm_location.value.trim();
+  const phone=sm_phone.value.trim();
+  if(phone){m.phone=phone;m.whatsapp=phone;}
+  m.category=sm_category.value.trim();
+  m.status=sm_status.value;
+  CURRENT_STAGED.meta=m;
+  sm_title_preview.textContent=m.title||CURRENT_STAGED.name||CURRENT_STAGED.id;
+  sm_id_preview.textContent=m.id;
+}
+sm_save.onclick=()=>{
+  applyStagedEdits();
+  stagedModal.classList.remove('active');
+  CURRENT_STAGED=null;
+  renderStaged();
+};
+sm_cancel.onclick=()=>{
+  stagedModal.classList.remove('active');
+  CURRENT_STAGED=null;
+};
+sm_close.onclick=sm_cancel;
+
+/* Bulk staged actions */
+acceptAllBtn.onclick=async ()=>{
+  if(STAGED.length===0){showToast('لا توجد عناصر في المدرج');return;}
+  if(!confirm(`قبول ${STAGED.length} عناصر من المدرج؟`))return;
+  for(const s of [...STAGED]){
+    try{await acceptStaged(s);}catch(e){console.error('acceptStaged failed',e);}
+  }
+  showToast('تم قبول جميع العناصر المتاحة');
+};
+clearAllBtn.onclick=()=>{if(confirm('حذف كل عناصر المدرج؟')){STAGED=[];renderStaged();showToast('تم الحذف');}};
+
+async function acceptStaged(s){
+  try{
+    const meta=s.meta||{};
+    const id=meta.id||s.id||('eld-'+Date.now());
+    await ghPutFile(`confirmations/${id}.png`,s.pngAb,`import confirmation ${id}`);
+    const ad=Object.assign({},meta);
+    ad.id=id;
+    ad.status=ad.status||'pending';
+    ad.created_at=ad.created_at||new Date().toISOString();
+    ad.updated_at=new Date().toISOString();
+    await ghPutFile(`ads/${id}.json`,JSON.stringify(ad,null,2),`import ad ${id}`);
+    const orderFile=await ghGetFile('order.json');let arr=[];let sha;
+    if(orderFile){arr=JSON.parse(atob(orderFile.content.replace(/\n/g,'')));sha=orderFile.sha;}
+    arr.unshift(id);await ghPutFile('order.json',JSON.stringify(arr,null,2),`add ${id} to order`,sha);
+    STAGED=STAGED.filter(x=>x!==s);renderStaged();
+    FILES_CACHE.unshift(ad);renderGrid();
+    showToast(`تم استيراد ${id}`);
+  }catch(e){alert('فشل استيراد العنصر: '+e.message);console.error(e);}
+}
+
+/* ========= Import / Export ZIP ========= */
+importZipBtn.onclick=async ()=>{
+  const input=document.createElement('input');input.type='file';input.accept='.zip';
+  input.onchange=async ()=>{
+    const f=input.files[0];if(!f)return;
+    const buf=await f.arrayBuffer();const zip=await JSZip.loadAsync(buf);const files=Object.keys(zip.files);
+    if(!confirm('استيراد '+files.length+' ملف؟ تأكد من بنية ZIP.'))return;
+    let count=0;
+    for(const name of files){
+      const item=zip.files[name];if(item.dir)continue;
+      try{
+        if(name.startsWith('images/')||name.startsWith('public/')||name.startsWith('confirmations/')){
+          const ab=await item.async('arraybuffer');await ghPutFile(name,ab,`import ${name}`);count++;
+        }else if(name.startsWith('ads/')&&name.endsWith('.json')){
+          const txt=await item.async('string');const obj=JSON.parse(txt);
+          const path=`ads/${obj.id}.json`;await ghPutFile(path,JSON.stringify(obj,null,2),`import ad ${obj.id}`);count++;
+        }else if(name==='order.json'||name==='zip_index.json'||name.endsWith('.html')){
+          const txt=await item.async('string');await ghPutFile(name,txt,`import ${name}`);count++;
+        }
+      }catch(e){console.warn('import fail',name,e);}
+    }
+    showToast(`تم استيراد ${count} ملفات`);loadAds();
+  };
+  input.click();
+};
+exportZipBtn.onclick=async ()=>{
+  if(!REPO||!TOKEN){alert('حدد repo و PAT أولاً');return;}
+  const zip=new JSZip();let added=0;
+  for(const ad of FILES_CACHE){
+    try{
+      const path=`ads/${ad.id}.json`;const f=await ghGetFile(path);
+      if(f && f.content) zip.file(`ads/${ad.id}.json`,atob(f.content.replace(/\n/g,'')));
+      if(ad.images){
+        for(const im of ad.images){
+          try{
+            const r=await fetch(`https://raw.githubusercontent.com/${REPO}/main/${im}`);
+            const ab=await r.arrayBuffer();zip.file(im,ab);
+          }catch(e){console.warn('missing',im);}
+        }
+      }
+      const conf=await ghGetFile(`confirmations/${ad.id}.png`);
+      if(conf && conf.content) zip.file(`confirmations/${ad.id}.png`,atob(conf.content.replace(/\n/g,'')),{binary:true});
+      added++;
+    }catch(e){console.warn('export fail',e);}
+  }
+  zip.file('export-index.json',JSON.stringify({count:added,generated_at:new Date().toISOString()},null,2));
+  const content=await zip.generateAsync({type:'blob'});
+  const url=URL.createObjectURL(content);
+  const a=document.createElement('a');a.href=url;a.download='eldelala_export.zip';a.click();URL.revokeObjectURL(url);
+  showToast('تم إنشاء ZIP');
+};
+
+/* ========= Scan confirmations/ ========= */
+scanConfirmationsBtn.onclick=async ()=>{
+  if(!REPO||!TOKEN){alert('حدد repo و PAT أولاً');return;}
+  showToast('جاري مسح confirmations/ ...');
+  const list=await ghList('confirmations');
+  if(!list){alert('لا يوجد مجلد confirmations أو فشل الوصول');return;}
+  const pngs=list.filter(f=>f.type==='file'&&f.name.toLowerCase().endsWith('.png'));
+  let added=0;
+  for(const p of pngs){
+    try{
+      const fileMeta=await ghGetFile(p.path);
+      if(!fileMeta||!fileMeta.content)continue;
+      const ab=base64ToArrayBuffer(fileMeta.content.replace(/\n/g,''));
+      const meta=extractMetaFromPng(ab);
+      const id=(meta && meta.id)?meta.id:p.name.replace('.png','');
+      if(STAGED.some(s=>s.id===id))continue;
+      STAGED.unshift({id,pngAb:ab,meta:meta||{title:p.name,id},name:p.name});
+      added++;
+    }catch(e){console.warn('scan error',p.name,e);}
+  }
+  renderStaged();
+  showToast(`تم إضافة ${added} ملفات من confirmations/ إلى المدرج`);
+};
+function base64ToArrayBuffer(b64){
+  const binary_string=atob(b64);
+  const len=binary_string.length;
+  const bytes=new Uint8Array(len);
+  for(let i=0;i<len;i++) bytes[i]=binary_string.charCodeAt(i);
+  return bytes.buffer;
+}
+
+/* ========= New Ad modal (WebP) ========= */
+function openNewAdModal(){
+  na_title.value='';
+  na_desc.value='';
+  na_price.value='';
+  na_loc.value='';
+  na_phone.value='';
+  na_cat.value='';
+  na_files.value='';
+  newAdModal.classList.add('active');
+}
+function closeNewAdModal(){newAdModal.classList.remove('active');}
+
+newAdBtn.onclick=()=>{
+  if(!REPO||!TOKEN){alert('حدد repo و PAT أولاً ثم اضغط اتصل');return;}
+  openNewAdModal();
+};
+na_close.onclick=closeNewAdModal;
+na_cancel.onclick=closeNewAdModal;
+
+na_submit.onclick=async ()=>{
+  try{
+    const t=na_title.value.trim();
+    if(!t){alert('يرجى إدخال العنوان');return;}
+    const desc=na_desc.value.trim();
+    const price=na_price.value.trim();
+    const loc=na_loc.value.trim();
+    const phone=na_phone.value.trim();
+    const cat=na_cat.value.trim();
+    const files=na_files.files;
+
+    const id='eld-'+(new Date()).toISOString().replace(/[:.]/g,'')+'-'+Math.floor(Math.random()*9000+1000);
+    const ad={
+      id,
+      title:t,
+      description:desc,
+      price:price,
+      currency:'SDG',
+      category:cat,
+      images:[],
+      primary_image:null,
+      thumbnail:null,
+      location:loc,
+      phone:phone,
+      whatsapp:phone,
+      status:'pending',
+      created_at:new Date().toISOString(),
+      updated_at:new Date().toISOString(),
+      meta:{views:0}
+    };
+
+    if(files && files.length>0){
+      let idx=1;
+      for(const f of files){
+        const webpAb = await convertImageFileToWebP(f);
+        const path=`images/${id}-${idx}.webp`;
+        await ghPutFile(path,webpAb,`upload ${path}`);
+        ad.images.push(path);
+        if(idx===1) ad.primary_image=path;
+        idx++;
+      }
+    }
+
+    await ghPutFile(`ads/${id}.json`,JSON.stringify(ad,null,2),`create ad ${id}`);
+
+    let mainAb=null;
+    if(ad.primary_image){
+      try{
+        const r=await fetch(`https://raw.githubusercontent.com/${REPO}/main/${ad.primary_image}`);
+        mainAb=await r.arrayBuffer();
+      }catch(e){mainAb=null;}
+    }
+    let confAb=mainAb?await canvasCreateConfirmationPng(mainAb,ad):await createFallbackPngWithTitle(ad.title,ad);
+    await ghPutFile(`confirmations/${id}.png`,confAb,`create confirmation ${id}`);
+
+    const orderFile=await ghGetFile('order.json');let arr=[];let sha;
+    if(orderFile){arr=JSON.parse(atob(orderFile.content.replace(/\n/g,'')));sha=orderFile.sha;}
+    arr.unshift(id);
+    await ghPutFile('order.json',JSON.stringify(arr,null,2),`add ${id} to order`,sha);
+
+    const blob=new Blob([confAb],{type:'image/png'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=`${id}-confirmation.png`;a.click();URL.revokeObjectURL(url);
+
+    FILES_CACHE.unshift(ad);
+    renderGrid();
+    showToast('تم نشر الإعلان وتنزيل بطاقة التأكيد PNG');
+    closeNewAdModal();
+  }catch(e){
+    alert('خطأ أثناء إنشاء الإعلان: '+e.message);
+  }
+};
+
+/* ========= Misc wiring ========= */
 refreshBtn.onclick=()=>loadAds();
 searchInput.oninput=()=>renderGrid();
 filterStatus.onchange=()=>renderGrid();
@@ -864,6 +1222,7 @@ mobileViewBtn.onclick=()=>{
   mobileViewBtn.textContent=active?'الخروج من عرض الموبايل':'عرض موبايل';
   window.scrollTo(0,0);
 };
+renderStaged();
 </script>
 </body>
 </html>
