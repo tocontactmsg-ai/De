@@ -648,7 +648,77 @@ function wrapTextRTL(ctx, text, x, y, maxWidth, lineHeight) {
   }
   if (line) ctx.fillText(line, x, curY);
   return curY;
+}<script>
+// --- تحميل الإعلانات من ملفات JSON في مجلد ads/ حسب order.json ---
+
+async function loadAdsFromFiles() {
+  try {
+    // نقرأ ترتيب الإعلانات من order.json
+    const orderRes = await fetch('order.json', { cache: 'no-store' });
+    if (!orderRes.ok) {
+      console.warn('لم يتم العثور على order.json، سيتم تخطي التحميل من الملفات');
+      return;
+    }
+
+    const ids = await orderRes.json(); // مثال: ["ELD1001","ELD1002",...]
+    const loaded = [];
+
+    for (const id of ids) {
+      try {
+        const r = await fetch(`ads/${id}.json`, { cache: 'no-store' });
+        if (!r.ok) continue;
+        const j = await r.json();
+
+        // تحويل بنية JSON إلى البنية التي يستعملها الموقع
+        loaded.push({
+          ref_code: j.id || id,                     // يظهر كود الإعلان
+          name: j.title || j.name || '',           // عنوان الإعلان
+          description: j.description || '',
+          price: j.price || '',
+          location: j.location || '',
+          contact: j.phone || j.whatsapp || j.contact || '',
+          category: j.category || 'عام',
+          thumb: j.thumbnail || ''                 // في المستقبل يمكنك وضع رابط صورة هنا
+        });
+      } catch (e) {
+        console.warn('تخطي إعلان', id, e);
+      }
+    }
+
+    // نخزنها في المتغير ads المستعمل في باقي الكود
+    ads = loaded;
+
+    // تعبئة قائمة التصنيفات
+    const cats = Array.from(new Set(ads.map(a => a.category || 'عام')));
+    const sel = document.getElementById('catFilter');
+    if (sel) {
+      sel.innerHTML = '<option value=\"\">كل الاقسام</option>' +
+        cats.map(c => `<option value=\"${escapeHtml(c)}\">${escapeHtml(c)}</option>`).join('');
+    }
+
+    // عرض الإعلانات
+    renderGrid();
+  } catch (e) {
+    console.error('فشل تحميل الإعلانات من الملفات', e);
+  }
 }
+
+// ربط البحث والتصنيف والتحديث
+if (typeof qEl !== 'undefined' && qEl) {
+  qEl.addEventListener('input', debounce(() => renderGrid(), 250));
+}
+if (typeof catFilter !== 'undefined' && catFilter) {
+  catFilter.addEventListener('change', () => renderGrid());
+}
+const refreshBtn = document.getElementById('refresh');
+if (refreshBtn) {
+  refreshBtn.addEventListener('click', () => loadAdsFromFiles());
+}
+
+// تحميل تلقائي عند فتح الصفحة
+loadAdsFromFiles();
+</script>
+
 </script>
 </body>
 </html>
