@@ -1,19 +1,21 @@
 {
   "id": "ELD1003",
-  "title": "دراجة هوائية جبلية",
-  "description": "دراجة جديدة مناسبة للطَرق الوعرة.",
+  "title": "Ø¯Ø±Ø§Ø¬Ø© ÙÙØ§Ø¦ÙØ© Ø¬Ø¨ÙÙØ©",
+  "description": "Ø¯Ø±Ø§Ø¬Ø© Ø¬Ø¯ÙØ¯Ø© ÙÙØ§Ø³Ø¨Ø© ÙÙØ·ÙØ±Ù Ø§ÙÙØ¹Ø±Ø©.",
   "price": "45000 SDG",
-  "location": "بحري",
+  "location": "Ø¨Ø­Ø±Ù",
   "phone": "+249912200300",
   "whatsapp": "+249912200300",
-  "category": "مركبات",
+  "category": "ÙØ±ÙØ¨Ø§Øª",
   "status": "accepted",
   "images": [],
   "primary_image": null,
   "thumbnail": null,
   "created_at": "2025-01-01T12:00:00Z",
-  "updated_at": "2025-01-01T12:00:00Z",
+  "updated_at": "2025-11-22T05:59:23.999Z",
   "meta": {
     "views": 0
-  }
+  },
+  "_sha": "7dc9c29cc7f4304427211de8ce9fa912aa4c0349",
+  "_path": "ads/ELD1003.json"
 }
