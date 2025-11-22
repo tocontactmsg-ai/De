@@ -3,21 +3,21 @@
   "title": "ahmed",
   "description": "ahmed",
   "price": "60000 SDG",
-  "location": "Ø§ÙØ®Ø±Ø·ÙÙ Ø¨Ø­Ø±Ù",
+  "location": "غيب غتؤغع غعبعبغع غب7يبع6ر عي6",
   "phone": "+249911223344",
   "whatsapp": "+249911223344",
-  "category": "Ø£Ø«Ø§Ø«",
+  "category": "ÃÂ£ÃÂ«ÃÂ§ÃÂ«",
   "status": "accepted",
   "images": [
-    "images/ELD1004-1.png"
+    "images/ELD1004-1.webp"
   ],
-  "primary_image": "images/ELD1004-1.png",
+  "primary_image": "images/ELD1004-1.webp",
   "thumbnail": null,
   "created_at": "2025-01-01T12:00:00Z",
-  "updated_at": "2025-11-22T06:38:36.933Z",
+  "updated_at": "2025-11-22T07:31:06.920Z",
   "meta": {
     "views": 0
   },
-  "_sha": "84d38b27f217c4e1152bda8365ea7aa5fa7d2775",
+  "_sha": "ac58dc44a71736c444ef6d72c4530c42b238e31d",
   "_path": "ads/ELD1004.json"
 }
