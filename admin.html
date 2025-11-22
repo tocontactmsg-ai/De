@@ -3,713 +3,777 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>الدلالة — لوحة الإدارة (GitHub + PAT)</title>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
+<title>Eldelala — Admin</title>
+<meta name="description" content="لوحة تحكم الدلالة — إدارة الإعلانات، استيراد PNG، استخراج JSON، رفع للـ GitHub" />
 <style>
-  *{box-sizing:border-box;font-family:"Tajawal",system-ui,-apple-system,"Segoe UI",sans-serif}
-  body{margin:0;background:#f3f7fc;color:#0b1220;line-height:1.5}
-  a{text-decoration:none;color:inherit}
-  code{background:#e2e8f0;border-radius:4px;padding:0 4px;font-size:12px}
-  .shell{max-width:1150px;margin:0 auto;padding:12px}
-  header{background:linear-gradient(135deg,#0ea5e9,#0369a1);color:#fff;border-radius:16px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-  .brand{display:flex;align-items:center;gap:10px}
-  .logo{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.14);display:flex;align-items:center;justify-content:center;font-weight:800}
-  .brandTitle{font-size:20px;font-weight:800}
-  .brandSub{font-size:13px;opacity:.9}
-  .connectBox{display:flex;flex-direction:column;gap:4px;align-items:flex-end}
-  .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
-  .small{font-size:13px}
-  .muted{color:#e0f2fe}
-  .mutedDark{color:#64748b}
-  input,select{padding:7px 9px;border-radius:9px;border:1px solid #d4dbe9;background:#f9fbff;font-size:13px}
-  input:focus,select:focus{outline:none;border-color:#0ea5e9;box-shadow:0 0 0 1px rgba(14,165,233,.22)}
-  .tokenInput{min-width:180px}
-  .btn{padding:7px 10px;border-radius:9px;border:1px solid #dbeafe;background:#eff6ff;color:#0369a1;font-size:13px;cursor:pointer}
-  .btn.primary{background:#0ea5e9;border-color:#0284c7;color:#fff}
-  .btn.ghost{background:transparent;border-color:rgba(255,255,255,0.3);color:#e0f2fe}
-  .btn.danger{background:#fee2e2;border-color:#fecaca;color:#b91c1c}
-  .btn.small{font-size:12px;padding:5px 8px;border-radius:999px}
-  .panel{background:#ffffff;border-radius:16px;padding:12px;border:1px solid #e2e8f0;box-shadow:0 10px 26px rgba(15,23,42,.06);margin-bottom:12px}
-  .panelHead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:6px}
-  .panelTitle{font-weight:700;font-size:15px}
-  .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
-  .filters input{min-width:160px}
-  .filters select{min-width:120px}
-  .tag{font-size:12px;color:#6b7280}
-  .grid{display:grid;grid-template-columns:repeat(1,1fr);gap:10px}
-  @media(min-width:720px){.grid{grid-template-columns:repeat(2,1fr)}}
-  @media(min-width:1000px){.grid{grid-template-columns:repeat(3,1fr)}}
-  .card{background:#fff;border-radius:14px;border:1px solid #e5e7eb;box-shadow:0 8px 22px rgba(15,23,42,.05);padding:10px;display:flex;flex-direction:column;gap:6px}
-  .cardTitle{font-weight:700;font-size:15px;color:#0f172a}
-  .cardDesc{font-size:13px;color:#4b5563;max-height:3.4em;overflow:hidden;text-overflow:ellipsis}
-  .cardFooter{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-  .badge{background:#eff6ff;color:#0369a1;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:600}
-  .pill{background:#f3f4f6;color:#4b5563;border-radius:999px;padding:3px 7px;font-size:11px}
-  .ref{margin-right:auto;font-size:12px;color:#0f172a;font-weight:600}
-  .statusChip{padding:3px 7px;border-radius:999px;font-size:11px;font-weight:600}
-  .statusChip.accepted{background:#dcfce7;color:#16a34a}
-  .statusChip.pending{background:#fef9c3;color:#854d0e}
-  .statusChip.rejected{background:#fee2e2;color:#b91c1c}
-  .btnRow{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-  .empty{padding:16px;text-align:center}
-  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;background:#0f172a;color:#f9fafb;padding:8px 12px;border-radius:10px;font-size:13px;box-shadow:0 12px 30px rgba(15,23,42,.45);display:none;z-index:60}
-  /* modal */
-  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(15,23,42,.55);z-index:50}
-  .modal.open{display:flex}
-  .modalCard{background:#ffffff;border-radius:16px;max-width:900px;width:96%;max-height:92vh;overflow:auto;padding:14px;box-shadow:0 18px 40px rgba(15,23,42,.4)}
-  .modalHead{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;flex-wrap:wrap}
-  .modalTitle{font-size:18px;font-weight:800;color:#020617}
-  .modalMeta{font-size:13px;color:#6b7280;margin-top:4px}
-  .modalContent{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
-  .modalLeft,.modalRight{flex:1;min-width:230px}
-  .field{margin-bottom:8px}
-  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:3px}
-  .field input,.field textarea{width:100%;padding:8px 9px;border-radius:10px;border:1px solid #d4dbe9;background:#f9fbff;font-size:13px}
-  .field textarea{min-height:80px;resize:vertical}
-  .field input:focus,.field textarea:focus{outline:none;border-color:#0ea5e9;box-shadow:0 0 0 1px rgba(14,165,233,.22)}
-  .modalFooter{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+  :root{
+    --bg:#ffffff; --card:#ffffff; --muted:#64748b; --accent:#06b6d4;
+    --danger:#ef4444; --success:#10b981; --inset:rgba(2,6,23,.04);
+  }
+  html,body{height:100%}
+  body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial;background:var(--bg);color:#071426;margin:0;padding:16px;box-sizing:border-box}
+  .container{max-width:1200px;margin:0 auto}
+  header{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
+  h1{font-size:18px;margin:0}
+  .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  input,button,select,textarea{padding:8px;border-radius:8px;border:1px solid var(--inset);background:transparent;color:inherit}
+  input[placeholder]{color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+  .card{background:#fff;padding:10px;border-radius:12px;border:1px solid #eef2f7;box-shadow:0 6px 18px rgba(15,20,36,.04);display:flex;flex-direction:column}
+  .thumb{width:100%;height:160px;object-fit:cover;border-radius:8px;background:#f3f4f6}
+  .meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+  .meta small{color:var(--muted)}
+  .btns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+  .btn{background:transparent;border:1px solid rgba(7,20,38,.06);padding:6px 8px;border-radius:8px;color:inherit;cursor:pointer}
+  .btn.danger{border-color:rgba(239,68,68,.12)}
+  .btn.success{border-color:rgba(16,185,129,.12)}
+  .panel{background:#fff;padding:12px;border-radius:10px;margin-bottom:12px;border:1px solid #eef2f7}
+  footer{margin-top:18px;color:var(--muted);font-size:13px}
+  .row{display:flex;gap:8px;align-items:center}
+  .hidden{display:none}
+  .progress{height:6px;background:#f1f5f9;border-radius:6px;overflow:hidden}
+  .progress > i{display:block;height:6px;background:var(--accent);width:0}
+  label{font-size:13px}
+  .file-drop{border:2px dashed #e6eef6;padding:12px;border-radius:12px;text-align:center;color:var(--muted);cursor:pointer}
+  .file-drop:hover{background:#f9fcff}
+  .flex{display:flex;gap:12px}
+  .mobile-toggle{border:1px solid #e6eef6;padding:6px 10px;border-radius:8px}
+  .mobile-sim{max-width:420px;margin:8px auto;border:1px solid #eef2f7;border-radius:12px;padding:8px}
+  .count-badge{background:var(--accent);color:#fff;padding:4px 8px;border-radius:999px;font-size:13px}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;background:#042a44;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 8px 30px rgba(2,6,23,.15);display:none;z-index:9999}
+  @media (max-width:520px){header{flex-direction:column;align-items:flex-start} .controls{flex-wrap:wrap}}
+  body.mobile-mode{background:#ffffff}
+  body.mobile-mode .container{max-width:420px}
+  .small-muted{color:var(--muted);font-size:13px}
+  .file-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .file-item{display:flex;align-items:center;justify-content:space-between;padding:8px;border-radius:8px;border:1px solid #eef2f7;background:#fbfdff}
 </style>
 </head>
 <body>
-<div class="shell">
+  <div class="container">
   <header>
-    <div class="brand">
-      <div class="logo">EL</div>
-      <div>
-        <div class="brandTitle">لوحة الإدارة — الدلالة</div>
-        <div class="brandSub">تتصل مباشرة بمجلد <code>ads/</code> وملف <code>order.json</code> في مستودع GitHub باستخدام PAT</div>
-      </div>
+    <div>
+      <h1>لوحة تحكم الدلالة — Admin</h1>
+      <small class="small-muted">تحكم من الموبايل أو الكمبيوتر — التوكن يُخزن في session فقط</small>
     </div>
-    <div class="connectBox">
-      <div class="row">
-        <input id="repoInput" placeholder="user/repo" title="مثال: username/eldelala">
-        <input id="tokenInput" class="tokenInput" placeholder="GitHub PAT (لن يُحفظ دائماً)">
-        <button id="connectBtn" class="btn primary">اتصل</button>
-      </div>
-      <div class="row">
-        <span id="statusLabel" class="small muted">غير متصل</span>
-        <button id="clearSessionBtn" class="btn ghost small">مسح التخزين المؤقت</button>
-      </div>
+
+    <div class="controls">
+      <input id="repoInput" placeholder="user/repo" style="width:150px" />
+      <input id="tokenInput" placeholder="Paste PAT (session only)" style="width:220px" />
+      <button id="loginBtn" class="btn">اتصل</button>
+      <button id="mobileViewBtn" class="btn mobile-toggle">عرض موبايل</button>
+      <button id="scanConfirmationsBtn" class="btn">Scan confirmations/</button>
+      <button id="importZipBtn" class="btn">Import ZIP</button>
+      <button id="exportZipBtn" class="btn">Export ZIP</button>
+      <button id="refreshBtn" class="btn">تحديث</button>
     </div>
   </header>
 
-  <section class="panel">
-    <div class="panelHead">
-      <div class="panelTitle">الإعلانات</div>
-      <div class="tag">يتم تحميلها من <code>order.json</code> و <code>ads/*.json</code> من نفس الريبو</div>
-    </div>
-    <div class="filters">
-      <input id="searchInput" placeholder="بحث بالعنوان أو الكود أو الموقع">
-      <select id="statusFilter">
-        <option value="">كل الحالات</option>
-        <option value="accepted">مقبول</option>
-        <option value="pending">قيد المراجعة</option>
-        <option value="rejected">مرفوض</option>
-      </select>
-      <select id="catFilter">
-        <option value="">كل الأقسام</option>
-      </select>
-      <button id="reloadBtn" class="btn">إعادة تحميل من GitHub</button>
-      <button id="saveOrderBtn" class="btn">حفظ order.json على GitHub</button>
-    </div>
-    <div id="cardsGrid" class="grid"></div>
-    <div id="emptyBox" class="empty" style="display:none">
-      لا توجد إعلانات لعرضها
-      <div class="mutedDark small">تأكد من وجود <code>order.json</code> ومجلد <code>ads/</code> في الريبو.</div>
-    </div>
-  </section>
-</div>
+  <div class="panel row" style="gap:10px">
+    <input id="search" placeholder="بحث عن إعلان أو ID أو عنوان" style="flex:1" />
+    <select id="filterStatus"><option value="all">كل الإعلانات</option><option value="pending">معلقة</option><option value="accepted">مقبولة</option><option value="rejected">مرفوضة</option></select>
+    <button id="newAdBtn" class="btn">إضافة إعلان</button>
+  </div>
 
-<div class="toast" id="toast"></div>
+  <!-- Stage area for extracted PNGs -->
+  <div class="panel">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3>المدرج المؤقت للصور المستخرجة (Staged PNGs)</h3>
+      <div class="flex"><span id="stagedCount" class="count-badge">0</span>
+        <button id="uploadPngsBtn" class="btn">اختيار PNGs (دفعي)</button>
+        <button id="acceptAllBtn" class="btn success">قبول الكل</button>
+        <button id="clearAllBtn" class="btn danger">حذف الكل</button>
+      </div>
+    </div>
+    <div id="fileDrop" class="file-drop" title="اسحب PNG هنا أو اضغط للتصفح">اسحب PNG هنا أو اضغط للتصفح</div>
+    <div id="stagedGrid" class="grid" style="margin-top:12px"></div>
+  </div>
 
-<!-- Modal -->
-<div class="modal" id="modal">
-  <div class="modalCard">
-    <div class="modalHead">
-      <div>
-        <div class="modalTitle" id="m_title"></div>
-        <div class="modalMeta" id="m_meta"></div>
+  <div class="panel">
+    <h3>قائمة الإعلانات</h3>
+    <div id="grid" class="grid"></div>
+  </div>
+
+  <div id="editorModal" class="hidden panel">
+    <h3 id="editorTitle">تحرير إعلان</h3>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <input id="e_title" placeholder="العنوان" />
+      <textarea id="e_desc" placeholder="الوصف" rows="4"></textarea>
+      <input id="e_price" placeholder="السعر" />
+      <input id="e_location" placeholder="الموقع" />
+      <input id="e_phone" placeholder="الهاتف/واتساب" />
+      <div class="row">
+        <input type="file" id="e_images" multiple />
+        <button id="saveEditBtn" class="btn success">حفظ</button>
+        <button id="cancelEditBtn" class="btn">إلغاء</button>
       </div>
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-        <span id="m_status" class="statusChip pending"></span>
-        <span id="m_ref" class="pill"></span>
-        <button class="btn" id="m_close">إغلاق</button>
-      </div>
-    </div>
-    <div class="modalContent">
-      <div class="modalLeft">
-        <div class="field">
-          <label for="m_title_input">العنوان</label>
-          <input id="m_title_input">
-        </div>
-        <div class="field">
-          <label for="m_desc_input">الوصف</label>
-          <textarea id="m_desc_input"></textarea>
-        </div>
-        <div class="field">
-          <label for="m_price_input">السعر</label>
-          <input id="m_price_input">
-        </div>
-      </div>
-      <div class="modalRight">
-        <div class="field">
-          <label for="m_loc_input">الموقع</label>
-          <input id="m_loc_input">
-        </div>
-        <div class="field">
-          <label for="m_phone_input">الهاتف / واتساب</label>
-          <input id="m_phone_input">
-        </div>
-        <div class="field">
-          <label for="m_cat_input">التصنيف</label>
-          <input id="m_cat_input">
-        </div>
-        <div class="field">
-          <label for="m_status_select">الحالة</label>
-          <select id="m_status_select">
-            <option value="pending">قيد المراجعة</option>
-            <option value="accepted">مقبول</option>
-            <option value="rejected">مرفوض</option>
-          </select>
-        </div>
-      </div>
-    </div>
-    <div class="modalFooter">
-      <div style="display:flex;gap:6px;flex-wrap:wrap">
-        <button class="btn primary" id="m_saveGithub">حفظ في GitHub</button>
-        <button class="btn" id="m_downloadJson">تنزيل JSON</button>
-        <button class="btn" id="m_makePng">بطاقة PNG</button>
-      </div>
-      <div class="tag">التعديل يُكتب مباشرة في ملف <code>ads/[id].json</code> في نفس المستودع.</div>
+      <div class="progress"><i id="uploadProgress"></i></div>
     </div>
   </div>
-</div>
 
-<!-- JsBarcode لعمل باركود حقيقي -->
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <footer>مبني للعمل مع GitHub Pages وGitHub API. استخدم PAT بصلاحية repo:contents فقط وفعّل 2FA لحماية الحساب.</footer>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
 <script>
+/* ============================
+   State & DOM
+   ============================ */
+const repoInput = document.getElementById('repoInput');
+const tokenInput = document.getElementById('tokenInput');
+const loginBtn = document.getElementById('loginBtn');
+const grid = document.getElementById('grid');
+const searchInput = document.getElementById('search');
+const filterStatus = document.getElementById('filterStatus');
+const refreshBtn = document.getElementById('refreshBtn');
+const importZipBtn = document.getElementById('importZipBtn');
+const exportZipBtn = document.getElementById('exportZipBtn');
+const newAdBtn = document.getElementById('newAdBtn');
+const mobileViewBtn = document.getElementById('mobileViewBtn');
+const fileDrop = document.getElementById('fileDrop');
+const stagedGrid = document.getElementById('stagedGrid');
+const stagedCount = document.getElementById('stagedCount');
+const uploadPngsBtn = document.getElementById('uploadPngsBtn');
+const acceptAllBtn = document.getElementById('acceptAllBtn');
+const clearAllBtn = document.getElementById('clearAllBtn');
+const scanConfirmationsBtn = document.getElementById('scanConfirmationsBtn');
+const toastEl = document.getElementById('toast');
+
 let REPO = '';
 let TOKEN = '';
-let BRANCH = 'main';
+let FILES_CACHE = []; // loaded ads JSON
+let STAGED = []; // staged PNGs {id, pngAb, meta, name}
 
-let ads = [];        // قائمة الإعلانات من GitHub
-let orderIds = [];   // IDs من order.json
-let ghFiles = {};    // path -> {sha}
-let currentAd = null;
-
-const repoInput   = document.getElementById('repoInput');
-const tokenInput  = document.getElementById('tokenInput');
-const connectBtn  = document.getElementById('connectBtn');
-const clearSessionBtn = document.getElementById('clearSessionBtn');
-const statusLabel = document.getElementById('statusLabel');
-
-const gridEl       = document.getElementById('cardsGrid');
-const emptyBoxEl   = document.getElementById('emptyBox');
-const searchEl     = document.getElementById('searchInput');
-const statusFilter = document.getElementById('statusFilter');
-const catFilter    = document.getElementById('catFilter');
-const reloadBtn    = document.getElementById('reloadBtn');
-const saveOrderBtn = document.getElementById('saveOrderBtn');
-const toastEl      = document.getElementById('toast');
-
-// modal elements
-const modal         = document.getElementById('modal');
-const m_close       = document.getElementById('m_close');
-const m_title       = document.getElementById('m_title');
-const m_meta        = document.getElementById('m_meta');
-const m_statusChip  = document.getElementById('m_status');
-const m_ref         = document.getElementById('m_ref');
-const m_title_in    = document.getElementById('m_title_input');
-const m_desc_in     = document.getElementById('m_desc_input');
-const m_price_in    = document.getElementById('m_price_input');
-const m_loc_in      = document.getElementById('m_loc_input');
-const m_phone_in    = document.getElementById('m_phone_input');
-const m_cat_in      = document.getElementById('m_cat_input');
-const m_status_sel  = document.getElementById('m_status_select');
-const m_saveGithub  = document.getElementById('m_saveGithub');
-const m_downloadBtn = document.getElementById('m_downloadJson');
-const m_makePngBtn  = document.getElementById('m_makePng');
-
-function showToast(msg){
+/* ============================
+   Helpers: toast & mask token
+   ============================ */
+function showToast(msg, timeout=3000){
   toastEl.textContent = msg;
   toastEl.style.display = 'block';
   clearTimeout(toastEl._t);
-  toastEl._t = setTimeout(()=> toastEl.style.display='none',2500);
+  toastEl._t = setTimeout(()=>{ toastEl.style.display = 'none'; }, timeout);
 }
 
-function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]);}
-function debounce(fn,delay){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),delay);}}
+function maskToken(t){
+  if(!t) return '';
+  return '****' + t.slice(-4);
+}
 
-// ===== GitHub helpers =====
-function getGitHubHeaders(){
-  const h = {'Accept':'application/vnd.github+json'};
-  if(TOKEN) h.Authorization = `Bearer ${TOKEN}`;
-  return h;
+/* ============================
+   Session init
+   ============================ */
+if(sessionStorage.getItem('eld_repo')){
+  repoInput.value = sessionStorage.getItem('eld_repo');
+  REPO = repoInput.value;
+}
+if(sessionStorage.getItem('eld_token')){
+  tokenInput.value = sessionStorage.getItem('eld_token').slice(0,4) + '...' + sessionStorage.getItem('eld_token').slice(-4);
+}
+
+/* ============================
+   Login / Load
+   ============================ */
+loginBtn.onclick = ()=> {
+  const repo = repoInput.value.trim();
+  const tokenRaw = prompt('ألصق PAT هنا (سيحفظ في الجلسة لمرة واحدة):',''); // keep token out of visible input
+  if(!repo || !tokenRaw){ alert('يرجى إدخال repo و PAT'); return; }
+  REPO = repo;
+  TOKEN = tokenRaw.trim();
+  sessionStorage.setItem('eld_repo', REPO);
+  sessionStorage.setItem('eld_token', TOKEN);
+  tokenInput.value = maskToken(TOKEN);
+  loadAds();
+}
+
+/* ============================
+   GitHub API helpers (safe)
+   ============================ */
+async function ghFetch(url, options = {}){
+  const headers = options.headers || {};
+  if(TOKEN) headers['Authorization'] = `token ${TOKEN}`;
+  try{
+    const res = await fetch(url, {...options, headers});
+    if(res.status === 403) throw new Error('403 Forbidden — تأكد من صلاحيات الـPAT (repo:contents) وفعّل 2FA');
+    if(res.status === 404) throw new Error('404 Not Found — تأكد من المسار أو أن الملفات موجودة');
+    if(!res.ok) {
+      const txt = await res.text();
+      throw new Error(`${res.status} ${res.statusText}: ${txt.slice(0,200)}`);
+    }
+    return res;
+  }catch(e){ throw e; }
+}
+
+async function ghList(path){
+  const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
+  try{
+    const res = await ghFetch(url);
+    return res.json();
+  }catch(e){ console.error(e); return null; }
 }
 
 async function ghGetFile(path){
-  const url = `https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}`;
-  const res = await fetch(url,{headers:getGitHubHeaders()});
-  if(!res.ok){
-    throw new Error(`GitHub GET ${path} failed: ${res.status}`);
-  }
-  const data = await res.json();
-  const contentStr = atob((data.content || '').replace(/\n/g,''));
-  ghFiles[path] = {sha:data.sha};
-  return {text:contentStr,sha:data.sha};
-}
-
-async function ghPutFile(path, contentText, message){
   const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
-  const sha = ghFiles[path]?.sha;
-  const b64 = btoa(unescape(encodeURIComponent(contentText)));
-  const body = {
-    message: message || `Update ${path}`,
-    content: b64,
-    branch: BRANCH
-  };
-  if(sha) body.sha = sha;
-  const res = await fetch(url,{
-    method:'PUT',
-    headers:Object.assign({'Content-Type':'application/json'}, getGitHubHeaders()),
-    body: JSON.stringify(body)
-  });
-  if(!res.ok){
-    const txt = await res.text();
-    throw new Error(`GitHub PUT ${path} failed: ${res.status} ${txt}`);
-  }
-  const data = await res.json();
-  ghFiles[path] = {sha:data.content.sha};
-  return data;
+  try{
+    const res = await ghFetch(url);
+    return res.json();
+  }catch(e){ return null; }
 }
 
-// ===== اتصال =====
-connectBtn.onclick = async ()=>{
-  const r = repoInput.value.trim();
-  const t = tokenInput.value.trim();
-  if(!r || !t){
-    alert('يرجى إدخال اسم الريبو والتوكن');
-    return;
+/* chunked ArrayBuffer -> base64 to avoid apply() limits */
+function arrayBufferToBase64(arrayBuffer){
+  const bytes = new Uint8Array(arrayBuffer);
+  const chunkSize = 0x8000;
+  let binary = '';
+  for(let i=0;i<bytes.length;i+=chunkSize){
+    const chunk = bytes.subarray(i,i+chunkSize);
+    binary += String.fromCharCode.apply(null, chunk);
   }
-  REPO = r;
-  TOKEN = t;
-  sessionStorage.setItem('eld_repo', REPO);
-  sessionStorage.setItem('eld_token', TOKEN);
-  statusLabel.textContent = `متصل بـ ${REPO} (main)`;
-  showToast('تم الحفظ في sessionStorage — سيتم استخدام نفس القيم خلال هذه الجلسة');
-  await loadAdsFromGitHub();
-};
+  return btoa(binary);
+}
 
-clearSessionBtn.onclick = ()=>{
-  sessionStorage.removeItem('eld_repo');
-  sessionStorage.removeItem('eld_token');
-  REPO=''; TOKEN='';
-  repoInput.value='';
-  tokenInput.value='';
-  statusLabel.textContent='غير متصل';
-  showToast('تم مسح بيانات الاتصال من هذه الجلسة');
-};
-
-// تحميل قيم محفوظة في الجلسة
-(function initFromSession(){
-  const r = sessionStorage.getItem('eld_repo');
-  const t = sessionStorage.getItem('eld_token');
-  if(r && t){
-    REPO = r; TOKEN = t;
-    repoInput.value = r;
-    tokenInput.value = t.replace(/.(?=.{4})/g,'*'); // إخفاء تقريبي (شكل فقط)
-    statusLabel.textContent = `متصل (مخزن) — اضغط "اتصل" لتفعيل`;
+async function ghPutFile(path, contentArrayBufferOrString, message, sha){
+  let base64;
+  if(contentArrayBufferOrString instanceof ArrayBuffer || contentArrayBufferOrString instanceof Uint8Array){
+    const ab = contentArrayBufferOrString instanceof Uint8Array ? contentArrayBufferOrString.buffer : contentArrayBufferOrString;
+    base64 = arrayBufferToBase64(ab);
+  } else {
+    base64 = btoa(unescape(encodeURIComponent(contentArrayBufferOrString)));
   }
-})();
-
-// ===== تحميل الإعلانات من GitHub =====
-async function loadAdsFromGitHub(){
-  if(!REPO || !TOKEN){
-    alert('أدخل اسم الريبو والتوكن ثم اضغط "اتصل" أولاً.');
-    return;
-  }
+  const body = { message, content: base64 };
+  if(sha) body.sha = sha;
+  const url = `https://api.github.com/repos/${REPO}/contents/${encodeURIComponent(path)}`;
   try{
-    statusLabel.textContent = 'جاري تحميل order.json والإعلانات...';
-    ghFiles = {};
-    // order.json
-    const order = await ghGetFile('order.json');
-    try{
-      orderIds = JSON.parse(order.text);
-      if(!Array.isArray(orderIds)) orderIds = [];
-    }catch(e){
-      orderIds = [];
-    }
-    const loaded = [];
-    for(const id of orderIds){
-      const path = `ads/${id}.json`;
-      try{
-        const f = await ghGetFile(path);
-        const ad = JSON.parse(f.text);
-        loaded.push(ad);
-      }catch(e){
-        console.warn('skip',id,e);
+    const res = await ghFetch(url, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    return res.json();
+  }catch(e){ console.error('ghPutFile error', e); throw e; }
+}
+
+async function ghDeleteFile(path, sha, message){
+  const url = `https://api.github.com/repos/${REPO}/contents/${encodeURIComponent(path)}`;
+  try{
+    const res = await ghFetch(url, { method:'DELETE', headers:{'Content-Type':'application/json'}, body: JSON.stringify({message, sha}) });
+    return res.json();
+  }catch(e){ console.error('ghDeleteFile error', e); throw e; }
+}
+
+/* ============================
+   PNG metadata helpers (fixed)
+   ============================ */
+function crc32(buf){
+  if(!crc32.table){
+    crc32.table = new Uint32Array(256).map((_,n)=>{ let c=n; for(let k=0;k<8;k++) c = (c&1) ? (0xEDB88320 ^ (c>>>1)) : (c>>>1); return c>>>0; });
+  }
+  let crc = 0xffffffff;
+  for(let i=0;i<buf.length;i++){
+    crc = (crc>>>8) ^ crc32.table[(crc ^ buf[i]) & 0xff];
+  }
+  return (crc ^ 0xffffffff)>>>0;
+}
+
+function embedTextChunkInPng(arrayBuffer, key, value){
+  const data = new Uint8Array(arrayBuffer);
+  function readU32(pos){ return (data[pos]<<24)|(data[pos+1]<<16)|(data[pos+2]<<8)|data[pos+3]; }
+  let pos = 8;
+  while(pos < data.length){
+    const len = readU32(pos);
+    const type = String.fromCharCode(...data.slice(pos+4,pos+8));
+    if(type === 'IEND') break;
+    pos += 8 + len + 4;
+  }
+  const before = data.slice(0,pos);
+  const after = data.slice(pos);
+  const encoder = new TextEncoder();
+  const textData = encoder.encode(key + '\0' + value); // NUL separator
+  const len = textData.length;
+  const lenBuf = new Uint8Array([ (len>>>24)&255, (len>>>16)&255, (len>>>8)&255, len&255 ]);
+  const typeBuf = new Uint8Array([116,69,88,116]); // 'tEXt'
+  const crcInput = new Uint8Array(typeBuf.length + textData.length);
+  crcInput.set(typeBuf,0); crcInput.set(textData,typeBuf.length);
+  const crc = crc32(crcInput);
+  const crcBuf = new Uint8Array([ (crc>>>24)&255, (crc>>>16)&255, (crc>>>8)&255, crc&255 ]);
+  const newBytes = new Uint8Array(before.length + 4 + 4 + textData.length + 4 + after.length);
+  let off=0;
+  newBytes.set(before,off); off+=before.length;
+  newBytes.set(lenBuf,off); off+=4;
+  newBytes.set(typeBuf,off); off+=4;
+  newBytes.set(textData,off); off+=textData.length;
+  newBytes.set(crcBuf,off); off+=4;
+  newBytes.set(after,off);
+  return newBytes.buffer;
+}
+
+function extractMetaFromPng(arrayBuffer){
+  const data = new Uint8Array(arrayBuffer);
+  function readU32(pos){ return (data[pos]<<24)|(data[pos+1]<<16)|(data[pos+2]<<8)|data[pos+3]; }
+  let pos = 8;
+  while(pos < data.length){
+    const len = readU32(pos);
+    const type = String.fromCharCode(...data.slice(pos+4,pos+8));
+    const start = pos + 8;
+    if(type === 'tEXt'){
+      const textBytes = data.slice(start, start + len);
+      const decoder = new TextDecoder();
+      const txt = decoder.decode(textBytes);
+      const sep = txt.indexOf('\0'); // look for NUL separator
+      if(sep !== -1){
+        const key = txt.slice(0, sep);
+        const val = txt.slice(sep + 1);
+        if(key === 'eldelala-meta'){
+          try{ return JSON.parse(val); }catch(e){ return null; }
+        }
       }
     }
-    ads = loaded;
-    statusLabel.textContent = `تم تحميل ${ads.length} إعلان من ${REPO}`;
-    populateFilters();
-    renderGrid();
-  }catch(e){
-    console.error(e);
-    statusLabel.textContent = 'فشل تحميل الإعلانات من GitHub';
-    showToast('خطأ أثناء الاتصال بـ GitHub — تحقق من اسم الريبو والتوكن والصلاحيات');
-    ads = [];
-    orderIds = [];
-    renderGrid();
+    pos += 8 + len + 4;
   }
+  return null;
 }
 
-reloadBtn.onclick = ()=> loadAdsFromGitHub();
+/* ============================
+   Image helpers
+   ============================ */
+async function fileToArrayBuffer(file){ return await file.arrayBuffer(); }
 
-function populateFilters(){
-  const cats = Array.from(new Set(ads.map(a=>a.category||'عام')));
-  catFilter.innerHTML = '<option value="">كل الأقسام</option>' +
-    cats.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-}
-
-// ===== عرض الإعلانات =====
-function renderGrid(){
-  const q = (searchEl.value || '').trim().toLowerCase();
-  const st = statusFilter.value;
-  const cat = catFilter.value;
-
-  let list = ads.slice();
-  if(st) list = list.filter(a => (a.status || 'pending') === st);
-  if(cat) list = list.filter(a => (a.category || 'عام') === cat);
-  if(q){
-    list = list.filter(a =>
-      (a.title||'').toLowerCase().includes(q) ||
-      (a.description||'').toLowerCase().includes(q) ||
-      (a.id||'').toLowerCase().includes(q) ||
-      (a.location||'').toLowerCase().includes(q)
-    );
-  }
-
-  gridEl.innerHTML = '';
-  if(!list.length){
-    emptyBoxEl.style.display = 'block';
-    return;
-  }
-  emptyBoxEl.style.display = 'none';
-
-  list.forEach(ad=>{
-    const card = document.createElement('article');
-    card.className = 'card';
-    const title = escapeHtml(ad.title || '');
-    const desc  = escapeHtml(ad.description || '');
-    const loc   = escapeHtml(ad.location || '');
-    const price = escapeHtml(ad.price || '');
-    const ref   = escapeHtml(ad.id || '');
-    const cat   = escapeHtml(ad.category || 'عام');
-    const st    = (ad.status || 'pending').toLowerCase();
-
-    card.innerHTML = `
-      <div class="cardTitle">${title || '(بدون عنوان)'}</div>
-      <div class="cardDesc">${desc}</div>
-      <div class="cardFooter">
-        <span class="badge">${cat}</span>
-        ${loc ? `<span class="pill">📍 ${loc}</span>` : ''}
-        ${price ? `<span class="pill">${price}</span>` : ''}
-        <span class="ref">${ref}</span>
-        <span class="statusChip ${st}">${st === 'accepted'?'مقبول':st==='rejected'?'مرفوض':'قيد المراجعة'}</span>
-      </div>
-      <div class="btnRow">
-        <button class="btn small" data-action="view">عرض / تعديل</button>
-        <button class="btn small" data-action="json">تنزيل JSON</button>
-        <button class="btn small" data-action="png">بطاقة PNG</button>
-      </div>
-    `;
-    card.querySelector('[data-action="view"]').onclick = ()=> openModal(ad);
-    card.querySelector('[data-action="json"]').onclick = ()=> downloadJson(ad);
-    card.querySelector('[data-action="png"]').onclick  = ()=> makePngForAd(ad);
-    gridEl.appendChild(card);
-  });
-}
-
-searchEl.addEventListener('input', debounce(renderGrid,250));
-statusFilter.addEventListener('change', renderGrid);
-catFilter.addEventListener('change', renderGrid);
-
-// ===== مودال =====
-function openModal(ad){
-  currentAd = JSON.parse(JSON.stringify(ad)); // clone
-  m_title.textContent = currentAd.title || '';
-  m_meta.textContent  = currentAd.location ? `الموقع: ${currentAd.location}` : '';
-  m_ref.textContent   = currentAd.id || '';
-  const st = (currentAd.status || 'pending').toLowerCase();
-  m_statusChip.textContent = st==='accepted'?'مقبول':st==='rejected'?'مرفوض':'قيد المراجعة';
-  m_statusChip.className = 'statusChip '+st;
-
-  m_title_in.value = currentAd.title || '';
-  m_desc_in.value  = currentAd.description || '';
-  m_price_in.value = currentAd.price || '';
-  m_loc_in.value   = currentAd.location || '';
-  m_phone_in.value = currentAd.phone || currentAd.whatsapp || '';
-  m_cat_in.value   = currentAd.category || '';
-  m_status_sel.value = st;
-
-  modal.classList.add('open');
-}
-
-m_close.onclick = ()=> modal.classList.remove('open');
-
-function applyModalEdits(){
-  if(!currentAd) return;
-  currentAd.title       = m_title_in.value.trim() || currentAd.title;
-  currentAd.description = m_desc_in.value.trim();
-  currentAd.price       = m_price_in.value.trim();
-  currentAd.location    = m_loc_in.value.trim();
-  const phone = m_phone_in.value.trim();
-  if(phone){ currentAd.phone = phone; currentAd.whatsapp = phone; }
-  currentAd.category    = m_cat_in.value.trim() || currentAd.category || 'عام';
-  currentAd.status      = m_status_sel.value;
-  currentAd.updated_at  = new Date().toISOString();
-  const st = currentAd.status.toLowerCase();
-  m_statusChip.textContent = st==='accepted'?'مقبول':st==='rejected'?'مرفوض':'قيد المراجعة';
-  m_statusChip.className = 'statusChip '+st;
-}
-
-// حفظ في GitHub
-m_saveGithub.onclick = async ()=>{
-  if(!currentAd){return;}
-  if(!REPO || !TOKEN){
-    alert('أدخل الريبو والتوكن واضغط "اتصل" أولاً.');
-    return;
-  }
-  applyModalEdits();
-  const path = `ads/${currentAd.id}.json`;
-  try{
-    const text = JSON.stringify(currentAd,null,2);
-    await ghPutFile(path,text,`Update ad ${currentAd.id}`);
-    showToast(`تم حفظ ${path} في GitHub`);
-    // حدث النسخة في الذاكرة
-    const idx = ads.findIndex(a=>a.id===currentAd.id);
-    if(idx>=0) ads[idx] = currentAd;
-    renderGrid();
-  }catch(e){
-    console.error(e);
-    showToast('فشل حفظ JSON في GitHub — تحقق من الصلاحيات');
-  }
-};
-
-// تنزيل JSON فقط
-function downloadJson(ad){
-  const data = JSON.stringify(ad,null,2);
-  const blob = new Blob([data],{type:'application/json'});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url;
-  a.download = `${ad.id||'ad'}.json`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-  showToast('تم تنزيل JSON — يمكنك رفعه يدوياً لمجلد ads في GitHub إذا أردت.');
-}
-
-m_downloadBtn.onclick = ()=>{ if(currentAd) downloadJson(currentAd); };
-
-// حفظ order.json في GitHub
-saveOrderBtn.onclick = async ()=>{
-  if(!REPO || !TOKEN){
-    alert('أدخل الريبو والتوكن واضغط "اتصل" أولاً.');
-    return;
-  }
-  // إن لم يكن لدينا orderIds استعمل IDs الموجودة في ads:
-  if(!orderIds.length){
-    orderIds = ads.map(a=>a.id).filter(Boolean);
-  }
-  if(!orderIds.length){
-    alert('لا توجد IDs لحفظها في order.json.');
-    return;
-  }
-  const text = JSON.stringify(orderIds,null,2);
-  try{
-    await ghPutFile('order.json',text,'Update order.json');
-    showToast('تم حفظ order.json في GitHub');
-  }catch(e){
-    console.error(e);
-    showToast('فشل حفظ order.json في GitHub');
-  }
-};
-
-// ===== PNG card with barcode =====
-m_makePngBtn.onclick = ()=>{ if(currentAd) makePngForAd(currentAd); };
-
-async function makePngForAd(ad){
-  const meta = {
-    id: ad.id,
-    title: ad.title,
-    description: ad.description,
-    price: ad.price,
-    location: ad.location,
-    phone: ad.phone || ad.whatsapp || '',
-    category: ad.category,
-    status: ad.status || 'pending',
-    created_at: ad.created_at || null,
-    updated_at: ad.updated_at || null
-  };
-  const ab = await createCardWithBarcode(null, meta);
-  const blob = new Blob([ab],{type:'image/png'});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url;
-  a.download = `${ad.id||'ad'}-confirmation.png`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-  showToast('تم توليد بطاقة PNG — يمكن إرسالها كدليل تأكيد.');
-}
-
-// ==== embed meta in PNG ====
-function embedMeta(arrayBuffer, meta){
-  const data = new Uint8Array(arrayBuffer);
-  function readU32(p){return (data[p]<<24)|(data[p+1]<<16)|(data[p+2]<<8)|data[p+3];}
-  function crc32(buf){
-    if(!crc32.table){
-      crc32.table = new Uint32Array(256).map((_,n)=>{let c=n;for(let k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);return c>>>0;});
-    }
-    let crc=0xffffffff;
-    for(let i=0;i<buf.length;i++) crc=(crc>>>8)^crc32.table[(crc^buf[i])&0xff];
-    return (crc^0xffffffff)>>>0;
-  }
-  let pos=8;
-  while(pos<data.length){
-    const len=readU32(pos);
-    const type=String.fromCharCode(...data.slice(pos+4,pos+8));
-    if(type==='IEND') break;
-    pos+=8+len+4;
-  }
-  const before=data.slice(0,pos);
-  const after=data.slice(pos);
-  const encoder=new TextEncoder();
-  const textData=encoder.encode('eldelala-meta\0'+JSON.stringify(meta));
-  const len=textData.length;
-  const lenBuf=new Uint8Array([(len>>>24)&255,(len>>>16)&255,(len>>>8)&255,len&255]);
-  const typeBuf=new Uint8Array([116,69,88,116]); // tEXt
-  const crcInput=new Uint8Array(typeBuf.length+textData.length);
-  crcInput.set(typeBuf,0);
-  crcInput.set(textData,typeBuf.length);
-  const crc=crc32(crcInput);
-  const crcBuf=new Uint8Array([(crc>>>24)&255,(crc>>>16)&255,(crc>>>8)&255,crc&255]);
-  const out=new Uint8Array(before.length+4+4+textData.length+4+after.length);
-  let o=0;
-  out.set(before,o);o+=before.length;
-  out.set(lenBuf,o);o+=4;
-  out.set(typeBuf,o);o+=4;
-  out.set(textData,o);o+=textData.length;
-  out.set(crcBuf,o);o+=4;
-  out.set(after,o);
-  return out.buffer;
-}
-
-async function createCardWithBarcode(imageFile, meta){
-  const width = 1400;
-  const imgH  = 700;
-  const footerH = 260;
+async function canvasCreateConfirmationPng(mainFileArrayBuffer, meta){
+  const blob = new Blob([mainFileArrayBuffer]);
+  const img = await createImageBitmap(blob);
+  const maxW = Math.min(1200, img.width);
+  const scale = maxW / img.width;
+  const h = Math.round(img.height * scale);
   const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = imgH + footerH;
+  canvas.width = maxW;
+  canvas.height = h + 90;
   const ctx = canvas.getContext('2d');
-
-  const g = ctx.createLinearGradient(0,0,width,canvas.height);
-  g.addColorStop(0,'#ffffff'); g.addColorStop(1,'#e0f2fe');
-  ctx.fillStyle=g; ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  roundedRect(ctx,40,40,width-80,imgH+footerH-60,26);
-  ctx.fillStyle='#ffffff';
-  ctx.shadowColor='rgba(15,23,42,.16)';
-  ctx.shadowBlur=32;
-  ctx.fill();
-  ctx.shadowBlur=0;
-
-  const imgX=80,imgY=80,imgW=width-160,imgAreaH=imgH-40;
-  roundedRect(ctx,imgX,imgY,imgW,imgAreaH,14);
-  ctx.fillStyle='#020617'; ctx.fill();
-  ctx.fillStyle='#f9fafb';
-  ctx.font='bold 52px sans-serif';
-  ctx.textAlign='center';
-  wrapText(ctx, meta.title || meta.id || 'إعلان', width/2, imgY+imgAreaH/2, imgW-80, 52);
-
-  const footX=100,footY=imgY+imgAreaH+22,footW=width-200,footH=footerH-60;
-  const g2 = ctx.createLinearGradient(footX,footY,footX+footW,footY+footH);
-  g2.addColorStop(0,'#082f49'); g2.addColorStop(1,'#0f766e');
-  roundedRect(ctx,footX,footY,footW,footH,14);
-  ctx.fillStyle=g2; ctx.fill();
-
-  ctx.beginPath();
-  ctx.arc(footX+60,footY+60,36,0,Math.PI*2);
-  ctx.fillStyle='#f9fafb'; ctx.fill();
-  ctx.fillStyle='#0f172a';
-  ctx.font='bold 20px sans-serif';
-  ctx.textAlign='center';
-  ctx.fillText('EL',footX+60,footY+66);
-
-  ctx.font='bold 50px sans-serif';
-  ctx.textAlign='center';
-  ctx.fillStyle='rgba(0,0,0,0.22)';
-  ctx.fillText(meta.id,width/2+3,footY+80+3);
-  ctx.fillStyle='#f9fafb';
-  ctx.fillText(meta.id,width/2,footY+80);
-
-  const bcCanvas = document.createElement('canvas');
-  const bcWidth = Math.floor(footW - 260);
-  const bcHeight = 100;
-  bcCanvas.width = bcWidth;
-  bcCanvas.height = bcHeight;
-  try{
-    JsBarcode(bcCanvas, meta.id || 'NO-ID', {format:"CODE128",displayValue:false,height:bcHeight,margin:0});
-    ctx.drawImage(bcCanvas, footX+120, footY+100, bcWidth, bcHeight);
-  }catch(e){
-    console.warn('JsBarcode failed',e);
-  }
-
-  ctx.fillStyle='rgba(226,232,240,0.95)';
-  ctx.font='16px sans-serif';
-  ctx.textAlign='left';
-  ctx.fillText('أحفظ هذه البطاقة وأرسلها عبر واتساب كدليل للتأكيد', footX+26,footY+footH-22);
-
-  roundedRect(ctx,footX+footW-20,footY+14,8,footH-28,5);
-  ctx.fillStyle='rgba(250,204,21,0.55)';
-  ctx.fill();
-
-  const blob = await new Promise(res=>canvas.toBlob(res,'image/png',1));
-  const ab   = await blob.arrayBuffer();
-  return embedMeta(ab, meta);
+  ctx.fillStyle = '#fff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(img,0,0,maxW,h);
+  ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(0,h,canvas.width,90);
+  ctx.fillStyle = '#fff'; ctx.textAlign='center'; ctx.font = '24px sans-serif';
+  ctx.fillText('شكرا على استعمال موقع الدلالة', canvas.width/2, h+40);
+  ctx.font = '18px sans-serif'; ctx.fillText('ID: '+meta.id, canvas.width/2, h+66);
+  const tw=120; const th = Math.round(tw * (h/maxW));
+  ctx.drawImage(img, 8,8, tw, th);
+  const blobOut = await new Promise(r=>canvas.toBlob(r,'image/png',1));
+  const ab = await blobOut.arrayBuffer();
+  const withMeta = embedTextChunkInPng(ab, 'eldelala-meta', JSON.stringify(meta));
+  return withMeta;
 }
 
-function roundedRect(ctx,x,y,w,h,r){
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.arcTo(x+w,y,x+w,y+h,r);
-  ctx.arcTo(x+w,y+h,x,y+h,r);
-  ctx.arcTo(x,y+h,x,y,r);
-  ctx.arcTo(x,y,x+w,y,r);
-  ctx.closePath();
+async function createFallbackPngWithTitle(title, meta){
+  const canvas = document.createElement('canvas');
+  canvas.width = 800; canvas.height = 600;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#000'; ctx.fillRect(0,0,800,600);
+  ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.font = 'bold 36px sans-serif';
+  wrapText(ctx, title, 400, 250, 36, 40);
+  ctx.font = '18px sans-serif'; ctx.fillText('شكرا على استعمال موقع الدلالة', 400, 560);
+  const blobOut = await new Promise(r=>canvas.toBlob(r,'image/png',1));
+  const ab = await blobOut.arrayBuffer();
+  return embedTextChunkInPng(ab,'eldelala-meta', JSON.stringify(meta));
 }
 
-function wrapText(ctx,text,x,y,maxWidth,lineHeight){
-  const words = String(text||'').split(' ');
-  let line='';let cy=y;
-  for(let i=0;i<words.length;i++){
-    const test=line+words[i]+' ';
-    if(ctx.measureText(test).width > maxWidth && i>0){
-      ctx.fillText(line,x,cy);
-      line=words[i]+' ';
-      cy+=lineHeight;
-    }else{
-      line=test;
+function wrapText(ctx, text, x, y, maxWidth, lineHeight){
+  var words = text.split(' ');
+  var line = '';
+  var curY = y;
+  for(var n = 0; n < words.length; n++){
+    const test = line + words[n] + ' ';
+    const metrics = ctx.measureText(test);
+    const testWidth = metrics.width;
+    if (testWidth > maxWidth && n > 0) {
+      ctx.fillText(line, x, curY);
+      line = words[n] + ' ';
+      curY += lineHeight;
+    } else {
+      line = test;
     }
   }
-  ctx.fillText(line,x,cy);
+  ctx.fillText(line, x, curY);
 }
+
+/* ============================
+   Loading ads & rendering
+   ============================ */
+async function loadAds(){
+  if(!REPO || !TOKEN) { alert('set repo and token first'); return; }
+  setStatus('جلب قائمة الإعلانات...');
+  const list = await ghList('ads');
+  if(!list){ alert('فشل جلب الملفات — تأكد من صلاحيات التوكن والمسار'); return; }
+  FILES_CACHE = [];
+  for(const f of list){
+    if(f.type !== 'file') continue;
+    if(!f.name.endsWith('.json')) continue;
+    try{
+      const raw = await ghGetFile(f.path);
+      const json = JSON.parse(atob(raw.content));
+      json._sha = raw.sha; json._path = f.path;
+      FILES_CACHE.push(json);
+    }catch(e){ console.warn('skip', f.name, e); }
+  }
+  FILES_CACHE.sort((a,b)=> new Date(b.created_at) - new Date(a.created_at));
+  renderGrid();
+  setStatus('تم التحميل');
+}
+
+function renderGrid(){
+  const q = searchInput.value.trim().toLowerCase();
+  const status = filterStatus.value;
+  grid.innerHTML = '';
+  let items = FILES_CACHE.filter(ad => {
+    if(status !== 'all' && ad.status !== status) return false;
+    if(!q) return true;
+    return String(ad.id||'').includes(q) || (ad.title||'').toLowerCase().includes(q) || (ad.description||'').toLowerCase().includes(q);
+  });
+  items.forEach(ad=> grid.appendChild(renderCard(ad)));
+}
+
+function renderCard(ad){
+  const el = document.createElement('div'); el.className='card';
+  const img = document.createElement('img'); img.className='thumb';
+  img.loading = 'lazy';
+  if(ad.primary_image){
+    img.src = `https://raw.githubusercontent.com/${REPO}/main/${ad.primary_image}`;
+    img.onerror = ()=> { img.src = ''; img.style.background = '#000'; img.alt = ad.title || ''; };
+  } else {
+    // draw placeholder
+    const c = document.createElement('canvas'); c.width=800; c.height=600;
+    const ctx = c.getContext('2d'); ctx.fillStyle='#000'; ctx.fillRect(0,0,800,600);
+    ctx.fillStyle='#fff'; ctx.font='bold 36px sans-serif'; ctx.textAlign='center'; ctx.fillText(ad.title||'بدون عنوان',400,300);
+    img.src = c.toDataURL('image/png');
+  }
+  el.appendChild(img);
+  const h = document.createElement('div'); h.style.marginTop='8px'; h.innerHTML = `<strong>${escapeHtml(ad.title||'بدون عنوان')}</strong><div style="color:var(--muted)">${escapeHtml(ad.location||'')} • ${escapeHtml(String(ad.price||''))}</div>`;
+  el.appendChild(h);
+  const meta = document.createElement('div'); meta.className='meta'; meta.innerHTML = `<small>ID: ${ad.id}</small><small>${ad.status||'pending'}</small>`; el.appendChild(meta);
+  const btns = document.createElement('div'); btns.className='btns';
+  const v = document.createElement('button'); v.className='btn'; v.textContent='عرض'; v.onclick = ()=> viewAd(ad); btns.appendChild(v);
+  const e = document.createElement('button'); e.className='btn'; e.textContent='تعديل'; e.onclick = ()=> openEditor(ad); btns.appendChild(e);
+  const a = document.createElement('button'); a.className='btn success'; a.textContent='قبول'; a.onclick = ()=> setStatusAd(ad,'accepted'); btns.appendChild(a);
+  const r = document.createElement('button'); r.className='btn'; r.textContent='رفض'; r.onclick = ()=> setStatusAd(ad,'rejected'); btns.appendChild(r);
+  const d = document.createElement('button'); d.className='btn danger'; d.textContent='حذف'; d.onclick = ()=> deleteAd(ad); btns.appendChild(d);
+  const up = document.createElement('button'); up.className='btn'; up.textContent='⬆'; up.onclick = ()=> moveAd(ad,'up'); btns.appendChild(up);
+  const down = document.createElement('button'); down.className='btn'; down.textContent='⬇'; down.onclick = ()=> moveAd(ad,'down'); btns.appendChild(down);
+  const ex = document.createElement('button'); ex.className='btn'; ex.textContent='استخراج JSON'; ex.onclick = ()=> downloadJson(ad); btns.appendChild(ex);
+  const conf = document.createElement('button'); conf.className='btn'; conf.textContent='تنزيل تأكيد'; conf.onclick = ()=> downloadConfirmation(ad); btns.appendChild(conf);
+  el.appendChild(btns);
+  return el;
+}
+
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
+
+/* ============================
+   Ad actions
+   ============================ */
+async function viewAd(ad){
+  const win = window.open('','_blank');
+  win.document.write(`<h2>${escapeHtml(ad.title||'')}</h2><img src="https://raw.githubusercontent.com/${REPO}/main/${ad.primary_image||''}" style="max-width:95%"/>`);
+}
+
+function openEditor(ad){
+  document.getElementById('editorModal').classList.remove('hidden');
+  document.getElementById('e_title').value = ad.title||'';
+  document.getElementById('e_desc').value = ad.description||'';
+  document.getElementById('e_price').value = ad.price||'';
+  document.getElementById('e_location').value = ad.location||'';
+  document.getElementById('e_phone').value = ad.whatsapp||ad.phone||'';
+  document.getElementById('saveEditBtn').onclick = async ()=>{
+    const t = document.getElementById('e_title').value.trim();
+    ad.title = t; ad.description = document.getElementById('e_desc').value.trim();
+    ad.price = document.getElementById('e_price').value; ad.location = document.getElementById('e_location').value;
+    ad.phone = document.getElementById('e_phone').value;
+    const files = document.getElementById('e_images').files;
+    if(files && files.length>0){
+      let idx=1; const imagesPaths = [];
+      for(const f of files){
+        const ab = await fileToArrayBuffer(f);
+        const ext = f.name.split('.').pop().toLowerCase();
+        const path = `images/${ad.id}-${idx}.${ext}`;
+        await ghPutFile(path, ab, `upload image ${path}`);
+        imagesPaths.push(path); idx++;
+      }
+      ad.images = imagesPaths; ad.primary_image = imagesPaths[0];
+    }
+    ad.updated_at = new Date().toISOString();
+    const path = `ads/${ad.id}.json`;
+    const existing = await ghGetFile(path); const sha = existing? existing.sha : undefined;
+    await ghPutFile(path, JSON.stringify(ad, null, 2), `update ad ${ad.id}`, sha);
+    let mainAb=null;
+    if(ad.primary_image){
+      try{ const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${ad.primary_image}`); mainAb = await r.arrayBuffer(); }catch(e){ mainAb=null; }
+    }
+    let confAb = mainAb? await canvasCreateConfirmationPng(mainAb, ad) : await createFallbackPngWithTitle(ad.title, ad);
+    await ghPutFile(`confirmations/${ad.id}.png`, confAb, `update confirmation ${ad.id}`);
+    showToast('تم الحفظ');
+    document.getElementById('editorModal').classList.add('hidden');
+    loadAds();
+  };
+  document.getElementById('cancelEditBtn').onclick = ()=> document.getElementById('editorModal').classList.add('hidden');
+}
+
+async function setStatusAd(ad, st){
+  try{
+    ad.status = st; ad.updated_at = new Date().toISOString();
+    const path = `ads/${ad.id}.json`; const existing = await ghGetFile(path);
+    await ghPutFile(path, JSON.stringify(ad,null,2), `set status ${st} for ${ad.id}`, existing.sha);
+    showToast('status updated');
+    loadAds();
+  }catch(e){ alert('فشل تغيير الحالة: ' + e.message); }
+}
+
+async function deleteAd(ad){
+  if(!confirm('تأكيد حذف الإعلان؟ سيحذف JSON و الصور و صورة التأكيد')) return;
+  try{
+    if(ad.images && ad.images.length){
+      for(const p of ad.images){
+        const f = await ghGetFile(p);
+        if(f && f.sha) await ghDeleteFile(p, f.sha, `delete image ${p}`);
+      }
+    }
+    if(ad.primary_image){ const f = await ghGetFile(ad.primary_image); if(f && f.sha) await ghDeleteFile(ad.primary_image, f.sha, `delete primary ${ad.primary_image}`); }
+    const c = await ghGetFile(`confirmations/${ad.id}.png`); if(c && c.sha) await ghDeleteFile(`confirmations/${ad.id}.png`, c.sha, `delete confirmation ${ad.id}`);
+    const j = await ghGetFile(`ads/${ad.id}.json`); if(j && j.sha) await ghDeleteFile(`ads/${ad.id}.json`, j.sha, `delete ad ${ad.id}`);
+    const order = await ghGetFile('order.json'); let arr=[]; let sha;
+    if(order){ arr = JSON.parse(atob(order.content)); sha = order.sha; }
+    arr = arr.filter(x=> x !== ad.id); await ghPutFile('order.json', JSON.stringify(arr,null,2), `remove ${ad.id} from order`, sha);
+    showToast('تم الحذف');
+    loadAds();
+  }catch(e){ alert('فشل الحذف: ' + e.message); }
+}
+
+async function moveAd(ad, dir){
+  const orderFile = await ghGetFile('order.json'); let arr=[]; let sha = undefined;
+  if(orderFile){ arr = JSON.parse(atob(orderFile.content)); sha = orderFile.sha; } else { arr = FILES_CACHE.map(a=>a.id); }
+  const idx = arr.indexOf(ad.id);
+  if(idx===-1) arr.unshift(ad.id);
+  else{
+    if(dir==='up' && idx>0){ const t = arr[idx-1]; arr[idx-1]=arr[idx]; arr[idx]=t; }
+    if(dir==='down' && idx < arr.length-1){ const t=arr[idx+1]; arr[idx+1]=arr[idx]; arr[idx]=t; }
+  }
+  await ghPutFile('order.json', JSON.stringify(arr,null,2), `reorder ${ad.id}`, sha);
+  loadAds();
+}
+
+async function downloadJson(ad){
+  const data = JSON.stringify(ad, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download = `${ad.id}.json`; a.click(); URL.revokeObjectURL(url);
+}
+
+async function downloadConfirmation(ad){
+  try{
+    let mainAb=null;
+    if(ad.primary_image){
+      try{ const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${ad.primary_image}`); mainAb = await r.arrayBuffer(); }catch(e){ mainAb=null; }
+    }
+    let confAb = mainAb? await canvasCreateConfirmationPng(mainAb, ad) : await createFallbackPngWithTitle(ad.title, ad);
+    const blob = new Blob([confAb], {type:'image/png'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download = `${ad.id}-confirmation.png`; a.click(); URL.revokeObjectURL(url);
+    setTimeout(()=>{ const phone = ad.whatsapp || ad.phone || ''; const msg = encodeURIComponent(`السلام عليكم\nهذا اعلان رقم ${ad.id} على موقع الدلالة\n`); const wa = `https://wa.me/${phone.replace(/[^0-9+]/g,'')}?text=${msg}`; if(confirm('فتح رابط واتساب لمشاركة؟')) window.open(wa,'_blank'); },500);
+  }catch(e){ alert('خطأ تنزيل التأكيد: ' + e.message); }
+}
+
+/* ============================
+   Staged PNG handling
+   ============================ */
+
+fileDrop.onclick = ()=>{ const i = document.createElement('input'); i.type='file'; i.accept='image/png'; i.multiple = false; i.onchange = async ()=>{ const f = i.files[0]; if(f) await handleMultiplePngFiles([f]); }; i.click(); };
+uploadPngsBtn.onclick = ()=>{ const i = document.createElement('input'); i.type='file'; i.accept='image/png'; i.multiple = true; i.onchange = async ()=>{ const files = Array.from(i.files); if(files && files.length) await handleMultiplePngFiles(files); }; i.click(); };
+fileDrop.ondragover = (e)=>{ e.preventDefault(); fileDrop.style.background='#f8fdff'; }
+fileDrop.ondragleave = (e)=>{ fileDrop.style.background=''; }
+fileDrop.ondrop = async (e)=>{ e.preventDefault(); fileDrop.style.background=''; const files = Array.from(e.dataTransfer.files); if(files && files.length) await handleMultiplePngFiles(files); }
+
+async function handleMultiplePngFiles(fileList){
+  for(const f of fileList){
+    if(f.type !== 'image/png') continue;
+    await handlePngFile(f);
+  }
+  showToast(`تم استيراد ${fileList.length} ملف(ملفات) إلى المدرج`);
+}
+
+async function handlePngFile(file){
+  try{
+    const ab = await file.arrayBuffer();
+    const meta = extractMetaFromPng(ab);
+    const id = meta && meta.id ? meta.id : 'staged-'+Date.now();
+    const entry = { id, pngAb: ab, meta: meta || { title: file.name, id }, name: file.name };
+    STAGED.unshift(entry);
+    renderStaged();
+  }catch(e){ alert('فشل قراءة PNG: ' + e.message); console.error(e); }
+}
+
+function renderStaged(){
+  stagedGrid.innerHTML = ''; stagedCount.textContent = String(STAGED.length);
+  for(const s of STAGED){
+    const el = document.createElement('div'); el.className='card';
+    const img = document.createElement('img'); img.className='thumb'; img.src = URL.createObjectURL(new Blob([s.pngAb], {type:'image/png'})); img.loading='lazy';
+    el.appendChild(img);
+    const h = document.createElement('div'); h.style.marginTop='8px'; h.innerHTML = `<strong>${escapeHtml(s.meta.title||s.name||s.id)}</strong><div style="color:var(--muted)">${escapeHtml(s.meta.location||'')}</div>`;
+    el.appendChild(h);
+    const btns = document.createElement('div'); btns.className='btns';
+    const acceptBtn = document.createElement('button'); acceptBtn.className='btn success'; acceptBtn.textContent='قبول (استيراد)'; acceptBtn.onclick = ()=> acceptStaged(s); btns.appendChild(acceptBtn);
+    const delBtn = document.createElement('button'); delBtn.className='btn danger'; delBtn.textContent='حذف من المدرج'; delBtn.onclick = ()=> { STAGED = STAGED.filter(x=> x !== s); renderStaged(); };
+    const extractBtn = document.createElement('button'); extractBtn.className='btn'; extractBtn.textContent='عرض البيانات'; extractBtn.onclick = ()=> alert(JSON.stringify(s.meta,null,2));
+    btns.appendChild(extractBtn); btns.appendChild(delBtn); el.appendChild(btns);
+    stagedGrid.appendChild(el);
+  }
+}
+
+/* Bulk actions */
+acceptAllBtn.onclick = async ()=>{
+  if(STAGED.length === 0){ showToast('لا توجد عناصر في المدرج'); return; }
+  if(!confirm(`قبول ${STAGED.length} عناصر من المدرج؟`)) return;
+  for(const s of [...STAGED]){ try{ await acceptStaged(s);}catch(e){ console.error('acceptStaged failed', e); } }
+  showToast('تم قبول جميع العناصر المتاحة');
+};
+
+clearAllBtn.onclick = ()=>{ if(confirm('حذف كل عناصر المدرج؟')){ STAGED = []; renderStaged(); showToast('تم الحذف'); } };
+
+/* Accept staged single item -> upload confirmation PNG and create ads/<id>.json */
+async function acceptStaged(s){
+  try{
+    const id = s.meta.id || ('eld-'+Date.now());
+    await ghPutFile(`confirmations/${id}.png`, s.pngAb, `import confirmation ${id}`);
+    const ad = s.meta;
+    ad.id = id; ad.status = ad.status || 'pending'; ad.created_at = ad.created_at || new Date().toISOString(); ad.updated_at = new Date().toISOString();
+    await ghPutFile(`ads/${id}.json`, JSON.stringify(ad,null,2), `import ad ${id}`);
+    const orderFile = await ghGetFile('order.json'); let arr=[]; let sha;
+    if(orderFile){ arr = JSON.parse(atob(orderFile.content)); sha = orderFile.sha; }
+    arr.unshift(id); await ghPutFile('order.json', JSON.stringify(arr,null,2), `add ${id} to order`, sha);
+    STAGED = STAGED.filter(x=> x !== s); renderStaged(); loadAds(); showToast(`تم استيراد ${id}`);
+  }catch(e){ alert('فشل استيراد العنصر: ' + e.message); console.error(e); }
+}
+
+/* ============================
+   Import/Export ZIP
+   ============================ */
+importZipBtn.onclick = async ()=>{
+  const input = document.createElement('input'); input.type='file'; input.accept='.zip';
+  input.onchange = async ()=>{ const f = input.files[0]; if(!f) return;
+    const buf = await f.arrayBuffer(); const zip = await JSZip.loadAsync(buf); const files = Object.keys(zip.files);
+    if(!confirm('استيراد '+files.length+' ملف؟ تأكد من بنية ZIP.')) return;
+    let count=0;
+    for(const name of files){
+      const item = zip.files[name]; if(item.dir) continue;
+      try{
+        if(name.startsWith('images/') || name.startsWith('public/') || name.startsWith('confirmations/')){ const ab = await item.async('arraybuffer'); await ghPutFile(name, ab, `import ${name}`); count++; }
+        else if(name.startsWith('ads/') && name.endsWith('.json')){ const txt = await item.async('string'); const obj = JSON.parse(txt); const path = `ads/${obj.id}.json`; await ghPutFile(path, JSON.stringify(obj,null,2), `import ad ${obj.id}`); count++; }
+        else if(name === 'order.json' || name === 'zip_index.json' || name.endsWith('.html')){ const txt = await item.async('string'); await ghPutFile(name, txt, `import ${name}`); count++; }
+      }catch(e){ console.warn('import fail', name, e); }
+    }
+    showToast(`تم استيراد ${count} ملفات`); loadAds();
+  };
+  input.click();
+};
+
+exportZipBtn.onclick = async ()=>{
+  if(!REPO || !TOKEN){ alert('حدد repo و PAT أولاً'); return; }
+  const zip = new JSZip(); let added=0;
+  for(const ad of FILES_CACHE){
+    try{
+      const path = `ads/${ad.id}.json`; const f = await ghGetFile(path); if(f && f.content) zip.file(`ads/${ad.id}.json`, atob(f.content));
+      if(ad.images){ for(const im of ad.images){ try{ const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${im}`); const ab = await r.arrayBuffer(); zip.file(im, ab); }catch(e){ console.warn('missing', im); } } }
+      const conf = await ghGetFile(`confirmations/${ad.id}.png`); if(conf && conf.content) zip.file(`confirmations/${ad.id}.png`, atob(conf.content), {binary:true});
+      added++;
+    }catch(e){ console.warn('export fail', e); }
+  }
+  zip.file('export-index.json', JSON.stringify({count:added, generated_at:new Date().toISOString()},null,2));
+  const content = await zip.generateAsync({type:'blob'});
+  const url = URL.createObjectURL(content); const a = document.createElement('a'); a.href = url; a.download = 'eldelala_export.zip'; a.click(); URL.revokeObjectURL(url);
+  showToast('تم إنشاء ZIP');
+};
+
+/* ============================
+   Auto-scan confirmations/ in repo (pull PNGs into staged)
+   ============================ */
+scanConfirmationsBtn.onclick = async ()=>{
+  if(!REPO || !TOKEN){ alert('حدد repo و PAT أولاً'); return; }
+  showToast('جاري مسح confirmations/ ...');
+  const list = await ghList('confirmations');
+  if(!list){ alert('لا يوجد مجلد confirmations أو فشل الوصول'); return; }
+  const pngs = list.filter(f=> f.type === 'file' && f.name.toLowerCase().endsWith('.png'));
+  let added=0;
+  for(const p of pngs){
+    try{
+      const fileMeta = await ghGetFile(p.path);
+      if(!fileMeta || !fileMeta.content) continue;
+      const ab = base64ToArrayBuffer(fileMeta.content);
+      const meta = extractMetaFromPng(ab);
+      const id = (meta && meta.id) ? meta.id : p.name.replace('.png','');
+      // avoid duplicates in staged (by checking id)
+      if(STAGED.some(s => s.id === id)) continue;
+      STAGED.unshift({ id, pngAb: ab, meta: meta || { title: p.name, id }, name: p.name });
+      added++;
+    }catch(e){ console.warn('scan error', p.name, e); }
+  }
+  renderStaged();
+  showToast(`تم إضافة ${added} ملفات من confirmations/ إلى المدرج`);
+};
+
+/* base64 content (from GitHub API) -> ArrayBuffer */
+function base64ToArrayBuffer(b64){
+  const binary_string = atob(b64);
+  const len = binary_string.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) bytes[i] = binary_string.charCodeAt(i);
+  return bytes.buffer;
+}
+
+/* ============================
+   New ad quick-add (popup)
+   ============================ */
+newAdBtn.onclick = ()=> {
+  const w = window.open('','_blank','width=420,height=680');
+  w.document.body.style.direction='rtl'; w.document.body.style.fontFamily='sans-serif';
+  w.document.title = 'إضافة إعلان سريع';
+  w.document.body.innerHTML = `
+    <div style="padding:16px">
+      <h3>إضافة إعلان جديد</h3>
+      <input id="n_title" placeholder="العنوان" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #eee" />
+      <textarea id="n_desc" placeholder="الوصف" rows="3" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #eee"></textarea>
+      <input id="n_price" placeholder="السعر" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #eee" />
+      <input id="n_location" placeholder="الموقع" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #eee" />
+      <input id="n_phone" placeholder="واتساب" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #eee" />
+      <input id="n_files" type="file" multiple style="margin-top:8px" />
+      <button id="n_submit" style="margin-top:10px;padding:10px;border-radius:8px;background:#06b6d4;color:#fff;border:none">نشر</button>
+    </div>
+  `;
+  w.document.getElementById('n_submit').onclick = async ()=> {
+    const t = w.document.getElementById('n_title').value.trim(); if(!t){ alert('اكتب عنوان'); return; }
+    const desc = w.document.getElementById('n_desc').value; const price = w.document.getElementById('n_price').value; const loc = w.document.getElementById('n_location').value; const phone = w.document.getElementById('n_phone').value;
+    const files = w.document.getElementById('n_files').files; const id = 'eld-'+(new Date()).toISOString().replace(/[:.]/g,'')+'-'+Math.floor(Math.random()*9000+1000);
+    const ad = { id, title:t, description:desc, price:price, currency:'SDG', category:'', images:[], primary_image:null, thumbnail:null, location:loc, phone:phone, whatsapp:phone, status:'pending', created_at:new Date().toISOString(), updated_at:new Date().toISOString(), meta:{views:0} };
+    if(files && files.length>0){
+      let idx=1; for(const f of files){ const ab = await f.arrayBuffer(); const ext = f.name.split('.').pop().toLowerCase(); const path = `images/${id}-${idx}.${ext}`; await ghPutFile(path, ab, `upload ${path}`); ad.images.push(path); if(idx===1) ad.primary_image = path; idx++; }
+    }
+    await ghPutFile(`ads/${id}.json`, JSON.stringify(ad,null,2), `create ad ${id}`);
+    let mainAb = null; if(ad.primary_image){ try{ const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${ad.primary_image}`); mainAb = await r.arrayBuffer(); }catch(e){ mainAb=null } }
+    let confAb = mainAb? await canvasCreateConfirmationPng(mainAb, ad) : await createFallbackPngWithTitle(ad.title, ad);
+    await ghPutFile(`confirmations/${id}.png`, confAb, `create confirmation ${id}`);
+    const orderFile = await ghGetFile('order.json'); let arr=[]; let sha; if(orderFile){ arr = JSON.parse(atob(orderFile.content)); sha = orderFile.sha; } arr.unshift(id); await ghPutFile('order.json', JSON.stringify(arr,null,2), `add ${id} to order`, sha);
+    alert('تم النشر. سيتم تنزيل صورة التأكيد الآن');
+    const blob = new Blob([confAb], {type:'image/png'}); const url = URL.createObjectURL(blob); const a = w.document.createElement('a'); a.href = url; a.download = `${id}-confirmation.png`; a.click(); w.close();
+    loadAds();
+  };
+};
+
+/* ============================
+   Utility: setStatus (console)
+   ============================ */
+function setStatus(msg){ console.log(msg); }
+
+/* ============================
+   Render initial and wire events
+   ============================ */
+refreshBtn.onclick = ()=> loadAds();
+searchInput.oninput = ()=> renderGrid();
+filterStatus.onchange = ()=> renderGrid();
+mobileViewBtn.onclick = ()=>{ const active = document.body.classList.toggle('mobile-mode'); mobileViewBtn.textContent = active ? 'الخروج من عرض الموبايل' : 'عرض موبايل'; window.scrollTo(0,0); };
+
+renderStaged();
+
 </script>
 </body>
 </html>
