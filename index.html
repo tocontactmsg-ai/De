@@ -3,675 +3,233 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>الدلالة — الإعلانات</title>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
+<title>الدلالة — أحدث الإعلانات</title>
 <style>
-  *{box-sizing:border-box;font-family:"Tajawal",system-ui,-apple-system,"Segoe UI",sans-serif}
-  body{margin:0;background:#f3f7fc;color:#0b1220;line-height:1.5}
-  a{text-decoration:none;color:inherit}
-  .shell{max-width:1200px;margin:0 auto;padding:12px}
-  header{background:linear-gradient(135deg,#0ea5e9,#0369a1);color:#fff;border-radius:16px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-  .brand{display:flex;align-items:center;gap:10px}
-  .logo{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.14);display:flex;align-items:center;justify-content:center;font-weight:800}
-  .brandTitle{font-size:20px;font-weight:800}
-  .brandSub{font-size:13px;opacity:.9}
-  .navTabs{display:flex;gap:6px;flex-wrap:wrap}
-  .tabBtn{padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.22);background:rgba(15,23,42,0.04);color:#e5f4ff;font-size:14px;cursor:pointer}
-  .tabBtn.active{background:#fff;color:#0369a1}
-  main{margin-top:8px}
-  .panel{background:#ffffff;border-radius:16px;padding:14px;border:1px solid #e3edf7;box-shadow:0 10px 30px rgba(15,23,42,0.06);margin-bottom:12px}
-  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
-  .filters input,.filters select{padding:9px 10px;border-radius:10px;border:1px solid #dce5f1;background:#f9fbff;min-width:120px;font-size:14px}
-  .filters input:focus,.filters select:focus{outline:none;border-color:#0ea5e9;box-shadow:0 0 0 1px rgba(14,165,233,.25)}
-  .filtersRight{margin-right:auto;display:flex;gap:6px;align-items:center}
-  .small{font-size:13px}
-  .muted{color:#64748b}
-  .btn{padding:8px 10px;border-radius:10px;border:1px solid #dbeafe;background:#eff6ff;color:#0369a1;font-size:13px;cursor:pointer}
-  .btn.primary{background:#0ea5e9;border-color:#0284c7;color:#fff}
-  .btn.ghost{background:transparent;border-color:transparent;color:#0369a1}
-  .grid{display:grid;grid-template-columns:repeat(1,1fr);gap:12px}
-  @media(min-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
-  @media(min-width:980px){.grid{grid-template-columns:repeat(3,1fr)}}
-  .card{background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e2e8f0;box-shadow:0 10px 24px rgba(15,23,42,.04);display:flex;flex-direction:column;cursor:pointer;transition:transform .12s,box-shadow .12s}
-  .card:hover{transform:translateY(-3px);box-shadow:0 16px 30px rgba(15,23,42,.08)}
-  .cardHead{height:190px;background:#e5effb;display:flex;align-items:center;justify-content:center;padding:6px}
-  .cardHeadInner{width:100%;height:100%;border-radius:10px;background:linear-gradient(135deg,#e0f2fe,#eef2ff);display:flex;align-items:center;justify-content:center;padding:8px}
-  .cardHeadInner span{color:#075985;font-weight:700;font-size:18px;text-align:center}
-  .cardBody{padding:10px 12px;display:flex;flex-direction:column;gap:6px;flex:1}
-  .cardTitle{font-weight:700;font-size:16px;color:#0f172a}
-  .cardDesc{font-size:13px;color:#4b5563;max-height:3.2em;overflow:hidden;text-overflow:ellipsis}
-  .cardMeta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:auto}
-  .badge{background:#eff6ff;color:#0369a1;border-radius:999px;padding:4px 8px;font-size:12px;font-weight:600}
-  .pill{background:#f1f5f9;color:#475569;border-radius:999px;padding:3px 7px;font-size:12px}
-  .ref{margin-right:auto;font-size:12px;color:#0f172a;font-weight:600}
-  .emptyMsg{text-align:center;padding:20px 10px}
-  .emptyMsg span{display:block;margin-top:4px}
-  /* submit/ privacy */
-  .sectionTitle{font-weight:700;font-size:17px;margin-bottom:8px}
-  .field{margin-bottom:10px}
-  .field label{display:block;font-size:14px;font-weight:600;margin-bottom:4px}
-  .field input,.field textarea{width:100%;padding:9px 10px;border-radius:10px;border:1px solid #d4dbe9;background:#f9fbff;font-size:14px}
-  .field textarea{min-height:90px;resize:vertical}
-  .field input:focus,.field textarea:focus{outline:none;border-color:#0ea5e9;box-shadow:0 0 0 1px rgba(14,165,233,.22)}
-  .row2{display:flex;gap:8px;flex-wrap:wrap}
-  .row2 .field{flex:1;min-width:120px;margin-bottom:0}
-  .hint{font-size:12px;color:#6b7280}
-  .previewImg{max-width:100%;border-radius:10px;border:1px solid #e2e8f0;margin-top:6px}
-  .downloadBox{margin-top:10px;padding:10px;border-radius:10px;border:1px dashed #d1e3f7;background:#f8fbff}
-  /* modal */
-  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(15,23,42,.55);z-index:50}
-  .modal.open{display:flex}
-  .modalCard{background:#ffffff;border-radius:16px;max-width:900px;width:96%;max-height:92vh;overflow:auto;padding:14px;box-shadow:0 18px 40px rgba(15,23,42,.4)}
-  .modalHead{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;flex-wrap:wrap}
-  .modalTitle{font-size:18px;font-weight:800;color:#020617}
-  .modalMeta{font-size:13px;color:#6b7280;margin-top:4px}
-  .modalContent{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap}
-  .modalLeft{flex:1;min-width:240px}
-  .modalRight{flex:1;min-width:240px}
-  .modalBox{background:#f9fbff;border-radius:12px;padding:10px;border:1px solid #e2e8f0;margin-bottom:8px}
-  .modalBoxTitle{font-size:13px;font-weight:700;color:#0f172a;margin-bottom:4px}
-  .modalDesc{font-size:14px;color:#111827}
-  .footerActions{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:10px;flex-wrap:wrap}
-  .refChip{background:#0f172a;color:#e5e7eb;border-radius:999px;padding:4px 10px;font-size:13px}
-  .badgeStatus{padding:4px 8px;border-radius:999px;font-size:12px;font-weight:600}
-  .badgeStatus.accepted{background:#dcfce7;color:#15803d}
-  .badgeStatus.pending{background:#fef9c3;color:#854d0e}
-  .badgeStatus.rejected{background:#fee2e2;color:#b91c1c}
-  @media(max-width:640px){
-    header{align-items:flex-start}
-    .filters{flex-direction:column;align-items:stretch}
-    .filtersRight{margin-right:0;justify-content:space-between;width:100%}
+  :root{
+    --bg:#f8fafc;
+    --card:#ffffff;
+    --border:#e2e8f0;
+    --text:#0f172a;
+    --muted:#64748b;
+    --accent:#0284c7;
+  }
+  *{box-sizing:border-box}
+  body{
+    font-family:system-ui,"Segoe UI",Roboto,Arial;
+    background:var(--bg);
+    color:var(--text);
+    margin:0;
+    padding:12px;
+  }
+  header{
+    background:linear-gradient(120deg,#0ea5e9,#0369a1);
+    color:white;
+    padding:14px;
+    border-radius:14px;
+    margin-bottom:14px;
+  }
+  h1{margin:0;font-size:22px}
+  .actions{
+    display:flex;
+    gap:8px;
+    margin-top:10px;
+  }
+  input{
+    flex:1;
+    padding:9px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    font-size:14px;
+  }
+  button{
+    padding:9px 14px;
+    border-radius:8px;
+    border:none;
+    background:var(--accent);
+    color:white;
+    cursor:pointer;
+    font-size:14px;
+  }
+  button:hover{opacity:.9}
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+    gap:12px;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:10px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .thumb{
+    width:100%;
+    height:160px;
+    border-radius:10px;
+    object-fit:cover;
+    background:#1e293b;
+  }
+  .title{
+    font-size:15px;
+    font-weight:600;
+    line-height:1.3;
+  }
+  .price{
+    font-size:15px;
+    font-weight:600;
+    color:#047857;
+  }
+  .location{
+    font-size:13px;
+    color:var(--muted);
+  }
+  .id{
+    font-size:12px;
+    color:var(--accent);
+    margin-top:4px;
+  }
+  .empty{
+    text-align:center;
+    margin-top:25px;
+    font-size:14px;
+    color:var(--muted);
   }
 </style>
 </head>
 <body>
-<div class="shell">
-  <header>
-    <div class="brand">
-      <div class="logo">EL</div>
-      <div>
-        <div class="brandTitle">الدلالة</div>
-        <div class="brandSub">منصة إعلانات بسيطة يمكنك إدارتها من GitHub</div>
-      </div>
-    </div>
-    <div class="navTabs">
-      <button class="tabBtn active" data-tab="home">الإعلانات</button>
-      <button class="tabBtn" data-tab="submit">أرسل إعلانك</button>
-      <button class="tabBtn" data-tab="privacy">سياسة الخصوصية</button>
-    </div>
-  </header>
 
-  <main>
-    <!-- HOME / ADS -->
-    <section id="tab-home" class="panel">
-      <div class="filters" aria-label="خيارات البحث">
-        <input id="searchInput" type="search" placeholder="ابحث بالعنوان، الكود، أو الموقع">
-        <select id="catFilter">
-          <option value="">كل الأقسام</option>
-        </select>
-        <div class="filtersRight">
-          <span id="countLabel" class="small muted">جاري التحميل...</span>
-          <button class="btn" id="refreshBtn">تحديث</button>
-        </div>
-      </div>
-      <div id="grid" class="grid" aria-label="قائمة الإعلانات"></div>
-      <div id="emptyBox" class="emptyMsg" style="display:none">
-        لا توجد إعلانات حالياً
-        <span class="muted small">يمكنك إضافة إعلانات من خلال لوحة الإدارة (admin.html) أو من GitHub.</span>
-      </div>
-    </section>
+<header>
+  <h1>موقع الدلالة — إعلانات السودان</h1>
+  <div class="actions">
+    <input id="searchInput" placeholder="بحث — مثال: عربية، أثاث، موبايل..." />
+    <button id="refreshBtn">تحديث</button>
+  </div>
+</header>
 
-    <!-- SUBMIT -->
-    <section id="tab-submit" class="panel" style="display:none">
-      <div class="sectionTitle">إرسال إعلانك — توليد بطاقة تأكيد PNG</div>
-      <p class="muted small">
-        املأ بيانات إعلانك، ثم اضغط <strong>إنشاء البطاقة</strong>. سيتم توليد صورة PNG تحتوي على رقم الإعلان وباركود يمكن مسحه، مع تخزين البيانات بداخل الصورة.
-        بعد التنزيل يمكنك إرسالها لصاحب الموقع عبر واتساب.
-      </p>
-      <div class="field">
-        <label for="s_title">عنوان الإعلان</label>
-        <input id="s_title" placeholder="مثال: للبيع هاتف سامسونج">
-      </div>
-      <div class="field">
-        <label for="s_desc">الوصف</label>
-        <textarea id="s_desc" placeholder="تفاصيل الإعلان (اختياري)"></textarea>
-      </div>
-      <div class="row2">
-        <div class="field">
-          <label for="s_price">السعر</label>
-          <input id="s_price" placeholder="مثال: 120000 SDG">
-        </div>
-        <div class="field">
-          <label for="s_loc">الموقع</label>
-          <input id="s_loc" placeholder="مثال: الخرطوم بحري">
-        </div>
-      </div>
-      <div class="field">
-        <label for="s_phone">رقم الهاتف (للتواصل عبر واتساب)</label>
-        <input id="s_phone" placeholder="مثال: 2499XXXXXXXX">
-        <div class="hint">سيستخدم في رسالة واتساب الجاهزة بعد تنزيل البطاقة.</div>
-      </div>
-      <div class="field">
-        <label for="s_img">صورة الإعلان (اختياري)</label>
-        <input id="s_img" type="file" accept="image/*">
-        <img id="s_preview" class="previewImg" style="display:none">
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
-        <button id="s_make" class="btn primary">إنشاء البطاقة</button>
-        <button id="s_clear" class="btn">مسح الحقول</button>
-        <a href="submit/" class="btn ghost small">فتح صفحة الإرسال الكاملة (submit/)</a>
-      </div>
-      <div id="s_downloadBox" class="downloadBox" style="display:none">
-        <div class="small"><strong>تم توليد البطاقة</strong></div>
-        <div class="hint">من فضلك قم بتنزيل الصورة أولاً، ثم أرسلها لصاحب الموقع عبر واتساب.</div>
-        <a id="s_downloadLink" href="#" download class="btn small" style="margin-top:6px;display:inline-block">تحميل البطاقة PNG</a>
-        <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
-          <button id="s_whats" class="btn primary small" style="display:none">إرسال عبر واتساب</button>
-          <button id="s_copy" class="btn small">نسخ نص الرسالة</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- PRIVACY -->
-    <section id="tab-privacy" class="panel" style="display:none">
-      <div class="sectionTitle">سياسة الخصوصية — الدلالة</div>
-      <p class="muted small">
-        هذه نسخة تجريبية من موقع الدلالة. يتم حفظ الإعلانات في ملفات JSON داخل مستودع GitHub الخاص بالموقع.
-      </p>
-      <ul class="small muted">
-        <li>يتم تخزين بيانات الإعلان (العنوان، الوصف، السعر، الموقع، ورقم الاتصال) في ملفات.</li>
-        <li>يمكن لصاحب الموقع تعديل أو حذف الإعلانات من خلال لوحة الإدارة (admin.html).</li>
-        <li>صور تأكيد الإعلانات (بطاقات PNG) يمكن أن تحتوي على بيانات الإعلان مخزّنة بداخل الصورة (Metadata).</li>
-      </ul>
-      <p class="small muted">
-        إذا كنت لا ترغب في استمرار ظهور إعلانك، تواصل مع صاحب الموقع عبر واتساب موضحاً رقم الإعلان (ID) ليقوم بحذفه.
-      </p>
-    </section>
-  </main>
-</div>
-
-<!-- JsBarcode CDN لإنتاج باركود حقيقي في البطاقة -->
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<div id="adsGrid" class="grid"></div>
+<div id="emptyMsg" class="empty" style="display:none">لا توجد إعلانات مطابقة</div>
 
 <script>
-// =====================
-// تبويب التنقل
-// =====================
-const tabButtons = document.querySelectorAll('.tabBtn');
-const tabs = {
-  home: document.getElementById('tab-home'),
-  submit: document.getElementById('tab-submit'),
-  privacy: document.getElementById('tab-privacy'),
-};
-tabButtons.forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    tabButtons.forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    const key = btn.dataset.tab;
-    Object.entries(tabs).forEach(([k,el])=>{
-      el.style.display = (k===key ? 'block' : 'none');
-    });
-  });
-});
+/* ✅ ضع اسم مستخدم GitHub والريبو هنا */
+const REPO = "YOUR_USERNAME/YOUR_REPO";
 
-// =====================
-// البيانات العامة للإعلانات
-// =====================
-let ads = []; // {ref_code,name,description,price,location,category,contact,status}
+/* ✅ يجلب قائمة ملفات ads */
+async function listAds(){
+  const url = `https://api.github.com/repos/${REPO}/contents/ads`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error("فشل تحميل قائمة الإعلانات");
+  return res.json();
+}
 
-// عناصر DOM
-const gridEl       = document.getElementById('grid');
-const emptyBoxEl   = document.getElementById('emptyBox');
-const searchEl     = document.getElementById('searchInput');
-const catFilterEl  = document.getElementById('catFilter');
-const countLabelEl = document.getElementById('countLabel');
-const refreshBtn   = document.getElementById('refreshBtn');
+/* ✅ يحول Base64 إلى نص UTF-8 */
+function decodeBase64(b64){
+  const bin = atob(b64.replace(/\n/g,""));
+  return new TextDecoder("utf-8").decode(
+    Uint8Array.from(bin, c => c.charCodeAt(0))
+  );
+}
 
-// أداة بسيطة لتطهير النص
-function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function debounce(fn,delay){let t;return(...args)=>{clearTimeout(t);t=setTimeout(()=>fn(...args),delay);}}
+/* ✅ يجلب محتوى إعلان واحد */
+async function loadAd(file){
+  const res = await fetch(file.url);
+  const data = await res.json();
+  return JSON.parse(decodeBase64(data.content));
+}
 
-// =====================
-// تحميل الإعلانات من order.json + ads/*.json
-// =====================
-async function loadAdsFromFiles(){
-  try{
-    countLabelEl.textContent = 'جاري تحميل الإعلانات...';
-    const orderRes = await fetch('order.json',{cache:'no-store'});
-    if(!orderRes.ok){
-      console.warn('order.json ليس موجوداً، لن يتم تحميل الإعلانات من الملفات');
-      ads = [];
-      renderGrid();
-      return;
-    }
-    const ids = await orderRes.json(); // مثال ["ELD1001","ELD1002",...]
-    const loaded = [];
-    for(const id of ids){
-      try{
-        const r = await fetch(`ads/${id}.json`,{cache:'no-store'});
-        if(!r.ok) continue;
-        const j = await r.json();
-        loaded.push({
-          ref_code:  j.id || id,
-          name:      j.title || j.name || '',
-          description: j.description || '',
-          price:     j.price || '',
-          location:  j.location || '',
-          category:  j.category || 'عام',
-          contact:   j.phone || j.whatsapp || j.contact || '',
-          status:    j.status || 'pending'
-        });
-      }catch(e){
-        console.warn('تخطي إعلان',id,e);
+/* ✅ تحميل جميع الإعلانات */
+async function loadAds(){
+  const container = document.getElementById("adsGrid");
+  container.innerHTML = "<div class='empty'>جاري التحميل...</div>";
+
+  try {
+    const files = await listAds();
+    const ads = [];
+
+    for(const f of files){
+      if(f.name.endsWith(".json")){
+        const ad = await loadAd(f);
+        ads.push(ad);
       }
     }
-    ads = loaded;
-    // ملء قائمة الأقسام
-    const cats = Array.from(new Set(ads.map(a=>a.category||'عام')));
-    catFilterEl.innerHTML = '<option value="">كل الأقسام</option>' +
-      cats.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-    renderGrid();
-  }catch(e){
-    console.error('فشل تحميل الإعلانات',e);
-    ads = [];
-    renderGrid();
+
+    renderAds(ads);
+    window.ALL_ADS = ads; // نخزن للبحث لاحقًا
+  } catch(err){
+    container.innerHTML = `<div class='empty'>⚠️ خطأ: ${err.message}</div>`;
   }
 }
 
-// =====================
-// عرض الإعلانات
-// =====================
-function renderGrid(){
-  const qText = (searchEl.value || '').trim().toLowerCase();
-  const cat   = (catFilterEl.value || '');
-  let list = ads.slice();
-  if(cat) list = list.filter(a => (a.category || '') === cat);
-  if(qText){
-    list = list.filter(a =>
-      (a.name||'').toLowerCase().includes(qText) ||
-      (a.description||'').toLowerCase().includes(qText) ||
-      (a.ref_code||'').toLowerCase().includes(qText) ||
-      (a.location||'').toLowerCase().includes(qText)
-    );
-  }
+/* ✅ عرض الإعلانات */
+function renderAds(ads){
+  const grid = document.getElementById("adsGrid");
+  const empty = document.getElementById("emptyMsg");
 
-  gridEl.innerHTML = '';
-  if(!list.length){
-    emptyBoxEl.style.display = 'block';
-    countLabelEl.textContent = '0 إعلان';
+  grid.innerHTML = "";
+
+  if(!ads.length){
+    empty.style.display = "block";
     return;
   }
-  emptyBoxEl.style.display = 'none';
-  list.forEach(item=>{
-    const card = document.createElement('article');
-    card.className = 'card';
-    const title = escapeHtml(item.name || '');
-    const desc  = escapeHtml(item.description || '');
-    const loc   = escapeHtml(item.location || '');
-    const cat   = escapeHtml(item.category || 'عام');
-    const price = escapeHtml(item.price || '');
-    const ref   = escapeHtml(item.ref_code || '');
+  empty.style.display = "none";
 
-    card.innerHTML = `
-      <div class="cardHead">
-        <div class="cardHeadInner">
-          <span>${title || 'إعلان'}</span>
-        </div>
-      </div>
-      <div class="cardBody">
-        <div class="cardTitle">${title}</div>
-        <div class="cardDesc">${desc}</div>
-        <div class="cardMeta">
-          <span class="badge">${cat}</span>
-          ${loc ? `<span class="pill">📍 ${loc}</span>` : ''}
-          ${price ? `<span class="pill">${price}</span>` : ''}
-          <span class="ref">${ref}</span>
-        </div>
-      </div>
-    `;
-    card.addEventListener('click',()=>openDetails(item));
-    gridEl.appendChild(card);
-  });
-  countLabelEl.textContent = list.length + ' إعلان';
-}
+  for(const ad of ads){
+    const card = document.createElement("div");
+    card.className = "card";
 
-// =====================
-// مودال التفاصيل
-// =====================
-const modal = document.createElement('div');
-modal.className = 'modal';
-modal.innerHTML = `
-  <div class="modalCard">
-    <div class="modalHead">
-      <div>
-        <div class="modalTitle" id="m_title"></div>
-        <div class="modalMeta" id="m_meta"></div>
-      </div>
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-        <span id="m_status" class="badgeStatus pending"></span>
-        <span id="m_ref" class="refChip"></span>
-        <button id="m_close" class="btn">إغلاق</button>
-      </div>
-    </div>
-    <div class="modalContent">
-      <div class="modalLeft">
-        <div class="modalBox">
-          <div class="modalBoxTitle">الوصف</div>
-          <div class="modalDesc" id="m_desc"></div>
-        </div>
-      </div>
-      <div class="modalRight">
-        <div class="modalBox">
-          <div class="modalBoxTitle">الموقع</div>
-          <div id="m_loc"></div>
-        </div>
-        <div class="modalBox">
-          <div class="modalBoxTitle">السعر</div>
-          <div id="m_price"></div>
-        </div>
-        <div class="modalBox">
-          <div class="modalBoxTitle">التصنيف</div>
-          <div id="m_cat"></div>
-        </div>
-        <div class="modalBox">
-          <div class="modalBoxTitle">رقم الاتصال / واتساب</div>
-          <div id="m_contact"></div>
-        </div>
-      </div>
-    </div>
-    <div class="footerActions">
-      <button id="m_whats" class="btn primary">مشاركة عبر واتساب</button>
-      <span class="small muted">هذه نسخة ثابتة على GitHub Pages — لا توجد قاعدة بيانات.</span>
-    </div>
-  </div>
-`;
-document.body.appendChild(modal);
-document.getElementById('m_close').onclick = ()=>{modal.classList.remove('open');};
+    const img = document.createElement("img");
+    img.className = "thumb";
 
-function openDetails(item){
-  document.getElementById('m_title').textContent = item.name || '';
-  document.getElementById('m_meta').textContent  = item.location ? `الموقع: ${item.location}` : '';
-  document.getElementById('m_ref').textContent   = item.ref_code || '';
-  document.getElementById('m_desc').textContent  = item.description || '-';
-  document.getElementById('m_loc').textContent   = item.location || '-';
-  document.getElementById('m_price').textContent = item.price || '-';
-  document.getElementById('m_cat').textContent   = item.category || 'عام';
-  document.getElementById('m_contact').textContent = item.contact || '-';
+    const src =
+      ad.primary_image ||
+      (ad.images && ad.images[0]) ||
+      null;
 
-  const st = (item.status || 'pending').toLowerCase();
-  const stEl = document.getElementById('m_status');
-  stEl.textContent = st === 'accepted' ? 'مقبول' : (st === 'rejected' ? 'مرفوض' : 'قيد المراجعة');
-  stEl.className = 'badgeStatus ' + (st === 'accepted' ? 'accepted' : (st === 'rejected' ? 'rejected' : 'pending'));
-
-  const phone = (item.contact || '').replace(/[^0-9+]/g,'');
-  const msg = encodeURIComponent(`السلام عليكم\nبخصوص الإعلان رقم ${item.ref_code || ''} (${item.name || ''}).`);
-  const wBtn = document.getElementById('m_whats');
-  if(phone){
-    wBtn.style.display = 'inline-block';
-    wBtn.onclick = ()=>window.open(`https://wa.me/${phone}?text=${msg}`,'_blank');
-  }else{
-    wBtn.style.display = 'none';
-  }
-  modal.classList.add('open');
-}
-
-// =====================
-// أحداث البحث والتصفية
-// =====================
-searchEl.addEventListener('input', debounce(renderGrid,250));
-catFilterEl.addEventListener('change', renderGrid);
-refreshBtn.addEventListener('click', loadAdsFromFiles);
-
-// =====================
-// جزء إرسال الإعلان — إنشاء بطاقة PNG مع باركود حقيقي
-// =====================
-const s_title  = document.getElementById('s_title');
-const s_desc   = document.getElementById('s_desc');
-const s_price  = document.getElementById('s_price');
-const s_loc    = document.getElementById('s_loc');
-const s_phone  = document.getElementById('s_phone');
-const s_img    = document.getElementById('s_img');
-const s_prev   = document.getElementById('s_preview');
-const s_make   = document.getElementById('s_make');
-const s_clear  = document.getElementById('s_clear');
-const s_box    = document.getElementById('s_downloadBox');
-const s_link   = document.getElementById('s_downloadLink');
-const s_whats  = document.getElementById('s_whats');
-const s_copy   = document.getElementById('s_copy');
-
-s_img.addEventListener('change', ()=>{
-  const f = s_img.files[0];
-  if(!f){ s_prev.style.display='none'; return; }
-  s_prev.src = URL.createObjectURL(f);
-  s_prev.style.display = 'block';
-});
-
-s_clear.addEventListener('click', ()=>{
-  s_title.value=''; s_desc.value=''; s_price.value=''; s_loc.value=''; s_phone.value='';
-  s_img.value=''; s_prev.style.display='none'; s_box.style.display='none';
-});
-
-s_make.addEventListener('click', async ()=>{
-  const title = s_title.value.trim();
-  const phone = s_phone.value.trim();
-  if(!title){ alert('يرجى كتابة عنوان للإعلان'); return; }
-  if(!phone){ alert('يرجى إدخال رقم واتساب/هاتف'); return; }
-
-  s_make.disabled = true;
-  s_make.textContent = 'جاري الإنشاء...';
-
-  const id = 'ELD' + Date.now();
-  const meta = {
-    id,
-    title,
-    description: s_desc.value.trim(),
-    price: s_price.value.trim(),
-    location: s_loc.value.trim(),
-    phone,
-    created_at: new Date().toISOString(),
-    status: 'pending'
-  };
-
-  try{
-    const file = s_img.files[0] || null;
-    const ab = await createCardWithBarcode(file, meta);
-    const blob = new Blob([ab],{type:'image/png'});
-    const url = URL.createObjectURL(blob);
-    s_link.href = url;
-    s_link.download = id + '-confirmation.png';
-    s_box.style.display = 'block';
-    s_whats.style.display = 'none';
-
-    s_link.onclick = ()=>{ setTimeout(()=>{ s_whats.style.display='inline-block'; },600); };
-
-    s_whats.onclick = ()=>{
-      const phoneNum = phone.replace(/[^0-9+]/g,'');
-      const msg = encodeURIComponent(`السلام عليكم\nأرسل بطاقة الإعلان رقم ${id} لموقع الدلالة.`);
-      window.open(`https://wa.me/${phoneNum}?text=${msg}`,'_blank');
-    };
-
-    s_copy.onclick = ()=>{
-      const msg = `السلام عليكم\nأرسل بطاقة الإعلان رقم ${id} لموقع الدلالة.`;
-      navigator.clipboard.writeText(msg).then(()=>alert('تم نسخ نص الرسالة.'));
-    };
-  }catch(e){
-    console.error(e);
-    alert('حدث خطأ أثناء إنشاء البطاقة، حاول مرة أخرى.');
-  }
-
-  s_make.disabled = false;
-  s_make.textContent = 'إنشاء البطاقة';
-});
-
-// توليد بطاقة PNG مع باركود حقيقي
-function embedMeta(arrayBuffer, meta){
-  const data = new Uint8Array(arrayBuffer);
-  function readU32(p){return (data[p]<<24)|(data[p+1]<<16)|(data[p+2]<<8)|data[p+3];}
-  function crc32(buf){
-    if(!crc32.table){
-      crc32.table = new Uint32Array(256).map((_,n)=>{let c=n;for(let k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);return c>>>0;});
+    if(src){
+      img.src = `https://raw.githubusercontent.com/${REPO}/main/${src}`;
     }
-    let crc=0xffffffff;
-    for(let i=0;i<buf.length;i++) crc=(crc>>>8)^crc32.table[(crc^buf[i])&0xff];
-    return (crc^0xffffffff)>>>0;
+
+    const title = document.createElement("div");
+    title.className = "title";
+    title.textContent = ad.title || "بدون عنوان";
+
+    const price = document.createElement("div");
+    price.className = "price";
+    price.textContent = ad.price ? `${ad.price} SDG` : "";
+
+    const loc = document.createElement("div");
+    loc.className = "location";
+    loc.textContent = ad.location || "";
+
+    const id = document.createElement("div");
+    id.className = "id";
+    id.textContent = `ID: ${ad.id}`;
+
+    card.append(img,title,price,loc,id);
+    grid.appendChild(card);
   }
-  let pos=8;
-  while(pos<data.length){
-    const len = readU32(pos);
-    const type = String.fromCharCode(...data.slice(pos+4,pos+8));
-    if(type==='IEND') break;
-    pos += 8+len+4;
-  }
-  const before=data.slice(0,pos);
-  const after=data.slice(pos);
-  const encoder=new TextEncoder();
-  const textData=encoder.encode('eldelala-meta\0'+JSON.stringify(meta));
-  const len=textData.length;
-  const lenBuf=new Uint8Array([(len>>>24)&255,(len>>>16)&255,(len>>>8)&255,len&255]);
-  const typeBuf=new Uint8Array([116,69,88,116]); // tEXt
-  const crcInput=new Uint8Array(typeBuf.length+textData.length);
-  crcInput.set(typeBuf,0);
-  crcInput.set(textData,typeBuf.length);
-  const crc=crc32(crcInput);
-  const crcBuf=new Uint8Array([(crc>>>24)&255,(crc>>>16)&255,(crc>>>8)&255,crc&255]);
-  const out=new Uint8Array(before.length+4+4+textData.length+4+after.length);
-  let o=0;
-  out.set(before,o);o+=before.length;
-  out.set(lenBuf,o);o+=4;
-  out.set(typeBuf,o);o+=4;
-  out.set(textData,o);o+=textData.length;
-  out.set(crcBuf,o);o+=4;
-  out.set(after,o);
-  return out.buffer;
 }
 
-async function createCardWithBarcode(imageFile, meta){
-  let imgBitmap=null;
-  if(imageFile) imgBitmap = await createImageBitmap(imageFile);
+/* ✅ البحث الفوري */
+document.getElementById("searchInput").oninput = e => {
+  const q = e.target.value.trim().toLowerCase();
+  if(!q) return renderAds(window.ALL_ADS || []);
+  const filtered = (window.ALL_ADS || []).filter(a =>
+    (a.title || "").toLowerCase().includes(q) ||
+    (a.description || "").toLowerCase().includes(q) ||
+    (a.location || "").toLowerCase().includes(q)
+  );
+  renderAds(filtered);
+};
 
-  const width = 1400;
-  const imgH = imageFile ? Math.round(width * (imgBitmap.height/imgBitmap.width)) : 700;
-  const footerH = 280;
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = imgH + footerH;
-  const ctx = canvas.getContext('2d');
+/* ✅ زر تحديث */
+document.getElementById("refreshBtn").onclick = () => loadAds();
 
-  const g = ctx.createLinearGradient(0,0,width,canvas.height);
-  g.addColorStop(0,'#ffffff'); g.addColorStop(1,'#e0f2fe');
-  ctx.fillStyle=g; ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  const radius=26;
-  roundedRect(ctx,40,40,width-80,imgH+footerH-60,radius);
-  ctx.fillStyle='#ffffff';
-  ctx.shadowColor='rgba(15,23,42,.16)';
-  ctx.shadowBlur=32;
-  ctx.fill();
-  ctx.shadowBlur=0;
-
-  const imgX=80,imgY=80,imgW=width-160,imgAreaH=imgH-40;
-  roundedRect(ctx,imgX,imgY,imgW,imgAreaH,14);
-  ctx.fillStyle='#f1f5f9';
-  ctx.fill();
-  if(imageFile){
-    ctx.drawImage(imgBitmap,imgX+12,imgY+12,imgW-24,imgAreaH-24);
-  }else{
-    roundedRect(ctx,imgX+12,imgY+12,imgW-24,imgAreaH-24,10);
-    ctx.fillStyle='#020617';ctx.fill();
-    ctx.fillStyle='#f9fafb';
-    ctx.font='bold 52px sans-serif';
-    ctx.textAlign='center';
-    wrapText(ctx,meta.title,width/2,imgY+imgAreaH/2, imgW-80, 52);
-  }
-
-  const footX=100,footY=imgY+imgAreaH+22,footW=width-200,footH=footerH-60;
-  const g2 = ctx.createLinearGradient(footX,footY,footX+footW,footY+footH);
-  g2.addColorStop(0,'#082f49'); g2.addColorStop(1,'#0f766e');
-  roundedRect(ctx,footX,footY,footW,footH,14);
-  ctx.fillStyle=g2;ctx.fill();
-
-  // logo
-  ctx.beginPath();
-  ctx.arc(footX+60,footY+60,36,0,Math.PI*2);
-  ctx.fillStyle='#f9fafb';ctx.fill();
-  ctx.fillStyle='#0f172a';
-  ctx.font='bold 20px sans-serif';
-  ctx.textAlign='center';
-  ctx.fillText('EL',footX+60,footY+66);
-
-  // big ID
-  ctx.font='bold 54px sans-serif';
-  ctx.textAlign='center';
-  ctx.fillStyle='rgba(0,0,0,0.22)';
-  ctx.fillText(meta.id,width/2+3,footY+80+3);
-  ctx.fillStyle='#f9fafb';
-  ctx.fillText(meta.id,width/2,footY+80);
-
-  // real barcode via JsBarcode
-  const bcCanvas = document.createElement('canvas');
-  const bcWidth = Math.floor(footW - 260);
-  const bcHeight = 110;
-  bcCanvas.width = bcWidth;
-  bcCanvas.height = bcHeight;
-  try{
-    JsBarcode(bcCanvas, meta.id, {format:"CODE128",displayValue:false,height:bcHeight,margin:0});
-    ctx.drawImage(bcCanvas, footX+120, footY+110, bcWidth, bcHeight);
-  }catch(e){
-    console.warn('JsBarcode failed',e);
-  }
-
-  // text under
-  ctx.fillStyle='rgba(226,232,240,0.95)';
-  ctx.font='16px sans-serif';
-  ctx.textAlign='left';
-  ctx.fillText('أحفظ هذه البطاقة وأرسلها عبر واتساب كدليل للتأكيد', footX+26, footY+footH-22);
-
-  // decorative stripe
-  roundedRect(ctx, footX+footW-20, footY+16, 8, footH-32, 5);
-  ctx.fillStyle='rgba(250,204,21,0.55)';
-  ctx.fill();
-
-  if(imageFile){
-    const tw=180,th=Math.round(tw*(imgBitmap.height/imgBitmap.width));
-    roundedRect(ctx, width-80-tw, imgY+24, tw, th, 12);
-    ctx.save(); ctx.clip();
-    ctx.drawImage(imgBitmap,width-80-tw,imgY+24,tw,th);
-    ctx.restore();
-  }
-
-  const blob = await new Promise(res=>canvas.toBlob(res,'image/png',1));
-  const ab = await blob.arrayBuffer();
-  return embedMeta(ab, meta);
-}
-
-function roundedRect(ctx,x,y,w,h,r){
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.arcTo(x+w,y,x+w,y+h,r);
-  ctx.arcTo(x+w,y+h,x,y+h,r);
-  ctx.arcTo(x,y+h,x,y,r);
-  ctx.arcTo(x,y,x+w,y,r);
-  ctx.closePath();
-}
-
-function wrapText(ctx,text,x,y,maxWidth,lineHeight){
-  const words = String(text||'').split(' ');
-  let line = ''; let cy=y;
-  for(let i=0;i<words.length;i++){
-    const test = line+words[i]+' ';
-    if(ctx.measureText(test).width > maxWidth && i>0){
-      ctx.fillText(line,x,cy);
-      line=words[i]+' ';
-      cy+=lineHeight;
-    }else{
-      line=test;
-    }
-  }
-  ctx.fillText(line,x,cy);
-}
-
-// تشغيل أولي
-loadAdsFromFiles();
+/* ✅ تحميل عند فتح الصفحة */
+loadAds();
 </script>
+
 </body>
 </html>
