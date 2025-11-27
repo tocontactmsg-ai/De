@@ -1,0 +1,1062 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>الدلالة</title>
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;font-family:"Tajawal",sans-serif}
+  body{margin:0;background:#f7fbff;color:#0b1320;line-height:1.4}
+  .container{max-width:1100px;margin:16px auto;padding:12px}
+  header{background:#0078d7;color:#fff;padding:12px;border-radius:14px;box-shadow:0 12px 40px rgba(0,120,215,0.35);margin-bottom:16px}
+  header .brand{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  .brand .title{font-size:24px;font-weight:900}
+  nav[aria-label="واجهة"]{display:flex;gap:8px;flex-wrap:wrap}
+  nav[aria-label="واجهة"] button{
+    background:rgba(255,255,255,0.12);
+    color:#fff;
+    border:1px solid rgba(255,255,255,0.4);
+    padding:6px 10px;
+    border-radius:999px;
+    cursor:pointer;
+    font-size:13px;
+  }
+  nav[aria-label="واجهة"] button[aria-current="true"]{
+    background:#fff;
+    color:#0078d7;
+    border-color:#fff;
+  }
+
+  .controls{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0;align-items:center}
+  input, textarea, select{
+    padding:10px;border-radius:10px;border:1px solid #e6eef8;width:100%;font-size:15px;background:#fff
+  }
+  textarea{min-height:80px;resize:vertical}
+  .btn{background:#0078d7;color:#fff;padding:10px 12px;border-radius:10px;border:none;cursor:pointer;font-size:14px}
+  .btn.alt{background:#6b7280}
+  .btn[disabled]{opacity:.5;cursor:not-allowed}
+
+  .grid{display:grid;grid-template-columns:repeat(1,1fr);gap:14px}
+  @media (min-width:560px){ .grid{grid-template-columns:repeat(2,1fr)} }
+  @media (min-width:900px){ .grid{grid-template-columns:repeat(3,1fr)} }
+  .card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 6px 18px rgba(15,23,42,0.09);display:flex;flex-direction:column;transition:transform .12s;cursor:pointer}
+  .card:hover{transform:translateY(-4px)}
+  .media{height:220px;background:#f0f4f8;display:flex;align-items:center;justify-content:center;position:relative}
+  .media img{width:100%;height:100%;object-fit:cover;display:block}
+  .body{padding:12px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .title{font-weight:700;font-size:16px}
+  .desc{font-size:13px;color:#4b5563;max-height:3.6em;overflow:hidden}
+  .meta{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#6b7280}
+  .badge{background:#eff6ff;color:#1d4ed8;padding:4px 8px;border-radius:999px;font-size:11px}
+  .price{font-weight:700;color:#047857}
+  footer{font-size:12px;color:#6b7280;text-align:center;margin-top:18px}
+  .small{font-size:12px}
+  .muted{color:#6b7280}
+  .panel{background:#fff;border-radius:14px;padding:12px;box-shadow:0 8px 24px rgba(15,23,42,0.08);margin-top:8px}
+  .subCard{background:#0f172a;color:#e5e7eb;border-radius:14px;padding:10px;margin-top:10px}
+  .refBox{background:#eff6ff;border-radius:10px;padding:6px 8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .refCode{font-family:monospace;font-size:16px;font-weight:800}
+  .fullDesc{white-space:pre-wrap;font-size:14px;color:#111827}
+  .detailsList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+  .detailsItem{background:#f9fafb;border-radius:10px;padding:6px 8px;font-size:13px}
+  .detailsItem strong{display:block;font-size:11px;color:#6b7280;margin-bottom:2px}
+/* يمنع الصورة من تغطية أزرار المشاركة */
+.modalMain{
+  max-height: calc(90vh - 80px);
+  overflow-y: auto;
+}
+
+.modalImage{
+  max-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalImage img{
+  max-height: 55vh; /* يمنع التمدد الزائد */
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+  main > section{display:none}
+  main > section.active{display:block}
+
+  .modal{position:fixed;inset:0;background:rgba(15,23,42,0.6);display:none;align-items:center;justify-content:center;z-index:999;padding:12px}
+  .modal[aria-hidden="false"]{display:flex}
+  .modalCard{background:#fff;border-radius:18px;max-width:900px;width:100%;max-height:90vh;overflow:hidden;box-shadow:0 18px 40px rgba(15,23,42,0.5);display:flex;flex-direction:column}
+  .modalMain{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.1fr);gap:12px;padding:12px}
+  .modalImage{background:#020617;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .modalImage img{max-width:100%;max-height:360px;display:block}
+  .modalFooter{padding:10px 12px;border-top:1px solid #e5e7eb;background:#f9fafb;font-size:12px;color:#6b7280;display:flex;justify-content:space-between;gap:8px;align-items:center}
+  .modalActions{display:flex;gap:8px;flex-wrap:wrap}
+
+  @media(max-width:720px){
+    .modalMain{grid-template-columns:1fr}
+    .modalImage{order:-1}
+    .detailsList{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="container" id="app">
+  <header>
+    <div class="brand">
+      <div class="title">الدلالة</div>
+      <nav aria-label="واجهة">
+        <button type="button" class="nav-btn" data-target="home" aria-current="true">الرئيسية</button>
+        <button type="button" class="nav-btn" data-target="send">أرسل إعلانك</button>
+        <button type="button" class="nav-btn" data-target="privacy">سياسة الخصوصية</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="controls" id="listControls" role="search" aria-label="بحث وتحكم">
+    <div style="flex:1;min-width:180px"><input id="q" type="search" placeholder="ابحث بالعنوان أو الرمز أو الموقع"></div>
+    <div style="width:200px"><select id="catFilter"><option value="">كل الاقسام</option></select></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="refresh" class="btn alt" type="button">⟳ تحديث</button>
+      <div id="count" class="small" aria-live="polite">تحميل...</div>
+    </div>
+  </div>
+
+  <main>
+    <section id="home" class="active" aria-live="polite">
+      <div id="grid" class="grid" role="list" aria-label="قائمة الإعلانات"></div>
+      <div id="noitems" style="display:none;text-align:center;margin-top:15px" class="small">يرجي الانتظار افضل الاعلانات يتم تحميلها</div>
+    </section>
+
+    <section id="send">
+      <div class="panel">
+        <h2>لتقديم طلب موافقة على إعلان:</h2>
+ <h1>املا البيانات - حمل البطاقة - ارسلها لنا عبر الواتساب</h1>
+       <div style="display:grid;gap:8px">
+          <input id="f_name" placeholder="اسم الإعلان">
+          <input id="f_price" placeholder="السعر">
+          <textarea id="f_desc" placeholder="وصف الإعلان" rows="4"></textarea>
+          <input id="f_loc" placeholder="الموقع">
+          <input id="f_contact" placeholder="رقم التواصل">
+          <input id="f_cat" placeholder="التصنيف">
+          <div><input id="f_file" type="file" accept="image/*"></div>
+          <label style="display:flex;gap:8px;align-items:center">
+            <input type="checkbox" id="agree" />
+            <span class="small">أقر أن البيانات صحيحة وأوافق على شروط النشر</span>
+          </label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button id="submitBtn" class="btn" type="button">بدء</button>
+            <div id="submitStatus" class="small"></div>
+          </div>
+          <div id="afterSubmit" style="display:none;margin-top:8px">
+            <div>رمز الإعلان الخاص بك:</div>
+            <div class="refBox" style="margin-top:6px">
+              <div id="refCode" class="refCode"></div>
+              <a id="openWa" class="btn alt" target="_blank" style="display:none">ارسل البطاقة ستجدها ضمن المستندات</a>
+              <button id="downloadEmbeddedBtn" class="btn" style="display:none" type="button">⬇ تنزيل البطاقة</button>
+            </div>
+            <div id="fallbackJson" style="display:none;margin-top:8px">
+              <div class="small">اعد المحاولة.</div>
+            </div>
+            <div id="previewCard" class="subCard" style="display:none">
+              <div class="small" style="margin-bottom:6px">مالم ترسل البطاقة عبر الواتساب لن ينشر الاعلان:</div>
+              <div id="previewCanvasWrap"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="privacy">
+      <div class="panel">
+        <h3>سياسة الخصوصية</h3>
+        <div style="white-space:pre-wrap;background:#fff;padding:12px;border-radius:8px;border:1px solid #eef6ff;margin-top:8px" class="small muted">
+باستخدامك لموقع الدلالة فأنت توافق على هذه الشروط. إذا لم توافق يرجى التوقف عن استخدام الموقع.
+يقدّم الموقع خدمة عرض الإعلانات والمحتوى التسويقي وروابط الأطراف الثالثة دون تقديم أي ضمانات حول دقتها أو مصداقيتها أو جودة المنتجات أو الخدمات المعروضة. 
+جميع التعاملات مع المعلنين تتم على مسؤوليتك الشخصية، والموقع ليس طرفًا فيها ولا يتحمل أي مسؤولية عن نتائجها.
+يجب عليك استخدام الموقع بطريقة قانونية، وعدم نشر أو إرسال أي محتوى مخالف أو مضلل أو منتهك لحقوق الآخرين، وعدم محاولة اختراق أو تعطيل الموقع أو استخدامه لجمع بيانات بشكل غير مشروع , أي استخدام غير مناسب قد يؤدي إلى حظر الدخول دون إشعار.
+جميع حقوق الملكية الفكرية المتعلقة بالموقع، بما في ذلك التصميم، الشعار، المحتوى، والأكواد، هي ملك للدلالة  يمنع نسخ أي جزء من الموقع أو استخدام علامته التجارية دون إذن مسبق.
+قد يحتوي الموقع على روابط خارجية والموقع غير مسؤول عن محتواها أو سلامتها. 
+قد يقوم الموقع بتعديل أو إزالة أي إعلان أو محتوى متى شاء دون الحاجة لذكر الأسباب.
+قد يتم جمع بعض البيانات الأساسية لتحسين تجربة الاستخدام مثل ملفات الارتباط وسجلات الاستخدام، ويمكن مشاركة هذه البيانات فقط للامتثال للقانون أو لحماية الخدمة من الهجمات.
+قد يتم تحديث هذه الشروط من وقت لآخر، ويعتبر استمرارك في استخدام الموقع موافقة على النسخة المحدثة.
+ 
+tocontactmsg@gmail.com 
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>الدلالة — تأكد دائماً من صحة المعلومات بنفسك قبل التعامل.</div>
+  </footer>
+</div>
+
+<div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modalCard" role="document" aria-labelledby="modalTitle">
+    <div style="padding:10px 12px;border-bottom:1px solid #e5e7eb">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>
+          <div id="modalTitle" style="font-weight:800;font-size:18px"></div>
+          <div id="modalMeta" class="small" style="margin-top:6px"></div>
+        </div>
+        <button id="modalClose" class="btn alt" type="button">إغلاق</button>
+      </div>
+    </div>
+    <div class="modalMain">
+      <div class="modalImage">
+        <img id="modalMainImg" src="" alt="" style="max-width:100%;max-height:100%;display:none" />
+      </div>
+
+      <div class="modalBody">
+        <div id="modalDescription" class="fullDesc"></div>
+        <div class="detailsList">
+          <div class="detailsItem"><strong>الموقع</strong><div id="modalLoc" class="muted"></div></div>
+          <div class="detailsItem"><strong>التصنيف</strong><div id="modalCat" class="badge"></div></div>
+          <div class="detailsItem"><strong>السعر</strong><div id="modalPrice" class="price"></div></div>
+          <div class="detailsItem"><strong>التواصل</strong><div id="modalContact" class="muted"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modalFooter">
+      <div class="modalActions">
+        <a id="modalWhats" class="btn" target="_blank" rel="noopener">مشاركة عبر WhatsApp</a>
+        <a id="modalCall" class="btn alt" style="display:none" href="#">اتصال</a>
+      </div>
+      <div class="small muted">ملاحظة: تأكد من صحة المعلومات بنفسك.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/*** GitHub + cache buster ***/
+const GITHUB_OWNER  = 'tocontactmsg-ai';
+const GITHUB_REPO   = 'delala';
+const GITHUB_BRANCH = 'main';
+const ADS_DIR       = 'ads';
+const CACHE_BUSTER  = 'v1.0.1'; // تم التحديث
+
+/* رقم الواتساب لاستقبال طلبات النشر */
+const WHATSAPP_NUMBER = '249998615193'; // بدون علامة + أو مسافات
+
+function escapeHtml(s){ return String(s||'').replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]||c)); }
+function debounce(fn,t=300){ let timer; return (...a)=>{ clearTimeout(timer); timer=setTimeout(()=>fn(...a),t); }; }
+function genRef(){ return 'R' + Date.now().toString(36).slice(-6).toUpperCase(); }
+
+/* تبويبات */
+const listControls = document.getElementById('listControls');
+document.querySelectorAll('.nav-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const target = btn.dataset.target;
+    document.querySelectorAll('main > section').forEach(s=> s.classList.remove('active'));
+    document.getElementById(target).classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(n=>n.removeAttribute('aria-current'));
+    btn.setAttribute('aria-current','true');
+    listControls.style.display = (target === 'home') ? 'flex' : 'none';
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+/* بيانات الإعلانات */
+let ads = [];
+const grid = document.getElementById('grid');
+const qEl = document.getElementById('q');
+const catFilter = document.getElementById('catFilter');
+const countEl = document.getElementById('count');
+
+function renderGrid(list){
+  const noItems = document.getElementById('noitems');
+  grid.innerHTML='';
+  list = list || [];
+  if(!list.length){
+    noItems.style.display='block';
+    countEl.textContent='0 إعلان';
+    return;
+  }
+  noItems.style.display='none';
+  list.forEach(a=>{
+    const el = document.createElement('div');
+    el.className='card';
+    if(a.ref_code) el.id = 'ad-' + a.ref_code;
+    const mediaHtml = a.image
+      ? `<img src="${escapeHtml(a.image)}" alt="${escapeHtml(a.name||'')}" loading="lazy">`
+      : '<div class="small muted">لا توجد صورة</div>';
+    el.innerHTML = `
+      <div class="media">${mediaHtml}</div>
+      <div class="body">
+        <div class="title">${escapeHtml(a.name||'')}</div>
+        <div class="desc">${escapeHtml(a.description||'')}</div>
+        <div class="meta">
+          <div class="badge">${escapeHtml(a.category||'عام')}</div>
+          <div class="price">${escapeHtml(a.price||'')}</div>
+        </div>
+        <div class="meta">
+          <div class="small">${escapeHtml(a.location||'')}</div>
+          <div class="small">${escapeHtml(a.ref_code||'')}</div>
+        </div>
+      </div>
+    `;
+    el.addEventListener('click', ()=>openDetails(a));
+    grid.appendChild(el);
+  });
+  countEl.textContent = list.length + ' إعلان';
+}
+
+function applyFiltersAndRender(){
+  const q = (qEl && qEl.value || '').trim().toLowerCase();
+  const cat = (catFilter && catFilter.value || '').trim();
+  let out = ads.slice();
+
+  if(cat){
+    out = out.filter(a => (a.category||'').toString() === cat);
+  }
+  if(q){
+    out = out.filter(a => {
+      const hay = ((a.name || '') + ' ' + (a.description||'') + ' ' + (a.location||'') + ' ' + (a.ref_code||'')).toLowerCase();
+      return hay.indexOf(q) !== -1;
+    });
+  }
+  
+  // ----------------------------------------------------
+  // التعديل: الترتيب حسب الوقت (رمز الإعلان) تنازلياً (الأحدث أولاً)
+  out.sort((A,B) => {
+    // 1. الترتيب حسب ref_code تنازلياً (B قبل A يعني الأحدث أولاً)
+    const timeSort = (B.ref_code || '').localeCompare((A.ref_code || ''));
+    if(timeSort !== 0) return timeSort;
+    
+    // 2. الترتيب الثانوي: الاسم (أبجدياً)
+    return (A.name || '').toString().localeCompare((B.name || '').toString(), 'ar');
+  });
+  // ----------------------------------------------------
+  
+  renderGrid(out);
+}
+
+/* فتح إعلان من الرابط (#ad-REF) */
+function openAdFromHash(){
+  try{
+    const hash = window.location.hash;
+    if(!hash || !hash.startsWith('#ad-')) return;
+    const ref = decodeURIComponent(hash.slice(4)).trim();
+    if(!ref) return;
+    const item = ads.find(a => (a.ref_code || '') === ref);
+    if(!item) return;
+
+    // تفعيل تبويب الرئيسية وإظهار الفلاتر
+    document.querySelectorAll('main > section').forEach(s => s.classList.remove('active'));
+    const home = document.getElementById('home');
+    if(home) home.classList.add('active');
+    if(listControls) listControls.style.display = 'flex';
+    document.querySelectorAll('.nav-btn').forEach(btn=>{
+      if(btn.dataset.target === 'home') btn.setAttribute('aria-current','true');
+      else btn.removeAttribute('aria-current');
+    });
+
+    openDetails(item);
+  }catch(e){
+    console.warn('openAdFromHash error', e);
+  }
+}
+
+/* Modal */
+const modal = document.getElementById('modal');
+const modalMainImg = document.getElementById('modalMainImg');
+const modalTitle = document.getElementById('modalTitle');
+const modalMeta = document.getElementById('modalMeta');
+const modalDescription = document.getElementById('modalDescription');
+const modalLoc = document.getElementById('modalLoc');
+const modalCat = document.getElementById('modalCat');
+const modalPrice = document.getElementById('modalPrice');
+const modalContact = document.getElementById('modalContact');
+const modalWhats = document.getElementById('modalWhats');
+const modalCall = document.getElementById('modalCall');
+const modalClose = document.getElementById('modalClose');
+
+function closeModal(){
+  modal.setAttribute('aria-hidden','true');
+  modal.classList.remove('open');
+}
+modalClose.addEventListener('click', closeModal);
+modal.addEventListener('click', e=>{ if(e.target===modal) closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+async function openDetails(item){
+  modalTitle.textContent = item.name || 'بدون عنوان';
+  modalMeta.textContent = `رمز: ${item.ref_code||''}`;
+  modalDescription.textContent = item.description||'-';
+  modalLoc.textContent = item.location||'-';
+  modalCat.textContent = item.category||'عام';
+  modalPrice.textContent = item.price || '-';
+  modalContact.textContent = item.contact || '-';
+
+  if(item.image){
+    modalMainImg.src = item.image;
+    modalMainImg.style.display = 'block';
+  } else {
+    modalMainImg.src = '';
+    modalMainImg.style.display = 'none';
+  }
+
+  if(item.contact && item.contact.trim()){
+    modalCall.style.display = 'inline-block';
+    const phoneDigits = (item.contact.match(/[+0-9][0-9() \-]{4,}/) || [])[0] || item.contact;
+    modalCall.href = 'tel:' + phoneDigits.replace(/\s+/g,'').replace(/[^+0-9]/g,'');
+  } else {
+    modalCall.style.display = 'none';
+  }
+
+  const base = window.location.href.split('#')[0];
+  const deepLink = base + '#ad-' + (item.ref_code||'');
+  const msg = (item.name||'') + '\n' + (item.price||'') + '\n' + deepLink;
+  modalWhats.href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+  modalWhats.target = '_blank';
+
+  //  وح
+  try{
+    if(item.ref_code){
+      const newHash = '#ad-' + encodeURIComponent(item.ref_code);
+      if(window.location.hash !== newHash){
+        history.replaceState(null, '', base + newHash);
+      }
+    }
+  }catch(e){}
+
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden','false');
+}
+
+/* تحميل الإعلانات من GitHub */
+
+
+
+async function loadAdsFromGithub(){
+  const noItemsEl = document.getElementById('noitems');
+  const loadMoreBtn = document.getElementById('loadMoreBtn'); // kept as fallback/status
+  const CACHE_KEY = 'eldelala_ads_cache_v2'; // تم التحديث: لإجبار المتصفح على تحميل الإعدادات الجديدة
+  const CACHE_TTL_MS = 60 * 60 * 1000; // تم التحديث: 60 دقيقة كاش
+  const MAX_ADS = 1000; // absolute cap
+  const PAGE_SIZE = 50; // تم التحديث: تحميل 50 إعلان في البداية
+  const CONCURRENCY = 8; // تم التحديث: زيادة عدد الطلبات المتزامنة
+  const FETCH_TIMEOUT_MS = 9000;
+  const RETRIES = 2;
+
+  let allFiles = [];
+  let pageIndex = 0;
+  let loadingPage = false;
+  let scrollHandlerAttached = false;
+
+  function timeoutFetch(url, opts = {}, ms = FETCH_TIMEOUT_MS){
+    const controller = new AbortController();
+    const id = setTimeout(()=>controller.abort(), ms);
+    const o = Object.assign({}, opts, { signal: controller.signal });
+    return fetch(url, o).finally(()=>clearTimeout(id));
+  }
+  function sleep(ms){ return new Promise(res=>setTimeout(res, ms)); }
+
+  // Try cache
+  try{
+    const raw = localStorage.getItem(CACHE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(parsed && Date.now() - (parsed.ts||0) < CACHE_TTL_MS && Array.isArray(parsed.ads)){
+        ads = parsed.ads;
+        try{
+          const cats = [...new Set(ads.map(a=>a.category||'عام'))];
+          cats.sort((a,b)=> a.toString().localeCompare(b.toString(), 'ar'));
+          if(catFilter){
+            catFilter.innerHTML = '<option value="">كل الاقسام</option>' +
+              cats.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+          }
+        }catch(e){}
+        applyFiltersAndRender();
+        if(countEl) countEl.textContent = ads.length + ' إعلان  ';
+        // إذا كان التحميل من الكاش، لا ننتظر، بل نذهب إلى GitHub في الخلفية إذا لم نكن قد حملنا كل شيء
+        if(ads.length < allFiles.length){
+             // لا حاجة لانتظار تحميل الكل إذا كان الكاش جاهزاً
+        } else {
+             // كل الإعلانات في الكاش، لا حاجة للتحميل الإضافي
+             return; // مهم: الخروج هنا إذا كان كل شيء في الكاش
+        }
+      }
+    }
+  }catch(e){ console.warn('cache read failed', e); }
+
+  try{
+    const contentsUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${ADS_DIR}?ref=${GITHUB_BRANCH}`;
+    
+    // 🛑 تم التأكد من بقاء هذا التعديل 🛑
+    const res = await timeoutFetch(contentsUrl, {
+        headers: {
+            'Accept': 'application/vnd.github.v3+json'
+        }
+    }, 7000); 
+
+    if(!res.ok){
+      console.warn('GitHub API status', res.status);
+      if(noItemsEl){
+        noItemsEl.style.display = 'block';
+        noItemsEl.innerHTML = 'تعذر تحميل الإعلانات (GitHub API). <br>status: ' + res.status;
+      }
+      if(countEl) countEl.textContent = '0 إعلان';
+      return;
+    }
+    const files = await res.json();
+    const jsonFiles = files.filter(f => f.type === 'file' && f.name.toLowerCase().endsWith('.json'));
+    allFiles = jsonFiles.slice(0, Math.min(jsonFiles.length, MAX_ADS));
+
+    // reset paging
+    pageIndex = 0;
+    
+    applyFiltersAndRender();
+
+    async function fetchPage(pageIdx){
+      const start = pageIdx * PAGE_SIZE;
+      const chunk = allFiles.slice(start, start + PAGE_SIZE);
+      if(!chunk.length) return [];
+      async function fetchWithRetries(url, tries = RETRIES){
+        let attempt = 0;
+        while(attempt <= tries){
+          try{
+            // لا )
+            const r = await timeoutFetch(url, {}, FETCH_TIMEOUT_MS); 
+            if(!r.ok) throw new Error('status ' + r.status);
+            const data = await r.json();
+            return data;
+          }catch(err){
+            attempt++;
+            if(attempt > tries) {
+              console.warn('fetch failed', url, err);
+              return null;
+            }
+            await sleep(200 * attempt);
+          }
+        }
+        return null;
+      }
+
+      const results = [];
+      for(let i=0;i<chunk.length;i+=CONCURRENCY){
+        const sub = chunk.slice(i, i+CONCURRENCY);
+        const promises = sub.map(async (f)=>{
+          try{
+            const rawUrl = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${ADS_DIR}/${encodeURIComponent(f.name)}`;
+            const data = await fetchWithRetries(rawUrl);
+            if(!data) return null;
+            return {
+              ref_code: data.ref_code || data.ref || f.name.replace(/\.json$/i,''),
+              name: data.name || data.title || '',
+              price: data.price || data.amount || '',
+              description: data.description || data.desc || data.body || '',
+              location: data.location || data.city || data.loc || '',
+              contact: data.contact || data.phone || data.tel || '',
+              category: (data.category || data.cat || data.type || data.Category || '').toString().trim() || 'عام',
+              image: data.image || data.thumb || data.imageDataUrl || ''
+            };
+          }catch(e){
+            console.warn('error loading ad', f.name, e);
+            return null;
+          }
+        });
+        const loaded = await Promise.all(promises);
+        results.push(...loaded.filter(Boolean));
+        await sleep(80);
+      }
+      return results;
+    }
+
+    async function loadNext(){
+      if(loadingPage) return;
+      loadingPage = true;
+      // show small inline indicator (using loadMoreBtn as status element)
+      const isInitialLoad = ads.length === 0;
+      if(loadMoreBtn){
+        loadMoreBtn.style.display = 'inline-block';
+        loadMoreBtn.disabled = true;
+        loadMoreBtn.textContent = 'جارِ التحميل...';
+      }
+      
+      const pageData = await fetchPage(pageIndex);
+      
+      if(pageData && pageData.length){
+        // إذا كان التحميل الأولي (بدون كاش)
+        if (isInitialLoad && pageIndex === 0) {
+            ads = pageData;
+        } else {
+            // وإلا، ندمج البيانات الجديدة
+            ads = ads.concat(pageData.filter(newAd => 
+              !ads.some(existingAd => existingAd.ref_code === newAd.ref_code)
+            ));
+        }
+        
+        try{
+          const cats = [...new Set(ads.map(a=>a.category||'عام'))];
+          cats.sort((a,b)=> a.toString().localeCompare(b.toString(), 'ar'));
+          if(catFilter){
+            catFilter.innerHTML = '<option value="">كل الاقسام</option>' +
+              cats.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+          }
+        }catch(e){}
+        applyFiltersAndRender();
+        try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), ads })); }catch(e){}
+      }
+      pageIndex++;
+      loadingPage = false;
+
+      const remaining = Math.max(0, allFiles.length - ads.length);
+      if(remaining <= 0){
+        // remove scroll listener if no more
+        detachScrollHandler();
+        if(loadMoreBtn) loadMoreBtn.style.display = 'none';
+      } else {
+        if(loadMoreBtn){
+          loadMoreBtn.style.display = 'inline-block';
+          loadMoreBtn.disabled = false;
+          loadMoreBtn.textContent = 'المزيد (' + remaining + ')';
+        }
+      }
+      if(countEl) countEl.textContent = ads.length + ' إعلان';
+      
+      // تم إزالة اس ub)
+    }
+
+    // infinite scroll: load when user is near page bottom
+    function shouldLoadMore(){
+      const scrollY = window.scrollY || window.pageYOffset;
+      const viewportH = window.innerHeight || document.documentElement.clientHeight;
+      const fullH = document.documentElement.scrollHeight;
+      // when within 1200px of bottom OR scrolled past 70% of content
+      if(fullH - (scrollY + viewportH) < 1200) return true;
+      if((scrollY + viewportH) / fullH > 0.7) return true;
+      return false;
+    }
+
+    async function onScroll(){
+      if(loadingPage) return;
+      if(shouldLoadMore()){
+        await loadNext();
+      }
+    }
+
+    function attachScrollHandler(){
+      if(scrollHandlerAttached) return;
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll);
+      scrollHandlerAttached = true;
+    }
+    function detachScrollHandler(){
+      if(!scrollHandlerAttached) return;
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      scrollHandlerAttached = false;
+    }
+
+    // auto-load first page, then attach scroll handler
+    // إذا لم يكن هناك كاش، يجب تحميل أول صفحة على الأقل
+    if (ads.length === 0 || ads.length < PAGE_SIZE) {
+        await loadNext();
+    }
+    
+    // إذا كان هناك المزيد لتحميله، قم بربط أداة التمرير
+    if (allFiles.length > ads.length) {
+        attachScrollHandler();
+    } 
+    // تم إزالة استدعاء openAdFromHash() من هنا (لأنها ستستدعى بعد اكتمال loadAdsFromGithub)
+
+
+    if(allFiles.length > 0 && noItemsEl){
+      noItemsEl.style.display = 'none';
+    }
+
+  }catch(err){
+    console.error('loadAdsFromGithub failed', err);
+    if(noItemsEl){
+      noItemsEl.style.display='block';
+      noItemsEl.textContent = 'تعذر تحميل الإعلانات (خطأ اتصال أو إعدادات  ).';
+    }
+    if(countEl) countEl.textContent='0 إعلان';
+  }
+}
+
+
+
+
+/* = = */
+
+const MARKER = 'ELDELALA_PAYLOAD:';
+
+function dataUrlToBlob(dataUrl){
+  const parts = dataUrl.split(',');
+  const meta = parts[0];
+  const data = parts[1] || '';
+  const mimeMatch = meta.match(/:(.*?);/);
+  const mime = mimeMatch ? mimeMatch[1] : 'image/png';
+  const bin = atob(data);
+  const len = bin.length;
+  const u8 = new Uint8Array(len);
+  for(let i=0;i<len;i++) u8[i] = bin.charCodeAt(i);
+  return new Blob([u8], { type: mime });
+}
+
+async function blobToUint8(blob){
+  const ab = await blob.arrayBuffer();
+  return new Uint8Array(ab);
+}
+
+function jsonToBase64String(obj){
+  const json = JSON.stringify(obj);
+  const utf8 = unescape(encodeURIComponent(json));
+  return btoa(utf8);
+}
+
+async function embedJsonInImageBlob(imageBlob, payloadObj){
+  const origBytes = await blobToUint8(imageBlob);
+  const markerBytes = new TextEncoder().encode(MARKER);
+  const b64 = jsonToBase64String(payloadObj);
+  const b64Bytes = new TextEncoder().encode(b64);
+  const out = new Uint8Array(origBytes.length + markerBytes.length + b64Bytes.length);
+  out.set(origBytes,0);
+  out.set(markerBytes, origBytes.length);
+  out.set(b64Bytes, origBytes.length + markerBytes.length);
+  return new Blob([out], { type: imageBlob.type || 'image/png' });
+}
+
+async function fileOrBlobToDataUrl(fileOrBlob){
+  return new Promise((resolve,reject)=>{
+    const fr = new FileReader();
+    fr.onload = ()=>resolve(fr.result);
+    fr.onerror = reject;
+    fr.readAsDataURL(fileOrBlob);
+  });
+}
+
+async function imageFileToWebpDataUrl(file, maxW = 900, maxH = 900, quality = 0.8){
+  const dataURL = await fileOrBlobToDataUrl(file);
+  const img = await new Promise((resolve, reject)=>{
+    const i = new Image();
+    i.onload = ()=>resolve(i);
+    i.onerror = reject;
+    i.src = dataURL;
+  });
+  let w = img.width, h = img.height;
+  const scale = Math.min(1, maxW / w, maxH / h);
+  const cw = Math.max(1, Math.round(w * scale));
+  const ch = Math.max(1, Math.round(h * scale));
+  const c = document.createElement('canvas');
+  c.width = cw; c.height = ch;
+  const ctx = c.getContext('2d');
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, 0, 0, cw, ch);
+  return c.toDataURL('image/webp', quality);
+}
+
+/* */
+async function createPlaceholderImageBlob(){
+  const c = document.createElement('canvas');
+  c.width = 900;
+  c.height = 900;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#e5f0ff';
+  ctx.fillRect(0,0,c.width,c.height);
+  ctx.fillStyle = '#111827';
+  ctx.font = 'bold 40px Tajawal, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('الدلالة', c.width/2, c.height/2 - 10);
+  ctx.font = '20px Tajawal, sans-serif';
+  ctx.fillText('إعلان بدون صورة', c.width/2, c.height/2 + 30);
+  const dataURL = c.toDataURL('image/png');
+  return dataUrlToBlob(dataURL);
+}
+
+/* ت  */
+function canvasToPngBlob(canvas){
+  return new Promise((resolve,reject)=>{
+    if(canvas.toBlob){
+      canvas.toBlob(b => b ? resolve(b) : reject(new Error('toBlob returned null')), 'image/png');
+    }else{
+      try{
+        const dataURL = canvas.toDataURL('image/png');
+        resolve(dataUrlToBlob(dataURL));
+      }catch(e){
+        reject(e);
+      }
+    }
+  });
+}
+
+/* ك   */
+async function createCardPngFromImageFileOrBlob(fileOrBlob, payload){
+  const baseDataUrl = await fileOrBlobToDataUrl(fileOrBlob);
+  const img = await new Promise((resolve,reject)=>{
+    const i = new Image();
+    i.onload = ()=>resolve(i);
+    i.onerror = reject;
+    i.src = baseDataUrl;
+  });
+
+  const W = 900;
+  const H = 1100;
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  //  ة
+  const grad = ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'#f5f8ff');
+  grad.addColorStop(1,'#e8f5ff');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,W,H);
+
+  // إط حة
+  const cardX = 60;
+  const cardY = 60;
+  const cardW = W - 120;
+  const cardH = H - 120;
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  const r = 30;
+  ctx.moveTo(cardX+r, cardY);
+  ctx.lineTo(cardX+cardW-r, cardY);
+  ctx.quadraticCurveTo(cardX+cardW, cardY, cardX+cardW, cardY+r);
+  ctx.lineTo(cardX+cardW, cardY+cardH-r);
+  ctx.quadraticCurveTo(cardX+cardW, cardY+cardH, cardX+cardW-r, cardY+cardH);
+  ctx.lineTo(cardX+r, cardY+cardH);
+  ctx.quadraticCurveTo(cardX, cardY+cardH, cardX, cardY+cardH-r);
+  ctx.lineTo(cardX, cardY+r);
+  ctx.quadraticCurveTo(cardX, cardY, cardX+r, cardY);
+  ctx.closePath();
+  ctx.fill();
+
+  //  
+  const imgMargin = 40;
+  const imgAreaX = cardX + imgMargin;
+  const imgAreaY = cardY + imgMargin;
+  const imgAreaW = cardW - imgMargin*2;
+  const imgAreaH = 550;
+
+  const ratio = Math.min(imgAreaW / img.width, imgAreaH / img.height);
+  const drawW = img.width * ratio;
+  const drawH = img.height * ratio;
+  const dx = imgAreaX + (imgAreaW - drawW)/2;
+  const dy = imgAreaY + (imgAreaH - drawH)/2;
+
+  ctx.save();
+  ctx.beginPath();
+  const ir = 26;
+  ctx.moveTo(imgAreaX+ir, imgAreaY);
+  ctx.lineTo(imgAreaX+imgAreaW-ir, imgAreaY);
+  ctx.quadraticCurveTo(imgAreaX+imgAreaW, imgAreaY, imgAreaX+imgAreaW, imgAreaY+ir);
+  ctx.lineTo(imgAreaX+imgAreaW, imgAreaY+imgAreaH-ir);
+  ctx.quadraticCurveTo(imgAreaX+imgAreaW, imgAreaY+imgAreaH, imgAreaX+imgAreaW-ir, imgAreaY+imgAreaH);
+  ctx.lineTo(imgAreaX+ir, imgAreaY+imgAreaH);
+  ctx.quadraticCurveTo(imgAreaX, imgAreaY+imgAreaH, imgAreaX, imgAreaY+imgAreaH-ir);
+  ctx.lineTo(imgAreaX, imgAreaY+ir);
+  ctx.quadraticCurveTo(imgAreaX, imgAreaY, imgAreaX+ir, imgAreaY);
+  ctx.closePath();
+  ctx.clip();
+  ctx.drawImage(img, dx, dy, drawW, drawH);
+  ctx.restore();
+
+  // ref co ورة
+  const refText = payload.ref_code || '';
+  ctx.textAlign = 'center';
+
+  ctx.fillStyle = '#111827';
+  ctx.font = 'bold 52px Tajawal, sans-serif';
+  ctx.fillText(refText, W/2, imgAreaY + imgAreaH + 120);
+
+  //  
+  ctx.fillStyle = '#4b5563';
+  ctx.font = '24px Tajawal, sans-serif';
+  ctx.fillText('نشكرك علي استخدامك موقع الدلالة', W/2, imgAreaY + imgAreaH + 170);
+
+  const pngBlob = await canvasToPngBlob(canvas);
+  const pngDataUrl = canvas.toDataURL('image/png');
+  return { blob: pngBlob, dataURL: pngDataUrl };
+}
+
+/*  " */
+(function(){
+  const submitBtn = document.getElementById('submitBtn');
+  const submitStatus = document.getElementById('submitStatus');
+  const afterSubmit = document.getElementById('afterSubmit');
+  const refCodeEl = document.getElementById('refCode');
+  const openWa = document.getElementById('openWa');
+  const downloadEmbeddedBtn = document.getElementById('downloadEmbeddedBtn');
+  const f_name = document.getElementById('f_name');
+  const f_price = document.getElementById('f_price');
+  const f_desc = document.getElementById('f_desc');
+  const f_loc = document.getElementById('f_loc');
+  const f_contact = document.getElementById('f_contact');
+  const f_cat = document.getElementById('f_cat');
+  const f_file = document.getElementById('f_file');
+  const agree = document.getElementById('agree');
+  const previewCanvasWrap = document.getElementById('previewCanvasWrap');
+  const fallbackBox = document.getElementById('fallbackJson');
+
+  function showStatus(msg, isError=false){
+    submitStatus.textContent = msg;
+    submitStatus.style.color = isError ? '#b45309' : '#0b84ff';
+  }
+
+  submitBtn && submitBtn.addEventListener('click', async ()=>{
+    try{
+      if(submitBtn.disabled) return;
+      submitBtn.disabled = true;
+      showStatus('جارٍ تجهيز الإعلان...');
+
+      if(!f_name.value || f_name.value.trim().length < 2){
+        showStatus('الرجاء إدخال اسم للإعلان', true);
+        submitBtn.disabled = false;
+        return;
+      }
+      if(!agree.checked){
+        showStatus('يجب الموافقة على الشروط', true);
+        submitBtn.disabled = false;
+        return;
+      }
+
+      const ref = genRef();
+      refCodeEl.textContent = ref;
+      afterSubmit.style.display = 'block';
+      downloadEmbeddedBtn.style.display = 'none';
+      if(openWa) openWa.style.display = 'none';
+      fallbackBox.style.display = 'none';
+      showStatus('جاري إنشاء البطاقة...');
+
+      const payload = {
+        ref_code: ref,
+        name: f_name.value.trim(),
+        price: f_price.value.trim(),
+        description: f_desc.value.trim(),
+        location: f_loc.value.trim(),
+        contact: f_contact.value.trim(),
+        category: f_cat.value.trim(),
+        created_at: new Date().toISOString(),
+        image: ''
+      };
+
+      // تجهيز الصورة
+      let fileOrBlob;
+      if(f_file.files && f_file.files[0]){
+        fileOrBlob = f_file.files[0];
+      }else{
+        fileOrBlob = await createPlaceholderImageBlob();
+      }
+
+      // تخزين WEBP داخل JSON
+      try{
+        const webpDataUrl = await imageFileToWebpDataUrl(fileOrBlob, 900, 900, 0.8);
+        payload.image = webpDataUrl;
+      }catch(e){
+        console.warn('failed to convert to webp, keeping image empty', e);
+        payload.image = '';
+      }
+
+      // إنشاء الكرت
+      let card;
+      try{
+        card = await createCardPngFromImageFileOrBlob(fileOrBlob, payload);
+      }catch(e){
+        console.error('failed to create card png', e);
+        card = null;
+      }
+
+      // معاينة
+      previewCanvasWrap.innerHTML = '';
+      if(card && card.dataURL){
+        const imgEl = document.createElement('img');
+        imgEl.style.width='100%';
+        imgEl.style.borderRadius='12px';
+        imgEl.src = card.dataURL;
+        previewCanvasWrap.appendChild(imgEl);
+        document.getElementById('previewCard').style.display='block';
+      }else{
+        document.getElementById('previewCard').style.display='none';
+      }
+
+      // ت م 
+      if(card && card.blob){
+        try{
+          const embedded = await embedJsonInImageBlob(card.blob, payload);
+          const url = URL.createObjectURL(embedded);
+          downloadEmbeddedBtn.style.display = 'inline-block';
+          downloadEmbeddedBtn.onclick = function(){
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = payload.ref_code + '_eldelala.png';
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(()=>{
+              URL.revokeObjectURL(url);
+              a.remove();
+              if(openWa){
+                openWa.style.display = 'inline-block';
+                const base = window.location.href.split('#')[0];
+                const adLink = base + '#ad-' + payload.ref_code;
+                const msg = `مرحباً، أود نشر إعلان برمز: ${payload.ref_code}\n${payload.name}\n${payload.price}\n${adLink}`;
+                
+                // ✅ استخدام الرقم المحدد في رابط واتساب
+                openWa.href = `https://wa.me/${+249998615193}?text=` + encodeURIComponent(msg);
+                openWa.target = '_blank';
+              }
+            }, 800);
+          };
+        }catch(e){
+          console.error('failed to embed JSON into PNG', e);
+          downloadEmbeddedBtn.style.display = 'none';
+          fallbackBox.style.display = 'block';
+        }
+      }else{
+        downloadEmbeddedBtn.style.display = 'none';
+        fallbackBox.style.display = 'block';
+      }
+
+      showStatus('تم إنشاء البطاقة. يمكنك تحميلها الآن.', false);
+    }catch(err){
+      console.error(err);
+      showStatus('حدث خطأ أثناء الإنشاء (تفاصيل في Console).', true);
+    }finally{
+      submitBtn.disabled = false;
+    }
+  });
+})();
+
+/* ===== ت = */
+
+//  الأداء
+if(qEl){
+  qEl.addEventListener('input', debounce(applyFiltersAndRender, 300));
+}
+
+//  ر
+if(catFilter){
+  catFilter.addEventListener('change', applyFiltersAndRender);
+}
+
+//  
+const refreshBtn = document.getElementById('refresh');
+if(refreshBtn){
+  refreshBtn.addEventListener('click', loadAdsFromGithub);
+}
+
+
+/*  == */
+window.addEventListener('load', async ()=>{ // تم إضافة async
+  document.getElementById('home').classList.add('active');
+  await loadAdsFromGithub(); // تم إضافة await لضمان تحميل البيانات الأولية
+  openAdFromHash(); // التحقق من الـ hash وفتح الإعلان إذا وجد
+});
+
+/*   */
+window.addEventListener('hashchange', openAdFromHash);
+</script>
+</body>
+</html>
