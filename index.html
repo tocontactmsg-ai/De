@@ -1121,7 +1121,23 @@ async function createCardPngFromImageFileOrBlob(fileOrBlob, payload){
                 openWa.style.display = 'inline-block';
                 const base = window.location.href.split('#')[0];
                 const adLink = base + '#ad-' + payload.ref_code;
-                const msg = `مرحباً، أود نشر إعلان برمز: ${payload.ref_code}\n${payload.name}\n${payload.price}\n${adLink}`;
+               const msg = `
+مرحباً! 👋
+
+معلومات الإعلان:
+- 📝 الاسم: ${payload.name}
+- 💰 السعر: ${payload.price}
+- 🔖 رمز الإعلان: ${payload.ref_code}
+
+في حال الموافقة على الإعلان، سيكون رابط النشر:
+🔗 ${adLink}
+
+لإكمال عرض الإعلان على الموقع، نحتاج إلى **بطاقة الإعلان (PNG)** الخاصة به:
+📎 **${payload.ref_code}_eldelala.png**
+
+نرجو إرسالها حتى يتم تفعيل ظهور الإعلان.
+`;
+
                 
                 // ✅ استخدام الرقم المحدد في رابط واتساب
                 openWa.href = `https://wa.me/${+249998615193}?text=` + encodeURIComponent(msg);
