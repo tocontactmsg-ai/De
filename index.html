@@ -3,11 +3,10 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title> - اعلن ببساطة وسهولة - الدلالة</title>
+<title>الدلالة | سوق إلكتروني للبيع والشراء في السودان</title>
 <link rel="icon" type="image/png" href="/favicon.ico">
 
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -15,29 +14,35 @@
   gtag('config', 'G-VFM8VZCQY6');
 </script>
 
-  <!--   SEO META   -->
-<meta name="description" content="الدلالة — معرض وسوق متميز لنشر ومتابعة الإعلانات المبوبة بسهولة ويسر في السودان . انشر إعلانك بسهولة وتواصل مع المشترين في منطقتك مباشرة , متعة وسهولة في العرض والطلب ,فقط عبر الواتساب يمكنك تقديم طلب اعلان واذا تمت الموافقة سيعرض اعلانك علي الملايين من الزوار." />
+  <meta name="description" content="الدلالة — معرض وسوق متميز لنشر ومتابعة الإعلانات المبوبة بسهولة ويسر في السودان . انشر إعلانك بسهولة وتواصل مع المشترين في منطقتك مباشرة , متعة وسهولة في العرض والطلب ,فقط عبر الواتساب يمكنك تقديم طلب اعلان واذا تمت الموافقة سيعرض اعلانك علي الملايين من الزوار." />
 <link rel="canonical" href="https://eldelala.com/" />
 <link rel="icon" type="image/png" href="/favicon.ico">
 
-<!-- Open Graph (no images) -->
 <meta property="og:type" content="website" />
 <meta property="og:title" content="الدلالة — اعلن ببساطة وسهولة" />
 <meta property="og:description" content="سوق إلكتروني للبيع والشراء داخل السودان – الدلالة" />
 <meta property="og:url" content="https://eldelala.com/" />
+<meta property="og:image" content="https://eldelala.com/logo-1200x630.png" />
 
-<!-- Twitter (no images) -->
-<meta name="twitter:card" content="summary" />
+<meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="الدلالة — سوق إلكتروني للبيع والشراء داخل السودان – الدلالة" />
 <meta name="twitter:description" content="سوق إلكتروني للبيع والشراء داخل السودان – الدلالة" />
+<meta name="twitter:image" content="https://eldelala.com/logo-800x418.png" />
 
-<!-- JSON-LD structured data (helps SEO) -->
+
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "WebSite",
+  "@type": ["WebSite", "Organization"],
   "name": "الدلالة",
   "url": "https://eldelala.com/",
+  "logo": "https://eldelala.com/logo.png",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+249-9986-15193",
+    "contactType": "customer support",
+    "email": "info@eldelala.com"
+  },
   "potentialAction": {
     "@type": "SearchAction",
     "target": "https://eldelala.com/?q={search_term_string}",
@@ -45,12 +50,13 @@
   }
 }
 </script>
-<!-- END: SEO META -->
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet"></noscript>
+
 <style>
   *{box-sizing:border-box;font-family:"Tajawal",sans-serif}
   body{margin:0;background:#f7fbff;color:#0b1320;line-height:1.4}
@@ -356,7 +362,7 @@ info@eldelala.com
   </div>
 </div>
 
-<script>
+<script defer>
 /*** GitHub + cache buster ***/
 const GITHUB_OWNER  = 'tocontactmsg-ai';
 const GITHUB_REPO   = 'De';
@@ -1004,7 +1010,7 @@ async function createCardPngFromImageFileOrBlob(fileOrBlob, payload){
   return { blob: pngBlob, dataURL: pngDataUrl };
 }
 
-/*  " */
+/* " */
 (function(){
   const submitBtn = document.getElementById('submitBtn');
   const submitStatus = document.getElementById('submitStatus');
@@ -1185,14 +1191,14 @@ if(refreshBtn){
 }
 
 
-/*  == */
+/* == */
 window.addEventListener('load', async ()=>{ // تم إضافة async
   document.getElementById('home').classList.add('active');
   await loadAdsFromGithub(); // تم إضافة await لضمان تحميل البيانات الأولية
   openAdFromHash(); // التحقق من الـ hash وفتح الإعلان إذا وجد
 });
 
-/*   */
+/* */
 window.addEventListener('hashchange', openAdFromHash);
 </script>
 </body>
