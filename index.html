@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>الدلالة | سوق إلكتروني للبيع والشراء في السودان</title>
+<title>الدلالة | سوق إلكتروني للبيع والشراء في السودان - مُحسَّن</title>
 <link rel="icon" type="image/png" href="/favicon.ico">
 
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
@@ -16,7 +16,26 @@
 
   <meta name="description" content="الدلالة — معرض وسوق متميز لنشر ومتابعة الإعلانات المبوبة بسهولة ويسر في السودان . انشر إعلانك بسهولة وتواصل مع المشترين في منطقتك مباشرة , متعة وسهولة في العرض والطلب ,فقط عبر الواتساب يمكنك تقديم طلب اعلان واذا تمت الموافقة سيعرض اعلانك علي الملايين من الزوار." />
 <link rel="canonical" href="https://eldelala.com/" />
-<link rel="icon" type="image/png" href="/favicon.ico">
+<!-- 🧠 SEO META TAGS FOR الدلالة -->
+<meta name="description" content="الدلالة - أكبر منصة للإعلانات في السودان لبيع وشراء كل شيء: سيارات، عقارات، موبايلات، وظائف، خدمات، وأكثر. تواصل مباشرة عبر واتساب بسهولة وأمان." />
+<meta name="keywords" content="الدلالة, سوق السودان, اعلانات السودان, بيع وشراء السودان, سيارات السودان, عقارات السودان, وظائف السودان, موبايلات السودان, خدمات السودان, دلالة السودان, موقع الدلالة" />
+<meta name="author" content="الدلالة" />
+<meta name="robots" content="index, follow" />
+<meta name="language" content="ar" />
+<meta property="og:locale" content="ar_SD" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="الدلالة - إعلانات السودان للبيع والشراء" />
+<meta property="og:description" content="اعرض إعلانك الآن في الدلالة! سوق السودان الأول لبيع وشراء السيارات والعقارات والموبايلات والخدمات والوظائف." />
+<meta property="og:site_name" content="الدلالة" />
+<meta property="og:image" content="https://raw.githubusercontent.com/tocontactmsg-ai/de/main/logo.png" />
+<meta property="og:url" content="https://tocontactmsg-ai.github.io/de/" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="الدلالة - إعلانات السودان للبيع والشراء" />
+<meta name="twitter:description" content="منصة الدلالة - بيع وشراء كل ما تحتاجه في السودان بسهولة عبر واتساب." />
+<meta name="twitter:image" content="https://raw.githubusercontent.com/tocontactmsg-ai/de/main/logo.png" />
+<link rel="canonical" href="https://tocontactmsg-ai.github.io/de/" />
+
+  <link rel="icon" type="image/png" href="/favicon.ico">
 
 <meta property="og:type" content="website" />
 <meta property="og:title" content="الدلالة — اعلن ببساطة وسهولة" />
@@ -58,7 +77,7 @@
 <noscript><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet"></noscript>
 
 <style>
-  /* --- EXISTING STYLES --- */
+  /* --- BASE STYLES --- */
   *{box-sizing:border-box;font-family:"Tajawal",sans-serif}
   body{margin:0;background:#f7fbff;color:#0b1320;line-height:1.4}
   .container{max-width:1100px;margin:16px auto;padding:12px}
@@ -81,27 +100,37 @@
     border-color:#fff;
   }
 
-  .controls{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0;align-items:center}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0;align-items:flex-end} /* align-items:flex-end لتحسين محاذاة الفلاتر */
   input, textarea, select{
     padding:10px;border-radius:10px;border:1px solid #e6eef8;width:100%;font-size:15px;background:#fff
   }
   textarea{min-height:80px;resize:vertical}
-  .btn{background:#0078d7;color:#fff;padding:10px 12px;border-radius:10px;border:none;cursor:pointer;font-size:14px}
-button.btn.alt#modalClose {
-  background: red; /* or background-color: #FF0000; */
-}
-    .btn{background:#0078d7;color:#fff;padding:10px 12px;border-radius:10px;border:none;cursor:pointer;font-size:14px}
-button.btn.alt#modalCall {
-  background: blue; /* or background-color: #FF0000; */
-}
+  .btn{background:#0078d7;color:#fff;padding:10px 12px;border-radius:10px;border:none;cursor:pointer;font-size:14px; transition: background .2s;}
   .btn.alt{background:green }
   .btn[disabled]{opacity:.5;cursor:not-allowed}
 
   .grid{display:grid;grid-template-columns:repeat(1,1fr);gap:14px}
   @media (min-width:560px){ .grid{grid-template-columns:repeat(2,1fr)} }
   @media (min-width:900px){ .grid{grid-template-columns:repeat(3,1fr)} }
-  .card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 6px 18px rgba(15,23,42,0.09);display:flex;flex-direction:column;transition:transform .12s;cursor:pointer}
-  .card:hover{transform:translateY(-4px)}
+  
+  /* --- CARD ENHANCEMENTS (3D HOVER) --- */
+  .card{
+    background:#fff;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 6px 18px rgba(15,23,42,0.09);
+    display:flex;
+    flex-direction:column;
+    transition:transform .2s, box-shadow .2s; /* تحسين الانتقال */
+    cursor:pointer;
+    position:relative; 
+  }
+  .card:hover{
+    /* تأثير رفع ثلاثي الأبعاد خفيف */
+    transform:translateY(-4px) perspective(1000px) rotateX(1deg);
+    box-shadow: 0 16px 30px rgba(15,23,42,0.18);
+  }
+  
   .media{height:220px;background:#f0f4f8;display:flex;align-items:center;justify-content:center;position:relative}
   .media img{width:100%;height:100%;object-fit:cover;display:block}
   .body{padding:12px;display:flex;flex-direction:column;gap:8px;flex:1}
@@ -121,42 +150,40 @@ button.btn.alt#modalCall {
   .detailsList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
   .detailsItem{background:#f9fafb;border-radius:10px;padding:6px 8px;font-size:13px}
   .detailsItem strong{display:block;font-size:11px;color:#6b7280;margin-bottom:2px}
-/* يمنع الصورة من تغطية أزرار المشاركة */
-.modalMain{
-  max-height: calc(90vh - 80px);
-  overflow-y: auto;
-}
 
-.modalImage{
-  max-height: 60vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modalImage img{
-  max-height: 55vh; /* يمنع التمدد الزائد */
-  width: auto;
-  height: auto;
-  object-fit: contain;
-}
-
+  /* --- MODAL ENHANCEMENTS (STICKY DETAILS) --- */
   main > section{display:none}
   main > section.active{display:block}
 
   .modal{position:fixed;inset:0;background:rgba(15,23,42,0.6);display:none;align-items:center;justify-content:center;z-index:999;padding:12px}
   .modal[aria-hidden="false"]{display:flex}
   .modalCard{background:#fff;border-radius:18px;max-width:900px;width:100%;max-height:90vh;overflow:hidden;box-shadow:0 18px 40px rgba(15,23,42,0.5);display:flex;flex-direction:column}
-  .modalMain{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.1fr);gap:12px;padding:12px}
-  .modalImage{background:#020617;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  
+  /* Mobile default */
+  .modalMain{display:grid;grid-template-columns:1fr;gap:12px;padding:12px}
+  .modalImage{background:#020617;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden; order:-1}
   .modalImage img{max-width:100%;max-height:360px;display:block}
+  .modalBody{overflow-y: auto;} /* Allow body to scroll */
+
   .modalFooter{padding:10px 12px;border-top:1px solid #e5e7eb;background:#f9fafb;font-size:12px;color:#6b7280;display:flex;justify-content:space-between;gap:8px;align-items:center}
   .modalActions{display:flex;gap:8px;flex-wrap:wrap}
 
-  @media(max-width:720px){
-    .modalMain{grid-template-columns:1fr}
-    .modalImage{order:-1}
-    .detailsList{grid-template-columns:1fr}
+  @media(min-width:721px){
+    /* Desktop layout with sticky details/actions sidebar */
+    .modalMain{
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); 
+      max-height: 80vh; 
+      overflow-y: hidden; /* Prevent modal main scroll */
+    }
+    .modalBody {
+      position: sticky;
+      top: 0;
+      align-self: flex-start;
+      padding-top: 10px;
+      overflow-y: auto; /* Scroll only on the details side */
+      max-height: 75vh;
+    }
+    .detailsList{grid-template-columns: 1fr;} /* Single column details on large screen */
   }
 
 /* --- Ticker Tape / Marquee Bar Styles --- */
@@ -168,31 +195,31 @@ button.btn.alt#modalCall {
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   overflow: hidden;
   margin-bottom: 16px;
-  display: none; /* 🛑 Hidden by default */
+  display: none; 
 }
 #tickerTape.has-messages {
-    display: flex; /* 🛑 Only shown if JS adds the class */
+    display: flex; 
 }
 .ticker-content{
   display: flex;
-  white-space: nowrap; /* Keep content on a single line */
-  animation: marquee-rtl 25s linear infinite; /* Animation definition */
+  white-space: nowrap; 
+  animation: marquee-rtl 25s linear infinite; 
 }
 .ticker-content:hover{
-  animation-play-state: paused; /* Pause on hover */
+  animation-play-state: paused; 
 }
 .ticker-item{
   font-size: 14px;
   color: #333;
-  padding-left: 50px; /* Space between messages */
+  padding-left: 50px; 
   font-weight: 500;
   display: inline-flex;
   align-items: center;
 }
 /* RTL Marquee Animation */
 @keyframes marquee-rtl {
-  100% { transform: translateX(100%); } /* Start off-screen right */
-   0% { transform: translateX(-100%); } /* End off-screen left */
+  100% { transform: translateX(100%); } 
+   0% { transform: translateX(-100%); } 
 }
 /* Ensure the items don't stretch */
 .ticker-item:first-child {
@@ -201,20 +228,17 @@ button.btn.alt#modalCall {
 /* --- End Ticker Tape Styles --- */
 
 /* ========================================================== */
-/* 💡 NEW: MESSAGE CONTAINER STYLING (MSEGS) */
+/* MESSAGE CONTAINER STYLING (MSEGS) */
 /* ========================================================== */
 :root {
-    /* Eldelala Primary Colors for Messages */
-    --msg-primary-color: #0078d7; /* Header Blue */
+    --msg-primary-color: #0078d7; 
     --msg-text-color: #0b1320;
     --msg-bg-color: #f7fbff;
     
-    /* Success Message Colors (Calm Green) */
-    --success-bg: #e6ffed; /* Very light green */
-    --success-border: #047857; /* Price Green */
+    --success-bg: #e6ffed; 
+    --success-border: #047857; 
     --success-text: #059669; 
     
-    /* Error/Warning Message Colors (Orange/Red - Using Alt Button color as a base for error) */
     --error-bg: #fee2e2;
     --error-border: #dc2626;
     --error-text: #dc2626;
@@ -222,10 +246,10 @@ button.btn.alt#modalCall {
 
 #msges-container {
     width: 100%;
-    max-width: 1100px; /* Matching the container width */
-    margin: 0 auto 16px auto; /* Margin above controls, below header */
+    max-width: 1100px; 
+    margin: 0 auto 16px auto; 
     padding: 0 12px;
-    display: none; /* Controlled by JS: disappears when empty */
+    display: none; 
 }
 
 .msges-box {
@@ -241,22 +265,18 @@ button.btn.alt#modalCall {
     text-align: right; 
 }
 
-/* Success Message Style */
 .msges-box.success {
     background-color: var(--success-bg);
     color: var(--success-text);
-    /* RTL Border on the right */
     border-right: 5px solid var(--success-border); 
 }
 
-/* Error Message Style */
 .msges-box.error {
     background-color: var(--error-bg);
     color: var(--error-text);
     border-right: 5px solid var(--error-border); 
 }
 
-/* Close Button Styling */
 .close-btn {
     background: none;
     border: none;
@@ -264,7 +284,6 @@ button.btn.alt#modalCall {
     font-size: 1.3rem;
     font-weight: bold;
     color: inherit; 
-    /* Push button to the far left in RTL layout */
     margin-inline-start: auto; 
     padding: 0 10px;
     opacity: 0.7;
@@ -274,9 +293,6 @@ button.btn.alt#modalCall {
 .close-btn:hover {
     opacity: 1;
 }
-/* ========================================================== */
-/* 🛑 END OF NEW MESSAGE STYLES */
-/* ========================================================== */
 </style>
 </head>
 <body>
@@ -294,16 +310,38 @@ button.btn.alt#modalCall {
   
   <div id="msges-container">
     </div>
-  <div class="controls" id="listControls" role="search" aria-label="بحث وتحكم">
+  <div class="controls" id="listControls" role="search" aria-label="بحث وترشيح">
     <div style="flex:1;min-width:180px"><input id="q" type="search" placeholder="ابحث بالعنوان أو الرمز أو الموقع"></div>
     <div style="width:200px"><select id="catFilter"><option value="">كل الاقسام</option></select></div>
+    
+    <div style="width:160px; flex-shrink: 0;">
+      <select id="sortOrder" aria-label="ترتيب حسب">
+        <option value="recent">الأحدث أولاً</option>
+        <option value="price_asc">السعر (الأقل أولاً)</option>
+        <option value="price_desc">السعر (الأعلى أولاً)</option>
+      </select>
+    </div>
+    
+    <div style="width:200px; padding: 0 5px; flex-shrink: 0;">
+      <label for="minPrice" class="small muted" style="display:block; margin-bottom: 2px;">نطاق السعر (الحدود)</label>
+      <div style="display: flex; gap: 4px;">
+        <input id="minPrice" type="number" placeholder="من" min="0" value="" style="padding: 6px 8px; width: 50%;"/>
+        <input id="maxPrice" type="number" placeholder="إلى" min="0" value="" style="padding: 6px 8px; width: 50%;"/>
+      </div>
+    </div>
+    
     <div style="display:flex;gap:8px;align-items:center">
       <div id="count" class="small" aria-live="polite">تحميل...</div>
+      <button id="refresh" class="btn" type="button" style="padding: 8px 10px; font-size: 13px; background: #555;">🔄 تحديث</button>
     </div>
   </div>
 
   <div id="tickerTape" role="marquee" aria-live="off">
     <div class="ticker-content">
+        <span class="ticker-item">   سيتم التواصل مع المرشحين المختارين فقط </span>
+            <span class="ticker-item">   </span>
+
+      <span class="ticker-item">  اغلاق باب التقديم لوظيفة : مسؤول دعم العملاء – الخرطوم </span>
 
       <span class="ticker-item">   </span>
    
@@ -333,7 +371,7 @@ button.btn.alt#modalCall {
           <input id="f_price" placeholder="السعر">
           <textarea id="f_desc" placeholder="وصف الإعلان" rows="4"></textarea>
           <input id="f_loc" placeholder="الموقع">
-          <input id="f_contact" placeholder="رقم التواصل">
+          <input id="f_contact" placeholder="رقم التواصل (مطلوب: يُفضل أن يبدأ بـ +249)">
           <input id="f_cat" placeholder="القسم">
           <div><input id="f_file" type="file" accept="image/*"></div>
           <label style="display:flex;gap:8px;align-items:center">
@@ -474,14 +512,20 @@ info@eldelala.com
       <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
         <div>
           <div id="modalTitle" style="font-weight:800;font-size:18px"></div>
-          <div id="modalMeta" class="small" style="margin-top:6px"></div>
+          <div id="modalMeta" class="small" style="margin-top:6px">
+            رمز: <span id="modalRefCodeText"></span>
+            <button id="copyRefBtn" type="button" class="btn small" style="background:#555; padding: 2px 6px; font-size: 10px; margin-inline-start: 8px;">
+              نسخ الرمز
+            </button>
+          </div>
         </div>
         <button id="modalClose" class="btn alt" type="button">إغلاق</button>
       </div>
     </div>
+    
     <div class="modalMain">
       <div class="modalImage">
-        <img id="modalMainImg" src="" alt="" style="max-width:100%;max-height:100%;display:none" />
+        <img id="modalMainImg" src="" alt="" loading="lazy" style="max-width:100%;max-height:100%;display:none" />
       </div>
 
       <div class="modalBody">
@@ -498,6 +542,7 @@ info@eldelala.com
     <div class="modalFooter">
       <div class="modalActions">
         <a id="modalWhats" class="btn" target="_blank" rel="noopener">مشاركة عبر WhatsApp</a>
+        <a id="modalWhatsChat" class="btn" target="_blank" rel="noopener" style="background: #25d366;">محادثة عبر WhatsApp</a>
         <a id="modalCall" class="btn alt" style="display:none" href="#">اتصال</a>
       </div>
       <div class="small muted">ملاحظة: تأكد من صحة المعلومات بنفسك.</div>
@@ -511,14 +556,32 @@ const GITHUB_OWNER  = 'tocontactmsg-ai';
 const GITHUB_REPO   = 'De';
 const GITHUB_BRANCH = 'main';
 const ADS_DIR       = 'ads';
-const CACHE_BUSTER  = 'v1.0.1'; // تم التحديث
-
-/* رقم الواتساب لاستقبال طلبات النشر */
-const WHATSAPP_NUMBER = '249998615193'; // بدون علامة + أو مسافات
+const CACHE_BUSTER  = 'v1.0.3'; // تم التحديث: لإجبار الكاش على إعادة التحميل
+const WHATSAPP_NUMBER = '249998615193'; 
 
 function escapeHtml(s){ return String(s||'').replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]||c)); }
 function debounce(fn,t=300){ let timer; return (...a)=>{ clearTimeout(timer); timer=setTimeout(()=>fn(...a),t); }; }
-function genRef(){ return 'R' + Date.now().toString(36).slice(-6).toUpperCase(); }
+
+// MODIFIED: Generate Ref Code with Timestamp for better ordering
+function genRef(){ 
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  const day = now.getDate().toString().padStart(2, '0');
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+  // Format: T-YYYYMMDDHHmmss
+  return `T-${year}${month}${day}${hours}${minutes}${seconds}`;
+}
+
+// NEW: Function to safely parse price string
+function parsePrice(priceStr){
+    // Remove non-digit, non-period characters
+    const cleanStr = (priceStr || '0').replace(/[^\d.]/g, '');
+    return parseFloat(cleanStr) || 0;
+}
+
 
 /* تبويبات */
 const listControls = document.getElementById('listControls');
@@ -532,7 +595,7 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
     listControls.style.display = (target === 'home') ? 'flex' : 'none';
     window.scrollTo({top:0,behavior:'smooth'});
     
-    // 💡 NEW: Ensure messages are cleared when switching sections
+    // Clear messages when switching sections
     if (target !== 'send') {
         const container = document.getElementById('msges-container');
         if (container) container.innerHTML = '';
@@ -548,6 +611,11 @@ const qEl = document.getElementById('q');
 const catFilter = document.getElementById('catFilter');
 const countEl = document.getElementById('count');
 
+// NEW Controls Elements
+const sortOrderEl = document.getElementById('sortOrder');
+const minPriceEl = document.getElementById('minPrice');
+const maxPriceEl = document.getElementById('maxPrice');
+
 function renderGrid(list){
   const noItems = document.getElementById('noitems');
   grid.innerHTML='';
@@ -561,6 +629,7 @@ function renderGrid(list){
   list.forEach(a=>{
     const el = document.createElement('div');
     el.className='card';
+    // Removed: Premium class logic
     if(a.ref_code) el.id = 'ad-' + a.ref_code;
     const mediaHtml = a.image
       ? `<img src="${escapeHtml(a.image)}" alt="${escapeHtml(a.name||'')}" loading="lazy">`
@@ -589,8 +658,15 @@ function renderGrid(list){
 function applyFiltersAndRender(){
   const q = (qEl && qEl.value || '').trim().toLowerCase();
   const cat = (catFilter && catFilter.value || '').trim();
+  
+  // NEW: Sorting & Price Filter values
+  const sortOrder = (sortOrderEl && sortOrderEl.value || 'recent');
+  const minP = parseFloat(minPriceEl.value) || 0;
+  const maxP = parseFloat(maxPriceEl.value) || Infinity;
+  
   let out = ads.slice();
 
+  // 1. Filtering
   if(cat){
     out = out.filter(a => (a.category||'').toString() === cat);
   }
@@ -600,18 +676,39 @@ function applyFiltersAndRender(){
       return hay.indexOf(q) !== -1;
     });
   }
-  
-  // ----------------------------------------------------
-  // التعديل: الترتيب حسب الوقت (رمز الإعلان) تنازلياً (الأحدث أولاً)
+  // NEW: Price Range Filtering (using parsePrice)
+  if(minP > 0 || maxP !== Infinity){
+    out = out.filter(a => {
+      const priceNum = parsePrice(a.price);
+      return priceNum >= minP && priceNum <= maxP;
+    });
+  }
+
+  // 2. Sorting
   out.sort((A,B) => {
-    // 1. الترتيب حسب ref_code تنازلياً (B قبل A يعني الأحدث أولاً)
-    const timeSort = (B.ref_code || '').localeCompare((A.ref_code || ''));
-    if(timeSort !== 0) return timeSort;
     
-    // 2. الترتيب الثانوي: الاسم (أبجدياً)
-    return (A.name || '').toString().localeCompare((B.name || '').toString(), 'ar');
+    // Primary sort: ref_code descending (newest first)
+    if(sortOrder === 'recent'){
+        // Using ref_code (now a timestamp-based string) for chronological sort
+        return (B.ref_code || '').localeCompare((A.ref_code || ''));
+    }
+
+    // Price sorting (using parsePrice)
+    const A_price = parsePrice(A.price);
+    const B_price = parsePrice(B.price);
+
+    switch(sortOrder){
+      case 'price_asc':
+        // Price ascending
+        return A_price - B_price;
+      case 'price_desc':
+        // Price descending
+        return B_price - A_price;
+      default:
+        // Default to recent
+        return (B.ref_code || '').localeCompare((A.ref_code || ''));
+    }
   });
-  // ----------------------------------------------------
   
   renderGrid(out);
 }
@@ -653,8 +750,13 @@ const modalCat = document.getElementById('modalCat');
 const modalPrice = document.getElementById('modalPrice');
 const modalContact = document.getElementById('modalContact');
 const modalWhats = document.getElementById('modalWhats');
+const modalWhatsChat = document.getElementById('modalWhatsChat'); // NEW
 const modalCall = document.getElementById('modalCall');
 const modalClose = document.getElementById('modalClose');
+
+// NEW Modal Elements
+const modalRefCodeText = document.getElementById('modalRefCodeText');
+const copyRefBtn = document.getElementById('copyRefBtn');
 
 function closeModal(){
   modal.setAttribute('aria-hidden','true');
@@ -664,9 +766,24 @@ modalClose.addEventListener('click', closeModal);
 modal.addEventListener('click', e=>{ if(e.target===modal) closeModal(); });
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
 
+// NEW: Copy Ref Code functionality
+copyRefBtn.addEventListener('click', ()=>{
+  const refCode = modalRefCodeText.textContent;
+  navigator.clipboard.writeText(refCode).then(()=>{
+    const originalText = copyRefBtn.textContent;
+    copyRefBtn.textContent = '✅ نُسخ!';
+    setTimeout(()=>copyRefBtn.textContent = originalText, 1500);
+  }).catch(err => {
+    console.error('Copy failed', err);
+    copyRefBtn.textContent = '❌ فشل!';
+    setTimeout(()=>copyRefBtn.textContent = 'نسخ الرمز', 1500);
+  });
+});
+
+
 async function openDetails(item){
   modalTitle.textContent = item.name || 'بدون عنوان';
-  modalMeta.textContent = `رمز: ${item.ref_code||''}`;
+  modalRefCodeText.textContent = item.ref_code||''; // Enhanced
   modalDescription.textContent = item.description||'-';
   modalLoc.textContent = item.location||'-';
   modalCat.textContent = item.category||'عام';
@@ -681,21 +798,32 @@ async function openDetails(item){
     modalMainImg.style.display = 'none';
   }
 
+  // Call Button Logic
   if(item.contact && item.contact.trim()){
     modalCall.style.display = 'inline-block';
     const phoneDigits = (item.contact.match(/[+0-9][0-9() \-]{4,}/) || [])[0] || item.contact;
     modalCall.href = 'tel:' + phoneDigits.replace(/\s+/g,'').replace(/[^+0-9]/g,'');
+
+    // NEW: WhatsApp Chat Link (for direct communication with the seller)
+    const waNumber = phoneDigits.replace(/\s+/g,'').replace(/[^+0-9]/g,'');
+    const waChatMsg = `مرحباً، أود الاستفسار عن إعلانكم: ${item.name||'Untitled Ad'} (الرمز: ${item.ref_code||''})، الذي رأيته في الدلالة.`;
+    // Attempt to format number for WA (e.g., ensure it starts with country code if not present)
+    const formattedWaNumber = waNumber.startsWith('+') ? waNumber.slice(1) : waNumber.replace(/^0/, '249'); 
+    modalWhatsChat.href = `https://wa.me/${formattedWaNumber}?text=` + encodeURIComponent(waChatMsg);
+    modalWhatsChat.style.display = 'inline-block';
+
   } else {
     modalCall.style.display = 'none';
+    modalWhatsChat.style.display = 'none';
   }
 
+  // WhatsApp Share Link (to share the ad itself)
   const base = window.location.href.split('#')[0];
   const deepLink = base + '#ad-' + (item.ref_code||'');
   const msg = (item.name||'') + '\n' + (item.price||'') + '\n' + deepLink;
   modalWhats.href = 'https://wa.me/?text=' + encodeURIComponent(msg);
   modalWhats.target = '_blank';
 
-  //  وح
   try{
     if(item.ref_code){
       const newHash = '#ad-' + encodeURIComponent(item.ref_code);
@@ -710,17 +838,14 @@ async function openDetails(item){
 }
 
 /* تحميل الإعلانات من GitHub */
-
-
-
 async function loadAdsFromGithub(){
   const noItemsEl = document.getElementById('noitems');
-  const loadMoreBtn = document.getElementById('loadMoreBtn'); // kept as fallback/status
-  const CACHE_KEY = 'eldelala_ads_cache_v2'; // تم التحديث: لإجبار المتصفح على تحميل الإعدادات الجديدة
-  const CACHE_TTL_MS = 60 * 60 * 1000; // تم التحديث: 60 دقيقة كاش
-  const MAX_ADS = 1000; // absolute cap
-  const PAGE_SIZE = 70; // تم التحديث: تحميل 50 إعلان في البداية
-  const CONCURRENCY = 8; // تم التحديث: زيادة عدد الطلبات المتزامنة
+  const loadMoreBtn = document.getElementById('loadMoreBtn'); 
+  const CACHE_KEY = 'eldelala_ads_cache_v4'; // Updated: to force reload of new settings
+  const CACHE_TTL_MS = 60 * 60 * 1000; 
+  const MAX_ADS = 1000; 
+  const PAGE_SIZE = 70; 
+  const CONCURRENCY = 8; 
   const FETCH_TIMEOUT_MS = 9000;
   const RETRIES = 2;
 
@@ -754,12 +879,9 @@ async function loadAdsFromGithub(){
         }catch(e){}
         applyFiltersAndRender();
         if(countEl) countEl.textContent = ads.length + ' إعلان  ';
-        // إذا كان التحميل من الكاش، لا ننتظر، بل نذهب إلى GitHub في الخلفية إذا لم نكن قد حملنا كل شيء
         if(ads.length < allFiles.length){
-             // لا حاجة لانتظار تحميل الكل إذا كان الكاش جاهزاً
         } else {
-             // كل الإعلانات في الكاش، لا حاجة للتحميل الإضافي
-             return; // مهم: الخروج هنا إذا كان كل شيء في الكاش
+             return; 
         }
       }
     }
@@ -768,7 +890,6 @@ async function loadAdsFromGithub(){
   try{
     const contentsUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${ADS_DIR}?ref=${GITHUB_BRANCH}`;
     
-    // 🛑 تم التأكد من بقاء هذا التعديل 🛑
     const res = await timeoutFetch(contentsUrl, {
         headers: {
             'Accept': 'application/vnd.github.v3+json'
@@ -788,7 +909,6 @@ async function loadAdsFromGithub(){
     const jsonFiles = files.filter(f => f.type === 'file' && f.name.toLowerCase().endsWith('.json'));
     allFiles = jsonFiles.slice(0, Math.min(jsonFiles.length, MAX_ADS));
 
-    // reset paging
     pageIndex = 0;
     
     applyFiltersAndRender();
@@ -801,7 +921,6 @@ async function loadAdsFromGithub(){
         let attempt = 0;
         while(attempt <= tries){
           try{
-            // لا )
             const r = await timeoutFetch(url, {}, FETCH_TIMEOUT_MS); 
             if(!r.ok) throw new Error('status ' + r.status);
             const data = await r.json();
@@ -834,7 +953,8 @@ async function loadAdsFromGithub(){
               location: data.location || data.city || data.loc || '',
               contact: data.contact || data.phone || data.tel || '',
               category: (data.category || data.cat || data.type || data.Category || '').toString().trim() || 'عام',
-              image: data.image || data.thumb || data.imageDataUrl || ''
+              image: data.image || data.thumb || data.imageDataUrl || '',
+              // Removed: is_premium simulation
             };
           }catch(e){
             console.warn('error loading ad', f.name, e);
@@ -851,8 +971,6 @@ async function loadAdsFromGithub(){
     async function loadNext(){
       if(loadingPage) return;
       loadingPage = true;
-      // show small inline indicator (using loadMoreBtn as status element)
-      const isInitialLoad = ads.length === 0;
       if(loadMoreBtn){
         loadMoreBtn.style.display = 'inline-block';
         loadMoreBtn.disabled = true;
@@ -862,11 +980,10 @@ async function loadAdsFromGithub(){
       const pageData = await fetchPage(pageIndex);
       
       if(pageData && pageData.length){
-        // إذا كان التحميل الأولي (بدون كاش)
+        const isInitialLoad = ads.length === 0 || ads.length < PAGE_SIZE;
         if (isInitialLoad && pageIndex === 0) {
             ads = pageData;
         } else {
-            // وإلا، ندمج البيانات الجديدة
             ads = ads.concat(pageData.filter(newAd => 
               !ads.some(existingAd => existingAd.ref_code === newAd.ref_code)
             ));
@@ -888,7 +1005,6 @@ async function loadAdsFromGithub(){
 
       const remaining = Math.max(0, allFiles.length - ads.length);
       if(remaining <= 0){
-        // remove scroll listener if no more
         detachScrollHandler();
         if(loadMoreBtn) loadMoreBtn.style.display = 'none';
       } else {
@@ -899,8 +1015,6 @@ async function loadAdsFromGithub(){
         }
       }
       if(countEl) countEl.textContent = ads.length + ' إعلان';
-      
-      // تم إزالة اس ub)
     }
 
     // infinite scroll: load when user is near page bottom
@@ -908,7 +1022,6 @@ async function loadAdsFromGithub(){
       const scrollY = window.scrollY || window.pageYOffset;
       const viewportH = window.innerHeight || document.documentElement.clientHeight;
       const fullH = document.documentElement.scrollHeight;
-      // when within 1200px of bottom OR scrolled past 70% of content
       if(fullH - (scrollY + viewportH) < 1200) return true;
       if((scrollY + viewportH) / fullH > 0.7) return true;
       return false;
@@ -934,18 +1047,13 @@ async function loadAdsFromGithub(){
       scrollHandlerAttached = false;
     }
 
-    // auto-load first page, then attach scroll handler
-    // إذا لم يكن هناك كاش، يجب تحميل أول صفحة على الأقل
     if (ads.length === 0 || ads.length < PAGE_SIZE) {
         await loadNext();
     }
     
-    // إذا كان هناك المزيد لتحميله، قم بربط أداة التمرير
     if (allFiles.length > ads.length) {
         attachScrollHandler();
     } 
-    // تم إزالة استدعاء openAdFromHash() من هنا (لأنها ستستدعى بعد اكتمال loadAdsFromGithub)
-
 
     if(allFiles.length > 0 && noItemsEl){
       noItemsEl.style.display = 'none';
@@ -960,11 +1068,6 @@ async function loadAdsFromGithub(){
     if(countEl) countEl.textContent='0 إعلان';
   }
 }
-
-
-
-
-/* = = */
 
 const MARKER = 'ELDELALA_PAYLOAD:';
 
@@ -1034,7 +1137,6 @@ async function imageFileToWebpDataUrl(file, maxW = 900, maxH = 900, quality = 0.
   return c.toDataURL('image/webp', quality);
 }
 
-/* */
 async function createPlaceholderImageBlob(){
   const c = document.createElement('canvas');
   c.width = 900;
@@ -1052,7 +1154,6 @@ async function createPlaceholderImageBlob(){
   return dataUrlToBlob(dataURL);
 }
 
-/* ت  */
 function canvasToPngBlob(canvas){
   return new Promise((resolve,reject)=>{
     if(canvas.toBlob){
@@ -1068,7 +1169,6 @@ function canvasToPngBlob(canvas){
   });
 }
 
-/* ك   */
 async function createCardPngFromImageFileOrBlob(fileOrBlob, payload){
   const baseDataUrl = await fileOrBlobToDataUrl(fileOrBlob);
   const img = await new Promise((resolve,reject)=>{
@@ -1085,14 +1185,12 @@ async function createCardPngFromImageFileOrBlob(fileOrBlob, payload){
   canvas.height = H;
   const ctx = canvas.getContext('2d');
 
-  //  ة
   const grad = ctx.createLinearGradient(0,0,0,H);
   grad.addColorStop(0,'#f5f8ff');
   grad.addColorStop(1,'#e8f5ff');
   ctx.fillStyle = grad;
   ctx.fillRect(0,0,W,H);
 
-  // إط حة
   const cardX = 60;
   const cardY = 60;
   const cardW = W - 120;
@@ -1112,7 +1210,6 @@ async function createCardPngFromImageFileOrBlob(fileOrBlob, payload){
   ctx.closePath();
   ctx.fill();
 
-  //  
   const imgMargin = 40;
   const imgAreaX = cardX + imgMargin;
   const imgAreaY = cardY + imgMargin;
@@ -1142,7 +1239,6 @@ async function createCardPngFromImageFileOrBlob(fileOrBlob, payload){
   ctx.drawImage(img, dx, dy, drawW, drawH);
   ctx.restore();
 
-  // ref co ورة
   const refText = payload.ref_code || '';
   ctx.textAlign = 'center';
 
@@ -1150,7 +1246,6 @@ async function createCardPngFromImageFileOrBlob(fileOrBlob, payload){
   ctx.font = 'bold 52px Tajawal, sans-serif';
   ctx.fillText(refText, W/2, imgAreaY + imgAreaH + 120);
 
-  //  
   ctx.fillStyle = '#4b5563';
   ctx.font = '24px Tajawal, sans-serif';
   ctx.fillText('نشكرك علي استخدامك موقع الدلالة', W/2, imgAreaY + imgAreaH + 170);
@@ -1161,14 +1256,10 @@ async function createCardPngFromImageFileOrBlob(fileOrBlob, payload){
 }
 
 /* ========================================================== */
-/* 💡 NEW: MESSAGE SYSTEM FUNCTIONS */
+/* MESSAGE SYSTEM FUNCTIONS (MSEGS) */
 /* ========================================================== */
 const msgContainer = document.getElementById('msges-container');
 
-/**
- * Checks the container's content and toggles its visibility.
- * Requirement: "if no msgs make it disappear"
- */
 function checkAndToggleVisibility() {
     if (!msgContainer) return;
     if (msgContainer.children.length === 0) {
@@ -1178,18 +1269,11 @@ function checkAndToggleVisibility() {
     }
 }
 
-/**
- * Creates and displays a new message (MSEGS).
- * @param {string} type - 'success' or 'error'
- * @param {string} text - The Arabic message content
- */
 function displayMessage(type, text) {
     if (!msgContainer) return;
     try {
-        // Clear existing messages for a fresh alert
         msgContainer.innerHTML = '';
 
-        // Create elements
         const newMsg = document.createElement('div');
         newMsg.className = 'msges-box ' + type;
         
@@ -1199,21 +1283,18 @@ function displayMessage(type, text) {
 
         const closeBtn = document.createElement('button');
         closeBtn.className = 'close-btn';
-        closeBtn.innerHTML = '&times;'; // 'x' symbol
+        closeBtn.innerHTML = '&times;'; 
         
-        // Close button logic
         closeBtn.addEventListener('click', function() {
             newMsg.remove();
-            checkAndToggleVisibility(); // Re-check visibility after removal
+            checkAndToggleVisibility(); 
         });
         
         newMsg.appendChild(closeBtn);
         
-        // Append the message and show the container
         msgContainer.appendChild(newMsg);
         checkAndToggleVisibility();
 
-        // Auto-hide after 7 seconds for success messages
         if (type === 'success') {
             setTimeout(() => {
                 if (newMsg.parentNode) {
@@ -1231,7 +1312,7 @@ function displayMessage(type, text) {
 /* ========================================================== */
 
 
-/* " */
+/* New Ad Submission Logic */
 (function(){
   const submitBtn = document.getElementById('submitBtn');
   const submitStatus = document.getElementById('submitStatus');
@@ -1257,36 +1338,49 @@ function displayMessage(type, text) {
 
   submitBtn && submitBtn.addEventListener('click', async ()=>{
     try{
-      // 💡 NEW: Clear previous messages before starting
+      // Clear previous messages before starting
       msgContainer.innerHTML = '';
       checkAndToggleVisibility();
       
       if(submitBtn.disabled) return;
       submitBtn.disabled = true;
-      showStatus('جارٍ تجهيز الإعلان...');
+      showStatus('جارٍ التحقق من الحقول...');
 
       if(!f_name.value || f_name.value.trim().length < 2){
         showStatus('الرجاء إدخال اسم للإعلان', true);
-        // 💡 NEW: Display Error Message in the unified container
         displayMessage('error', '⚠️ الرجاء إدخال اسم واضح ومناسب للإعلان قبل البدء.');
         submitBtn.disabled = false;
         return;
       }
+
+      // NEW: Contact Validation
+      const contactValue = f_contact.value.trim().replace(/\s+/g,'');
+      // Regex for phone format (accepts 0, 249, +249, and 7-15 digits)
+      const phoneRegex = /^(?:0|\+?249)?\d{7,15}$/; 
+      
+      if(!contactValue || !phoneRegex.test(contactValue)){
+          showStatus('الرجاء إدخال رقم تواصل صحيح وصالح', true);
+          displayMessage('error', '⚠️ الرجاء إدخال رقم تواصل صحيح وصالح (يفضل أن يبدأ بـ +249).');
+          submitBtn.disabled = false;
+          return;
+      }
+
       if(!agree.checked){
         showStatus('يجب الموافقة على الشروط', true);
-        // 💡 NEW: Display Error Message in the unified container
         displayMessage('error', 'يجب عليك الموافقة على شروط النشر أولاً للمتابعة.');
         submitBtn.disabled = false;
         return;
       }
 
-      const ref = genRef();
+      const ref = genRef(); // MODIFIED
       refCodeEl.textContent = ref;
       afterSubmit.style.display = 'block';
       downloadEmbeddedBtn.style.display = 'none';
       if(openWa) openWa.style.display = 'none';
       fallbackBox.style.display = 'none';
-      showStatus('جاري إنشاء البطاقة...');
+      
+      // NEW: Better loading status
+      showStatus('جاري ضغط ومعالجة الصورة...');
 
       const payload = {
         ref_code: ref,
@@ -1317,6 +1411,9 @@ function displayMessage(type, text) {
         payload.image = '';
       }
 
+      // NEW: Loading status for card creation
+      showStatus('جاري إنشاء البطاقة...');
+      
       // إنشاء الكرت
       let card;
       try{
@@ -1339,7 +1436,7 @@ function displayMessage(type, text) {
         document.getElementById('previewCard').style.display='none';
       }
 
-      // ت م 
+      // تضمين البيانات في الصورة
       if(card && card.blob){
         try{
           const embedded = await embedJsonInImageBlob(card.blob, payload);
@@ -1358,7 +1455,7 @@ function displayMessage(type, text) {
                 openWa.style.display = 'inline-block';
                 const base = window.location.href.split('#')[0];
                 const adLink = base + '#ad-' + payload.ref_code;
-   const msg = `
+                const msg = `
 مرحباً! 👋
 
 معلومات إعلانك:
@@ -1372,11 +1469,8 @@ function displayMessage(type, text) {
 لإتمام النشر، نرجو إرسال بطاقة الإعلان:
 📎 ${payload.ref_code}_eldelala.png
 `;
-
-
-                
-                // ✅ استخدام الرقم المحدد في رابط واتساب
-                openWa.href = `https://wa.me/${+249998615193}?text=` + encodeURIComponent(msg);
+                // استخدام الرقم المحدد في رابط واتساب
+                openWa.href = `https://wa.me/${WHATSAPP_NUMBER}?text=` + encodeURIComponent(msg);
                 openWa.target = '_blank';
               }
             }, 800);
@@ -1392,13 +1486,11 @@ function displayMessage(type, text) {
       }
 
       showStatus('تم إنشاء البطاقة. يمكنك تحميلها الآن.', false);
-      // 💡 NEW: Display Success Message in the unified container
       displayMessage('success', '✅ تم تجهيز بطاقة الإعلان! قم بتنزيلها وإرسالها عبر الواتساب لتأكيد النشر.');
 
     }catch(err){
       console.error(err);
       showStatus('حدث خطأ أثناء الإنشاء (تفاصيل في Console).', true);
-      // 💡 NEW: Display General Error Message
       displayMessage('error', 'حدث خطأ غير متوقع أثناء إنشاء البطاقة. يرجى المحاولة مرة أخرى.');
     }finally{
       submitBtn.disabled = false;
@@ -1406,46 +1498,55 @@ function displayMessage(type, text) {
   });
 })();
 
-/* ===== ت = */
+/* ===== Event Listeners for NEW Controls = */
 
-//  الأداء
+// البحث
 if(qEl){
   qEl.addEventListener('input', debounce(applyFiltersAndRender, 300));
 }
 
-//  ر
+// التصنيف
 if(catFilter){
   catFilter.addEventListener('change', applyFiltersAndRender);
 }
 
-//  
+// NEW: الترتيب
+if(sortOrderEl){
+  sortOrderEl.addEventListener('change', applyFiltersAndRender);
+}
+
+// NEW: نطاق السعر (تأخير 500ms لتجنب الفلترة المستمرة)
+if(minPriceEl){
+  minPriceEl.addEventListener('input', debounce(applyFiltersAndRender, 500));
+}
+if(maxPriceEl){
+  maxPriceEl.addEventListener('input', debounce(applyFiltersAndRender, 500));
+}
+
+// التحديث
 const refreshBtn = document.getElementById('refresh');
 if(refreshBtn){
   refreshBtn.addEventListener('click', loadAdsFromGithub);
 }
 
-// 💡 NEW JAVASCRIPT FOR TICKER TAPE LOGIC
+// Ticker Tape Logic
 (function(){
   const tickerTape = document.getElementById('tickerTape');
   const tickerItems = tickerTape ? tickerTape.querySelectorAll('.ticker-item') : null;
   
-  // Check if the ticker exists and has messages
   if(tickerTape && tickerItems && tickerItems.length > 0){
-    // If there are messages, add the class to make it visible
     tickerTape.classList.add('has-messages');
   }
 })();
-// 💡 END OF NEW JAVASCRIPT
 
-/* == */
-window.addEventListener('load', async ()=>{ // تم إضافة async
+/* == INITIALIZATION == */
+window.addEventListener('load', async ()=>{ 
   document.getElementById('home').classList.add('active');
-  await loadAdsFromGithub(); // تم إضافة await لضمان تحميل البيانات الأولية
-  openAdFromHash(); // التحقق من الـ hash وفتح الإعلان إذا وجد
-  checkAndToggleVisibility(); // 💡 NEW: Initial check to hide the message container
+  await loadAdsFromGithub(); 
+  openAdFromHash(); 
+  checkAndToggleVisibility(); 
 });
 
-/* */
 window.addEventListener('hashchange', openAdFromHash);
 </script>
 </body>
