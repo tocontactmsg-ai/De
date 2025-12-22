@@ -16,18 +16,14 @@
 
     <style>
         body { font-family: 'Cairo', sans-serif; background: #f8fafc; color: #1e293b; }
-        
-        /* Brand Colors */
-        .title-main { color: #1e3a8a; } /* Deep Blue */
-        .title-accent { color: #007BE2; } /* Logo light blue */
-        
+        .title-main { color: #1e3a8a; } 
+        .title-accent { color: #10b981; } 
         .card-tender { background: white; border-radius: 2rem; border: 1px solid #f1f5f9; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .card-tender:hover { border-color: #10b981; }
         .nav-active { color: #1e3a8a; border-bottom: 3px solid #1e3a8a; }
         .search-input { width: 100%; padding: 1.25rem 3.5rem; background: white; border-radius: 1.5rem; border: 2px solid #f1f5f9; transition: all 0.2s; }
         .search-input:focus { border-color: #1e3a8a; box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.1); outline: none; }
         .mono { font-family: 'Roboto Mono', monospace; }
-        
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-feed { animation: fadeIn 0.4s ease forwards; }
     </style>
@@ -39,10 +35,10 @@
         const { useState, useEffect } = React;
 
         const CONFIG = {
-            user: "Sudatnd",
-            repo: "De",
-            path: "ads",
-            wa: "249901234567"
+            user: "Sudatnd", // Change this to your GitHub username
+            repo: "De",      // Change this to your Repo name
+            path: "ads",     // Change this to your folder name
+            wa: "249901234567" // Your WhatsApp number for receiving requests
         };
 
         function App() {
@@ -59,24 +55,16 @@
 
             const isAr = lang === "ar";
             const t = {
-                title_el: "EL",
-                title_delala: "DELALA",
+                title_el: "EL", title_delala: "DELALA",
                 sub: isAr ? "نجلب لك السوق في مكانك" : "The Market in Your Hands",
-                searchPlaceholder: isAr ? "ابحث بالكود، الموقع، أو الصنف..." : "Search by Ref, Loc, or Item...",
-                ref: isAr ? "المرجع" : "REF",
-                bid: isAr ? "تقديم عرض" : "Offer Bid",
-                share: isAr ? "مشاركة" : "Share",
-                pdf: isAr ? "تحميل" : "PDF",
-                post: isAr ? "إضافة طلب" : "Post Request",
-                feed: isAr ? "العطاءات" : "Tenders",
+                searchPlaceholder: isAr ? "ابحث بالكود، الموقع، أو الصنف..." : "Search...",
+                ref: isAr ? "المرجع" : "REF", bid: isAr ? "تقديم عرض" : "Offer Bid",
+                share: isAr ? "مشاركة" : "Share", pdf: isAr ? "تحميل" : "PDF",
+                post: isAr ? "إضافة طلب" : "Post Request", feed: isAr ? "العطاءات" : "Tenders",
                 viewAll: isAr ? "عرض كافة العطاءات" : "View All Tenders",
                 aboutTitle: isAr ? "عن المنصة" : "About Platform",
-                aboutMain: isAr 
-                    ? "منصة الدلالة هي حلقة الوصل الموثوقة بين المؤسسات الصحية والموردين في السودان. نهدف لتسهيل الوصول للمستلزمات الطبية عبر نظام عطاءات آمن."
-                    : "Eldelala is the reliable bridge between health institutions and suppliers in Sudan. We aim to simplify medical procurement through a secure bidding system.",
-                aboutInstruction: isAr
-                    ? "يمكنك اضافة طلب بكتابة كل صنف مع ذكر وصفه والشركة المصنعة والعبوة ومن ثم قم باضافة العدد."
-                    : "You can add a request by writing each item with its description, manufacturer, and packaging, then add the quantity."
+                aboutMain: isAr ? "منصة الدلالة هي حلقة الوصل الموثوقة بين المؤسسات الصحية والموردين في السودان." : "Eldelala is the reliable bridge between health institutions and suppliers in Sudan.",
+                aboutInstruction: isAr ? "يمكنك اضافة طلب بكتابة كل صنف مع ذكر وصفه والشركة المصنعة والعبوة ومن ثم قم باضافة العدد." : "You can add a request by writing each item with its description, manufacturer, and packaging, then add the quantity."
             };
 
             useEffect(() => {
@@ -86,9 +74,7 @@
                     fetch(`https://api.github.com/repos/${CONFIG.user}/${CONFIG.repo}/contents/${CONFIG.path}`)
                         .then(res => res.json())
                         .then(async files => {
-                            const data = await Promise.all(
-                                files.filter(f => f.name.endsWith('.json')).map(f => fetch(f.download_url).then(r => r.json()))
-                            );
+                            const data = await Promise.all(files.filter(f => f.name.endsWith('.json')).map(f => fetch(f.download_url).then(r => r.json())));
                             setTenders(data.sort((a,b) => b.id - a.id));
                             setLoading(false);
                             if(sharedRef) setExpanded({ [sharedRef]: true });
@@ -99,15 +85,13 @@
             const filteredTenders = tenders.filter(item => {
                 if (sharedRef && !search) return item.id === sharedRef;
                 const query = search.toLowerCase();
-                return item.id.toString().toLowerCase().includes(query) || 
-                       item.location.toLowerCase().includes(query) ||
-                       item.items.some(i => i.name.toLowerCase().includes(query));
+                return item.id.toString().toLowerCase().includes(query) || item.location.toLowerCase().includes(query) || item.items.some(i => i.name.toLowerCase().includes(query));
             });
 
             const shareTender = (tender) => {
                 const baseUrl = window.location.origin + window.location.pathname;
                 const shareLink = `${baseUrl}?ref=${tender.id}`;
-                const message = `📌 *عطاء طبي من الدلالة*\n*المرجع:* ${tender.id}\n*الموقع:* ${tender.location}\n\n🔗 *رابط العطاء:*\n${shareLink}`;
+                const message = `📌 *عطاء طبي من الدلالة*\n*المرجع:* ${tender.id}\n*الموقع:* ${tender.location}\n\n🔗 *رابط التفاصيل:*\n${shareLink}`;
                 window.open(`https://wa.me/?text=${encodeURIComponent(message)}`);
             };
 
@@ -122,36 +106,24 @@
 
             return (
                 <div className="max-w-xl mx-auto px-4 py-8">
-                    {/* Header */}
                     <header className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-3">
                             <img src="favicon.ico" alt="Logo" className="w-14 h-14 object-contain" />
                             <div>
                                 <h1 className="text-3xl font-[900] italic tracking-tighter leading-none">
-                                    <span className="title-main">{t.title_el}</span>
-                                    <span className="title-accent">{t.title_delala}</span>
+                                    <span className="title-main">{t.title_el}</span><span className="title-accent">{t.title_delala}</span>
                                 </h1>
                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">{t.sub}</p>
                             </div>
                         </div>
-                        <button onClick={() => setLang(isAr ? "en" : "ar")} className="bg-white border text-[10px] font-black px-4 py-2 rounded-xl shadow-sm uppercase">
-                            {isAr ? "English" : "العربية"}
-                        </button>
+                        <button onClick={() => setLang(isAr ? "en" : "ar")} className="bg-white border text-[10px] font-black px-4 py-2 rounded-xl shadow-sm uppercase">{isAr ? "English" : "العربية"}</button>
                     </header>
 
-                    {/* About Section with Instruction */}
                     <div className="bg-white border-r-4 border-blue-600 p-6 rounded-2xl mb-8 shadow-sm">
-                        <h2 className="text-sm font-black text-slate-800 mb-2 flex items-center gap-2">
-                            <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
-                            {t.aboutTitle}
-                        </h2>
+                        <h2 className="text-sm font-black text-slate-800 mb-2 flex items-center gap-2"><span className="w-2 h-2 bg-blue-600 rounded-full"></span>{t.aboutTitle}</h2>
                         <div className="space-y-3">
-                            <p className="text-xs text-slate-500 leading-relaxed font-medium">
-                                {t.aboutMain}
-                            </p>
-                            <p className="text-xs text-blue-700 leading-relaxed font-bold bg-blue-50 p-3 rounded-xl border border-blue-100">
-                                {t.aboutInstruction}
-                            </p>
+                            <p className="text-xs text-slate-500 leading-relaxed font-medium">{t.aboutMain}</p>
+                            <p className="text-xs text-blue-700 leading-relaxed font-bold bg-blue-50 p-3 rounded-xl border border-blue-100">{t.aboutInstruction}</p>
                         </div>
                     </div>
 
@@ -161,94 +133,69 @@
                     </nav>
 
                     {sharedRef && !search && view === "feed" && (
-                        <button 
-                            onClick={() => window.location.href = window.location.origin + window.location.pathname}
-                            className="w-full mb-6 py-3 bg-blue-50 text-blue-700 rounded-xl font-bold text-xs"
-                        >
-                            {t.viewAll}
-                        </button>
-                    )}
-
-                    {view === "feed" && (
-                        <div className="relative mb-8">
-                            <span className={`absolute ${isAr?'right-4':'left-4'} top-4 text-slate-400`}>
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                            </span>
-                            <input 
-                                type="text" 
-                                placeholder={t.searchPlaceholder}
-                                className="search-input text-sm font-medium"
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                            />
-                        </div>
+                        <button onClick={() => window.location.href = window.location.origin + window.location.pathname} className="w-full mb-6 py-3 bg-blue-50 text-blue-700 rounded-xl font-bold text-xs">{t.viewAll}</button>
                     )}
 
                     {view === "feed" ? (
-                        <div className="space-y-6">
-                            {loading ? <div className="text-center py-10 animate-pulse text-blue-600 font-bold italic">Loading Feed...</div> : 
-                             filteredTenders.map(tndr => (
-                                <div key={tndr.id} className="card-tender p-6 shadow-xl animate-feed">
-                                    <div className="flex justify-between mb-4">
-                                        <div>
-                                            <span className="mono text-[10px] bg-slate-900 text-white px-3 py-1 rounded-full">{t.ref}: {tndr.id}</span>
-                                            <h3 className="text-xl font-black text-slate-800 mt-2">📍 {tndr.location}</h3>
-                                        </div>
-                                        <div className="text-center bg-blue-50 px-3 py-1 rounded-xl border border-blue-100 h-fit">
-                                            <p className="text-xl font-black text-blue-600">{tndr.items.length}</p>
-                                        </div>
-                                    </div>
-                                    <div onClick={() => setExpanded({...expanded, [tndr.id]: !expanded[tndr.id]})} className="cursor-pointer space-y-2">
-                                        {tndr.items.slice(0, expanded[tndr.id] ? undefined : 3).map((it, idx) => (
-                                            <div key={idx} className="flex justify-between text-sm bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                                <span className="font-bold text-slate-700">{it.name}</span>
-                                                <span className="font-black text-blue-700">{it.qty}</span>
+                        <>
+                            <div className="relative mb-8">
+                                <span className={`absolute ${isAr?'right-4':'left-4'} top-4 text-slate-400`}><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></span>
+                                <input type="text" placeholder={t.searchPlaceholder} className="search-input text-sm font-medium" value={search} onChange={(e) => setSearch(e.target.value)}/>
+                            </div>
+                            <div className="space-y-6">
+                                {loading ? <div className="text-center py-10 animate-pulse text-blue-600 font-bold italic">Loading...</div> : 
+                                 filteredTenders.map(tndr => (
+                                    <div key={tndr.id} className="card-tender p-6 shadow-xl animate-feed">
+                                        <div className="flex justify-between mb-4">
+                                            <div>
+                                                <span className="mono text-[10px] bg-slate-900 text-white px-3 py-1 rounded-full">{t.ref}: {tndr.id}</span>
+                                                <h3 className="text-xl font-black text-slate-800 mt-2">📍 {tndr.location}</h3>
                                             </div>
-                                        ))}
-                                        {tndr.items.length > 3 && (
-                                            <div className="text-center mt-2 text-[10px] font-black text-blue-500 uppercase">
-                                                {expanded[tndr.id] ? "⬆ Collapse / إغلاق" : `⬇ +${tndr.items.length-3} More / المزيد`}
-                                            </div>
-                                        )}
+                                            <div className="bg-blue-50 px-3 py-1 rounded-xl border border-blue-100 h-fit text-xl font-black text-blue-600">{tndr.items.length}</div>
+                                        </div>
+                                        <div onClick={() => setExpanded({...expanded, [tndr.id]: !expanded[tndr.id]})} className="cursor-pointer space-y-2">
+                                            {tndr.items.slice(0, expanded[tndr.id] ? undefined : 3).map((it, idx) => (
+                                                <div key={idx} className="flex justify-between text-sm bg-slate-50 p-3 rounded-xl border border-slate-100"><span className="font-bold text-slate-700">{it.name}</span><span className="font-black text-blue-700">{it.qty}</span></div>
+                                            ))}
+                                            {tndr.items.length > 3 && <div className="text-center text-[10px] font-black text-blue-500 uppercase">{expanded[tndr.id] ? "⬆ Close" : `⬇ +${tndr.items.length-3} More`}</div>}
+                                        </div>
+                                        <div className="grid grid-cols-3 gap-2 mt-6">
+                                            <button onClick={() => shareTender(tndr)} className="bg-slate-100 text-slate-600 py-3 rounded-xl font-bold text-xs uppercase">{t.share}</button>
+                                            <button className="bg-red-50 text-red-600 py-3 rounded-xl font-bold text-xs uppercase">{t.pdf}</button>
+                                            <a href={`https://wa.me/${CONFIG.wa}?text=${encodeURIComponent(`Offer for ${tndr.id}`)}`} className="bg-blue-600 text-white py-3 rounded-xl font-black text-xs text-center shadow-lg uppercase">{t.bid}</a>
+                                        </div>
                                     </div>
-                                    <div className="grid grid-cols-3 gap-2 mt-6">
-                                        <button onClick={() => shareTender(tndr)} className="bg-slate-100 text-slate-600 py-3 rounded-xl font-bold text-xs uppercase">{t.share}</button>
-                                        <button onClick={() => {}} className="bg-red-50 text-red-600 py-3 rounded-xl font-bold text-xs uppercase">{t.pdf}</button>
-                                        <a href={`https://wa.me/${CONFIG.wa}?text=${encodeURIComponent(`Offer for ${tndr.id}`)}`} className="bg-blue-600 text-white py-3 rounded-xl font-black text-xs text-center shadow-lg uppercase">{t.bid}</a>
-                                    </div>
-                                </div>
-                             ))
-                            }
-                        </div>
+                                 ))}
+                            </div>
+                        </>
                     ) : (
-                        /* Post Form */
                         <div className="card-tender p-8 shadow-2xl">
                             <form onSubmit={handlePost} className="space-y-4">
-                                <input required name="user" placeholder={isAr?"اسم المقدم":"Your Name"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
+                                <input required name="user" placeholder={isAr?"اسمك الكريم":"Name"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
                                 <input required name="phone" placeholder={isAr?"رقم الهاتف":"Phone"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
-                                <input required name="hosp" placeholder={isAr?"اسم الجهة":"Orgnization Name"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none font-bold" />
+                                <input required name="hosp" placeholder={isAr?"المستشفى أو الجهة":"Hospital"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none font-bold" />
                                 <input required name="loc" placeholder={isAr?"الموقع":"Location"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
                                 <div className="pt-4 border-t">
                                     {items.map((it, idx) => (
-                                        <div key={idx} className="flex gap-2 mb-2">
-                                            <input required placeholder="Item / الوصف والشركة المصنعة والعبوة" className="flex-1 p-3 border rounded-xl text-sm" value={it.name} onChange={e => {
-                                                const n = [...items]; n[idx].name = e.target.value; setItems(n);
-                                            }} />
-                                            <input required placeholder="العدد" className="w-20 p-3 border rounded-xl text-sm font-bold text-center" value={it.qty} onChange={e => {
-                                                const n = [...items]; n[idx].qty = e.target.value; setItems(n);
-                                            }} />
+                                        <div key={idx} className="flex gap-2 mb-2 items-center animate-feed">
+                                            <input required placeholder="Item / الوصف والشركة" className="flex-1 p-3 border rounded-xl text-sm" value={it.name} onChange={e => {const n = [...items]; n[idx].name = e.target.value; setItems(n);}} />
+                                            <input required placeholder="العدد" className="w-16 p-3 border rounded-xl text-sm font-bold text-center" value={it.qty} onChange={e => {const n = [...items]; n[idx].qty = e.target.value; setItems(n);}} />
+                                            {items.length > 1 && (
+                                                <button type="button" onClick={() => setItems(items.filter((_, i) => i !== idx))} className="w-8 h-8 flex items-center justify-center bg-red-50 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" /></svg>
+                                                </button>
+                                            )}
                                         </div>
                                     ))}
-                                    <button type="button" onClick={() => setItems([...items, {name:"", qty:""}])} className="w-full py-2 border-2 border-dashed rounded-xl text-[10px] font-bold text-slate-400">+ Add Item / إضافة صنف</button>
+                                    <button type="button" onClick={() => setItems([...items, {name:"", qty:""}])} className="w-full py-2 border-2 border-dashed rounded-xl text-[10px] font-bold text-slate-400 mt-2">+ Add Item</button>
                                 </div>
-                                <button type="submit" className="w-full py-5 bg-[#128C7E] text-white rounded-2xl font-black text-sm uppercase shadow-xl italic tracking-widest">ارسل الطلب عبر الواتساب</button>
+                                <button type="submit" className="w-full py-5 bg-[#128C7E] text-white rounded-2xl font-black text-sm uppercase shadow-xl">ارسل عبر الواتساب</button>
                             </form>
                         </div>
                     )}
                 </div>
             );
         }
-
         ReactDOM.createRoot(document.getElementById("root")).render(<App />);
     </script>
 </body>
