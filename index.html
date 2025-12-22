@@ -17,7 +17,7 @@
     <style>
         body { font-family: 'Cairo', sans-serif; background: #f8fafc; color: #1e293b; }
         .title-main { color: #1e3a8a; } 
-        .title-accent { color: #10b981; } 
+        .title-accent { color: #007BE2; } 
         .card-tender { background: white; border-radius: 2rem; border: 1px solid #f1f5f9; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .nav-active { color: #1e3a8a; border-bottom: 3px solid #1e3a8a; }
         .search-input { width: 100%; padding: 1.25rem 3.5rem; background: white; border-radius: 1.5rem; border: 2px solid #f1f5f9; }
@@ -36,7 +36,7 @@
             user: "tocontactmsg-ai", 
             repo: "De",      
             path: "ads",     
-            wa: "249901234567" // Ensure this is your correct number
+            wa: "249998615193" // Ensure this is your correct number
         };
 
         function App() {
@@ -54,7 +54,7 @@
             const isAr = lang === "ar";
             const t = {
                 title_el: "EL", title_delala: "DELALA",
-                sub: isAr ? "نجلب لك السوق في مكانك" : "The Market in Your Hands",
+                sub: isAr ? "نجلب لك السوق في مكانك" : "We Bring The Market To You",
                 searchPlaceholder: isAr ? "ابحث بالكود، الموقع، أو الصنف..." : "Search...",
                 ref: isAr ? "المرجع" : "REF", bid: isAr ? "تقديم عرض" : "Offer Bid",
                 share: isAr ? "مشاركة" : "Share", pdf: isAr ? "تحميل" : "PDF",
@@ -88,7 +88,7 @@
 
             const generatePDF = (tender) => {
                 const doc = new jspdf.jsPDF();
-                doc.setFontSize(22); doc.text("ELDELALA", 105, 20, {align:"center"});
+                doc.setFontSize(22); doc.text("eldelala.com", 105, 20, {align:"center"});
                 doc.setFontSize(10); doc.text(`REF: ${tender.id} | Location: ${tender.location}`, 105, 30, {align:"center"});
                 doc.autoTable({
                     startY: 40,
@@ -183,14 +183,14 @@
                     ) : (
                         <div className="card-tender p-8 shadow-2xl">
                             <form onSubmit={handlePost} className="space-y-4">
-                                <input required name="user" placeholder={isAr?"اسمك الكريم":"Name"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
+                                <input required name="user" placeholder={isAr?"اسم مقدم الطلب":"Name"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
                                 <input required name="phone" placeholder={isAr?"رقم الهاتف":"Phone"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
-                                <input required name="hosp" placeholder={isAr?"المستشفى أو الجهة":"Hospital"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none font-bold" />
+                                <input required name="hosp" placeholder={isAr?"اسم الجهة ":"Orgnizatio"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none font-bold" />
                                 <input required name="loc" placeholder={isAr?"الموقع":"Location"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
                                 <div className="pt-4 border-t">
                                     {items.map((it, idx) => (
                                         <div key={idx} className="flex gap-2 mb-2 items-center animate-feed">
-                                            <input required placeholder="Item / الوصف والشركة" className="flex-1 p-3 border rounded-xl text-sm" value={it.name} onChange={e => {const n = [...items]; n[idx].name = e.target.value; setItems(n);}} />
+                                            <input required placeholder="Item / الاسم والشركة والعبوة" className="flex-1 p-3 border rounded-xl text-sm" value={it.name} onChange={e => {const n = [...items]; n[idx].name = e.target.value; setItems(n);}} />
                                             <input required placeholder="العدد" className="w-16 p-3 border rounded-xl text-sm font-bold text-center" value={it.qty} onChange={e => {const n = [...items]; n[idx].qty = e.target.value; setItems(n);}} />
                                             {items.length > 1 && (
                                                 <button type="button" onClick={() => setItems(items.filter((_, i) => i !== idx))} className="w-8 h-8 flex items-center justify-center bg-red-50 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors">
