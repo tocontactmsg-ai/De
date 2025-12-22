@@ -15,11 +15,12 @@
 
     <style>
         body { font-family: 'Cairo', sans-serif; background: #f8fafc; color: #1e293b; }
-        .card-tender { background: white; border-radius: 2rem; border: 1px solid #e2e8f0; transition: all 0.3s ease; }
+        .card-tender { background: white; border-radius: 2rem; border: 1px solid #f1f5f9; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-tender:hover { transform: translateY(-4px); border-color: #3b82f6; }
+        .nav-active { color: #3b82f6; border-bottom: 3px solid #3b82f6; }
+        .search-input { width: 100%; padding: 1.25rem 3.5rem; background: white; border-radius: 1.5rem; border: 2px solid #f1f5f9; transition: all 0.2s; }
+        .search-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); outline: none; }
         .mono { font-family: 'Roboto Mono', monospace; }
-        .nav-active { border-bottom: 4px solid #2563eb; color: #2563eb; font-weight: 900; }
-        .search-input { width: 100%; padding: 1rem 3rem 1rem 1rem; background: white; border-radius: 1.2rem; border: 1px solid #e2e8f0; outline: none; transition: 0.3s; shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
-        .search-input:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-feed { animation: fadeIn 0.4s ease forwards; }
     </style>
@@ -31,10 +32,10 @@
         const { useState, useEffect } = React;
 
         const CONFIG = {
-            user: "tocontactmsg-ai",
-            repo: "De",
-            path: "ads",
-            wa: "249998615193" 
+            user: "Sudatnd", // Your GitHub Username
+            repo: "De",      // Your Repository Name
+            path: "ads",     // Your folder name
+            wa: "249901234567" // Your WhatsApp Number
         };
 
         function App() {
@@ -46,6 +47,10 @@
             const [expanded, setExpanded] = useState({});
             const [items, setItems] = useState([{ name: "", qty: "" }]);
 
+            // Get Deep Link Reference from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const sharedRef = urlParams.get('ref');
+
             const isAr = lang === "ar";
             const t = {
                 title: isAr ? "الدلالة" : "ELDELALA",
@@ -56,7 +61,8 @@
                 share: isAr ? "مشاركة" : "Share",
                 pdf: isAr ? "تحميل" : "PDF",
                 post: isAr ? "إضافة طلب" : "Post Request",
-                feed: isAr ? "العطاءات" : "Tenders"
+                feed: isAr ? "العطاءات" : "Tenders",
+                viewAll: isAr ? "عرض كافة العطاءات" : "View All Tenders"
             };
 
             useEffect(() => {
@@ -71,12 +77,17 @@
                             );
                             setTenders(data.sort((a,b) => b.id - a.id));
                             setLoading(false);
+                            
+                            // If a link was shared, expand that card automatically
+                            if(sharedRef) setExpanded({ [sharedRef]: true });
                         }).catch(() => setLoading(false));
                 }
             }, [view, lang]);
 
-            // Filter Logic
+            // Filter logic: If a sharedRef is in URL and no search is active, show only that one
             const filteredTenders = tenders.filter(item => {
+                if (sharedRef && !search) return item.id === sharedRef;
+                
                 const query = search.toLowerCase();
                 return item.id.toString().toLowerCase().includes(query) || 
                        item.location.toLowerCase().includes(query) ||
@@ -96,9 +107,9 @@
             };
 
             const shareTender = (tender) => {
-                const siteUrl = window.location.href.split('?')[0];
-                const shareLink = `${siteUrl}?ref=${tender.id}`;
-                const message = `📌 *عطاء طبي من الدلالة*\n*المرجع:* ${tender.id}\n*الموقع:* ${tender.location}\n*الأصناف:* ${tender.items.length}\n\n🔗 *رابط العطاء:*\n${shareLink}`;
+                const baseUrl = window.location.origin + window.location.pathname;
+                const shareLink = `${baseUrl}?ref=${tender.id}`;
+                const message = `📌 *عطاء طبي من الدلالة*\n*المرجع:* ${tender.id}\n*الموقع:* ${tender.location}\n\n🔗 *رابط العطاء:*\n${shareLink}`;
                 window.open(`https://wa.me/?text=${encodeURIComponent(message)}`);
             };
 
@@ -107,7 +118,7 @@
                 const fd = new FormData(e.target);
                 const refCode = "EL-" + Math.floor(Math.random()*9000 + 1000);
                 const itemList = items.map((it, i) => `${i+1}. ${it.name} (${it.qty})`).join('\n');
-                const message = `📌 *طلب جديد - الدلالة*\n*المرجع:* ${refCode}\n*الجهة:* ${fd.get("hosp")}\n*الموقع:* ${fd.get("loc")}\n*المرسل:* ${fd.get("user")}\n*الهاتف:* ${fd.get("phone")}\n----------\n*الأصناف:*\n${itemList}`;
+                const message = `📌 *طلب جديد - الدلالة*\n*المرجع:* *${refCode}*\n*الجهة:* *${fd.get("hosp")}*\n*الموقع:* *${fd.get("loc")}*\n*الاسم:* *${fd.get("user")}*\n*رقم الهاتف:* *${fd.get("phone")}*\n----------\n*الأصناف:*\n${itemList}`;
                 window.open(`https://wa.me/${CONFIG.wa}?text=${encodeURIComponent(message)}`);
             };
 
@@ -118,7 +129,7 @@
                             <h1 className="text-4xl font-black italic tracking-tighter text-slate-900">{t.title}</h1>
                             <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">{t.sub}</p>
                         </div>
-                        <button onClick={() => setLang(isAr ? "en" : "ar")} className="bg-white border text-[10px] font-black px-4 py-2 rounded-xl shadow-sm uppercase uppercase">
+                        <button onClick={() => setLang(isAr ? "en" : "ar")} className="bg-white border text-[10px] font-black px-4 py-2 rounded-xl shadow-sm uppercase">
                             {isAr ? "English" : "العربية"}
                         </button>
                     </header>
@@ -127,6 +138,15 @@
                         <button onClick={() => setView("feed")} className={`pb-3 ${view==='feed'?'nav-active':'text-slate-400'}`}>{t.feed}</button>
                         <button onClick={() => setView("post")} className={`pb-3 ${view==='post'?'nav-active':'text-slate-400'}`}>{t.post}</button>
                     </nav>
+
+                    {sharedRef && !search && view === "feed" && (
+                        <button 
+                            onClick={() => window.location.href = window.location.origin + window.location.pathname}
+                            className="w-full mb-6 py-2 bg-blue-100 text-blue-700 rounded-xl font-bold text-xs"
+                        >
+                            {t.viewAll}
+                        </button>
+                    )}
 
                     {view === "feed" && (
                         <div className="relative mb-8">
@@ -192,10 +212,10 @@
                                 <div className="pt-4 border-t">
                                     {items.map((it, idx) => (
                                         <div key={idx} className="flex gap-2 mb-2">
-                                            <input required placeholder="Item" className="flex-1 p-3 border rounded-xl text-sm" onChange={e => {
+                                            <input required placeholder="Item" className="flex-1 p-3 border rounded-xl text-sm" value={it.name} onChange={e => {
                                                 const n = [...items]; n[idx].name = e.target.value; setItems(n);
                                             }} />
-                                            <input required placeholder="Qty" className="w-20 p-3 border rounded-xl text-sm font-bold text-center" onChange={e => {
+                                            <input required placeholder="Qty" className="w-20 p-3 border rounded-xl text-sm font-bold text-center" value={it.qty} onChange={e => {
                                                 const n = [...items]; n[idx].qty = e.target.value; setItems(n);
                                             }} />
                                         </div>
