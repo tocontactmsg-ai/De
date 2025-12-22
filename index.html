@@ -8,20 +8,35 @@
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React and Libraries -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        /* Custom styles here instead of tailwind config */
-        :root {
-            --primary: #007BE2;
-            --secondary: #1e3a8a;
-            --accent: #128C7E;
-        }
-        
         body { 
             font-family: 'Cairo', sans-serif; 
             background: #f8fafc;
             color: #1e293b;
             min-height: 100vh;
         }
+        
+        .title-main { 
+            color: #1e3a8a;
+        } 
+        
+        .title-accent { 
+            color: #007BE2;
+        } 
         
         .card-tender { 
             background: white;
@@ -37,19 +52,10 @@
             box-shadow: 0 8px 30px rgba(0, 123, 226, 0.1);
         }
         
-        .btn-primary {
-            background: linear-gradient(135deg, #007BE2 0%, #1e3a8a 100%);
-            color: white;
-            font-weight: bold;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.75rem;
-            border: none;
-            transition: all 0.2s ease;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 123, 226, 0.3);
+        .nav-active { 
+            color: #1e3a8a;
+            font-weight: 900;
+            border-bottom: 3px solid #1e3a8a;
         }
         
         .search-input { 
@@ -67,10 +73,8 @@
             box-shadow: 0 0 0 3px rgba(0, 123, 226, 0.1);
         }
         
-        .nav-active { 
-            color: #1e3a8a; 
-            font-weight: 900;
-            border-bottom: 3px solid #1e3a8a;
+        .mono { 
+            font-family: monospace;
         }
         
         @keyframes fadeIn { 
@@ -95,20 +99,22 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #007BE2 0%, #1e3a8a 100%);
+            color: white;
+            font-weight: bold;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 123, 226, 0.3);
+        }
     </style>
-    
-    <!-- React and Libraries -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    
-    <!-- Simple Icons (FontAwesome alternative) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
     <div id="root"></div>
@@ -124,7 +130,7 @@
             itemsPerPage: 10
         };
 
-        // Simple components without complex styling
+        // Loading Component
         function LoadingSpinner() {
             return (
                 <div className="flex justify-center items-center py-12">
@@ -134,6 +140,7 @@
             );
         }
 
+        // Empty State Component
         function EmptyState({ title, description }) {
             return (
                 <div className="text-center py-12">
@@ -146,7 +153,7 @@
             );
         }
 
-        // Main App Component (Simplified)
+        // Main App Component
         function App() {
             const [lang, setLang] = useState("ar");
             const [view, setView] = useState("feed");
@@ -265,38 +272,36 @@
 
             // Handle Post Request
             const handlePost = (e) => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    
-    // كود مرجعي بسيط ومرتب: YYMMDDHHMM
-    const d = new Date();
-    const refCode = 
-        d.getFullYear().toString().slice(-2) +
-        (d.getMonth()+1).toString().padStart(2, '0') +
-        d.getDate().toString().padStart(2, '0') +
-        d.getHours().toString().padStart(2, '0') +
-        d.getMinutes().toString().padStart(2, '0');
-    // مثال: 2312151430 يعني 2023/12/15 الساعة 14:30
-    
-    const itemList = items.map((it, i) => `${i+1}. ${it.name} (${it.qty})`).join('\n');
+                e.preventDefault();
+                const fd = new FormData(e.target);
+                
+                // كود مرجعي يعتمد على التاريخ والوقت: YYMMDDHHMM
+                const d = new Date();
+                const refCode = 
+                    d.getFullYear().toString().slice(-2) +
+                    (d.getMonth()+1).toString().padStart(2, '0') +
+                    d.getDate().toString().padStart(2, '0') +
+                    d.getHours().toString().padStart(2, '0') +
+                    d.getMinutes().toString().padStart(2, '0');
+                // مثال: 2312151430 يعني 2023/12/15 الساعة 14:30
+                
                 const itemList = items.map((it, i) => `${i+1}. ${it.name} (${it.qty})`).join('\n');
                 const message = `📌 *طلب جديد*\n*المرجع:* *${refCode}*\n*الجهة:* *${fd.get("hosp")}*\n*الموقع:* *${fd.get("loc")}*\n*المرسل:* *${fd.get("user")}*\n*الهاتف:* *${fd.get("phone")}*\n----------\n*الأصناف:*\n${itemList}`;
+                
                 window.open(`https://wa.me/${CONFIG.wa}?text=${encodeURIComponent(message)}`);
             };
 
             return (
                 <div className="max-w-xl mx-auto px-4 py-8">
-                    {/* Header */}
+                    {/* Header بدون الصندوق الأزرق */}
                     <header className="flex justify-between items-center mb-8">
-                       <div className="flex items-center gap-3">
-    <div>
-        <h1 className="text-3xl font-bold">
-            <span className="text-blue-900">EL</span>
-            <span className="text-blue-600">DELALA</span>
-        </h1>
-        <p className="text-xs text-slate-500 font-bold">{t.sub}</p>
-    </div>
-</div>
+                        <div>
+                            <h1 className="text-3xl font-bold">
+                                <span className="text-blue-900">EL</span>
+                                <span className="text-blue-600">DELALA</span>
+                            </h1>
+                            <p className="text-xs text-slate-500 font-bold">{t.sub}</p>
+                        </div>
                         <button 
                             onClick={() => setLang(isAr ? "en" : "ar")}
                             className="bg-white border border-slate-300 text-xs font-bold px-3 py-2 rounded-lg"
@@ -552,7 +557,7 @@
                             © {new Date().getFullYear()} Eldelala.com
                         </p>
                         <p className="text-xs mt-2">
-                            {isAr ? "منصة الدلالة - نجلب لك السوق في مكانك" : "Eldelala - We Bring The Market To You "}
+                            {isAr ? "منصة الدلالة - السوق الصحي السوداني" : "Eldelala - Sudanese Health Market"}
                         </p>
                     </footer>
                 </div>
