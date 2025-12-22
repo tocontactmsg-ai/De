@@ -18,11 +18,11 @@
         body { font-family: 'Cairo', sans-serif; background: #f8fafc; color: #1e293b; }
         
         /* Brand Colors */
-        .title-main { color: #1e3a8a; } /* Logo Deep Blue */
-        .title-accent { color: #007BE2; } /* Logo light blue*/
+        .title-main { color: #1e3a8a; } /* Deep Blue */
+        .title-accent { color: #007BE2; } /* Logo light blue */
         
         .card-tender { background: white; border-radius: 2rem; border: 1px solid #f1f5f9; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .card-tender:hover { transform: translateY(-4px); border-color: #10b981; }
+        .card-tender:hover { border-color: #10b981; }
         .nav-active { color: #1e3a8a; border-bottom: 3px solid #1e3a8a; }
         .search-input { width: 100%; padding: 1.25rem 3.5rem; background: white; border-radius: 1.5rem; border: 2px solid #f1f5f9; transition: all 0.2s; }
         .search-input:focus { border-color: #1e3a8a; box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.1); outline: none; }
@@ -38,12 +38,11 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // --- CONFIGURATION ---
         const CONFIG = {
-            user: "Sudatnd",    // Your GitHub Username
-            repo: "De",         // Your Repo Name
-            path: "ads",        // Folder with JSONs
-            wa: "249901234567"  // Your WhatsApp for receiving requests
+            user: "Sudatnd",
+            repo: "De",
+            path: "ads",
+            wa: "249901234567"
         };
 
         function App() {
@@ -55,7 +54,6 @@
             const [expanded, setExpanded] = useState({});
             const [items, setItems] = useState([{ name: "", qty: "" }]);
 
-            // Detect Shared Link (?ref=EL-XXXX)
             const urlParams = new URLSearchParams(window.location.search);
             const sharedRef = urlParams.get('ref');
 
@@ -73,13 +71,12 @@
                 feed: isAr ? "العطاءات" : "Tenders",
                 viewAll: isAr ? "عرض كافة العطاءات" : "View All Tenders",
                 aboutTitle: isAr ? "عن المنصة" : "About Platform",
-                aboutText: isAr 
-                    ? "منصة الدلالة هي حلقة الوصل الموثوقة بين المؤسسات الصحية والموردين في السودان. نهدف لتسهيل الوصول للمستلزمات الطبية واللوجستية عبر نظام عطاءات آمن."
-                    : "Eldelala is the reliable bridge between health institutions and suppliers in Sudan. We aim to simplify medical procurement through a secure bidding system."
-           aboutInstruction: isAr
+                aboutMain: isAr 
+                    ? "منصة الدلالة هي حلقة الوصل الموثوقة بين المؤسسات الصحية والموردين في السودان. نهدف لتسهيل الوصول للمستلزمات الطبية عبر نظام عطاءات آمن."
+                    : "Eldelala is the reliable bridge between health institutions and suppliers in Sudan. We aim to simplify medical procurement through a secure bidding system.",
+                aboutInstruction: isAr
                     ? "يمكنك اضافة طلب بكتابة كل صنف مع ذكر وصفه والشركة المصنعة والعبوة ومن ثم قم باضافة العدد."
                     : "You can add a request by writing each item with its description, manufacturer, and packaging, then add the quantity."
-         
             };
 
             useEffect(() => {
@@ -94,14 +91,11 @@
                             );
                             setTenders(data.sort((a,b) => b.id - a.id));
                             setLoading(false);
-                            
-                            // Auto-expand if coming from a share link
                             if(sharedRef) setExpanded({ [sharedRef]: true });
                         }).catch(() => setLoading(false));
                 }
             }, [view, lang]);
 
-            // Filter logic (Prioritize sharedRef unless user is searching)
             const filteredTenders = tenders.filter(item => {
                 if (sharedRef && !search) return item.id === sharedRef;
                 const query = search.toLowerCase();
@@ -109,18 +103,6 @@
                        item.location.toLowerCase().includes(query) ||
                        item.items.some(i => i.name.toLowerCase().includes(query));
             });
-
-            const generatePDF = (tender) => {
-                const doc = new jspdf.jsPDF();
-                doc.setFontSize(22); doc.text("Eldelala.com", 105, 20, {align:"center"});
-                doc.setFontSize(10); doc.text(`Ref: ${tender.id} | Location: ${tender.location}`, 105, 30, {align:"center"});
-                doc.autoTable({
-                    startY: 40,
-                    head: [['#', 'Description', 'Qty']],
-                    body: tender.items.map((it, i) => [i+1, it.name, it.qty]),
-                });
-                doc.save(`Eldelala-${tender.id}.pdf`);
-            };
 
             const shareTender = (tender) => {
                 const baseUrl = window.location.origin + window.location.pathname;
@@ -140,10 +122,10 @@
 
             return (
                 <div className="max-w-xl mx-auto px-4 py-8">
-                    {/* Header with Logo and Brand Colors */}
+                    {/* Header */}
                     <header className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-3">
-                            <img src="favicon.ico" alt="Logo" className="w-14 h-14 object-contain shadow-sm rounded-xl" />
+                            <img src="favicon.ico" alt="Logo" className="w-14 h-14 object-contain" />
                             <div>
                                 <h1 className="text-3xl font-[900] italic tracking-tighter leading-none">
                                     <span className="title-main">{t.title_el}</span>
@@ -152,20 +134,25 @@
                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">{t.sub}</p>
                             </div>
                         </div>
-                        <button onClick={() => setLang(isAr ? "en" : "ar")} className="bg-white border-2 border-slate-100 text-[10px] font-black px-4 py-2 rounded-xl shadow-sm uppercase">
+                        <button onClick={() => setLang(isAr ? "en" : "ar")} className="bg-white border text-[10px] font-black px-4 py-2 rounded-xl shadow-sm uppercase">
                             {isAr ? "English" : "العربية"}
                         </button>
                     </header>
 
-                    {/* About Paragraph Section */}
+                    {/* About Section with Instruction */}
                     <div className="bg-white border-r-4 border-blue-600 p-6 rounded-2xl mb-8 shadow-sm">
                         <h2 className="text-sm font-black text-slate-800 mb-2 flex items-center gap-2">
                             <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
                             {t.aboutTitle}
                         </h2>
-                        <p className="text-xs text-slate-500 leading-relaxed font-medium">
-                            {t.aboutText}
-                        </p>
+                        <div className="space-y-3">
+                            <p className="text-xs text-slate-500 leading-relaxed font-medium">
+                                {t.aboutMain}
+                            </p>
+                            <p className="text-xs text-blue-700 leading-relaxed font-bold bg-blue-50 p-3 rounded-xl border border-blue-100">
+                                {t.aboutInstruction}
+                            </p>
+                        </div>
                     </div>
 
                     <nav className="flex justify-around mb-6 border-b border-slate-200 text-sm font-bold">
@@ -173,11 +160,10 @@
                         <button onClick={() => setView("post")} className={`pb-3 ${view==='post'?'nav-active':'text-slate-400'}`}>{t.post}</button>
                     </nav>
 
-                    {/* Deep Link Reset Button */}
                     {sharedRef && !search && view === "feed" && (
                         <button 
                             onClick={() => window.location.href = window.location.origin + window.location.pathname}
-                            className="w-full mb-6 py-3 bg-blue-50 text-blue-700 rounded-xl font-bold text-xs border border-blue-100 shadow-sm"
+                            className="w-full mb-6 py-3 bg-blue-50 text-blue-700 rounded-xl font-bold text-xs"
                         >
                             {t.viewAll}
                         </button>
@@ -202,7 +188,7 @@
                         <div className="space-y-6">
                             {loading ? <div className="text-center py-10 animate-pulse text-blue-600 font-bold italic">Loading Feed...</div> : 
                              filteredTenders.map(tndr => (
-                                <div key={tndr.id} className="card-tender p-6 shadow-xl shadow-slate-200/40 animate-feed">
+                                <div key={tndr.id} className="card-tender p-6 shadow-xl animate-feed">
                                     <div className="flex justify-between mb-4">
                                         <div>
                                             <span className="mono text-[10px] bg-slate-900 text-white px-3 py-1 rounded-full">{t.ref}: {tndr.id}</span>
@@ -212,7 +198,6 @@
                                             <p className="text-xl font-black text-blue-600">{tndr.items.length}</p>
                                         </div>
                                     </div>
-
                                     <div onClick={() => setExpanded({...expanded, [tndr.id]: !expanded[tndr.id]})} className="cursor-pointer space-y-2">
                                         {tndr.items.slice(0, expanded[tndr.id] ? undefined : 3).map((it, idx) => (
                                             <div key={idx} className="flex justify-between text-sm bg-slate-50 p-3 rounded-xl border border-slate-100">
@@ -221,47 +206,42 @@
                                             </div>
                                         ))}
                                         {tndr.items.length > 3 && (
-                                            <div className="text-center mt-2 text-[10px] font-black text-blue-500 uppercase tracking-tighter">
+                                            <div className="text-center mt-2 text-[10px] font-black text-blue-500 uppercase">
                                                 {expanded[tndr.id] ? "⬆ Collapse / إغلاق" : `⬇ +${tndr.items.length-3} More / المزيد`}
                                             </div>
                                         )}
                                     </div>
-
                                     <div className="grid grid-cols-3 gap-2 mt-6">
-                                        <button onClick={() => shareTender(tndr)} className="bg-slate-100 text-slate-600 py-3 rounded-xl font-bold text-xs uppercase hover:bg-slate-200 transition-colors">{t.share}</button>
-                                        <button onClick={() => generatePDF(tndr)} className="bg-red-50 text-red-600 py-3 rounded-xl font-bold text-xs uppercase hover:bg-red-100 transition-colors">{t.pdf}</button>
-                                        <a href={`https://wa.me/${CONFIG.wa}?text=${encodeURIComponent(`Offer for Ref: ${tndr.id}`)}`} className="bg-blue-600 text-white py-3 rounded-xl font-black text-xs text-center shadow-lg shadow-blue-200 uppercase hover:bg-blue-700 transition-colors">{t.bid}</a>
+                                        <button onClick={() => shareTender(tndr)} className="bg-slate-100 text-slate-600 py-3 rounded-xl font-bold text-xs uppercase">{t.share}</button>
+                                        <button onClick={() => {}} className="bg-red-50 text-red-600 py-3 rounded-xl font-bold text-xs uppercase">{t.pdf}</button>
+                                        <a href={`https://wa.me/${CONFIG.wa}?text=${encodeURIComponent(`Offer for ${tndr.id}`)}`} className="bg-blue-600 text-white py-3 rounded-xl font-black text-xs text-center shadow-lg uppercase">{t.bid}</a>
                                     </div>
                                 </div>
                              ))
                             }
                         </div>
                     ) : (
-                        /* Request Form Section */
+                        /* Post Form */
                         <div className="card-tender p-8 shadow-2xl">
                             <form onSubmit={handlePost} className="space-y-4">
-                                <input required name="user" placeholder={isAr?"اسمك الكريم":"Your Full Name"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
-                                <input required name="phone" placeholder={isAr?"رقم الهاتف المباشر":"Direct Phone Number"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
-                                <input required name="hosp" placeholder={isAr?"اسم المستشفى أو الجهة":"Hospital or Entity Name"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none font-bold" />
-                                <input required name="loc" placeholder={isAr?"الموقع الجغرافي (الولاية/المدينة)":"Location (City/State)"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
-                                
+                                <input required name="user" placeholder={isAr?"اسمك الكريم":"Your Name"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
+                                <input required name="phone" placeholder={isAr?"رقم الهاتف":"Phone"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
+                                <input required name="hosp" placeholder={isAr?"المستشفى أو الجهة":"Hospital Name"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none font-bold" />
+                                <input required name="loc" placeholder={isAr?"الموقع":"Location"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
                                 <div className="pt-4 border-t">
-                                    <p className="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-widest">{isAr ? "قائمة الأصناف المطلوبة" : "List of Required Items"}</p>
                                     {items.map((it, idx) => (
-                                        <div key={idx} className="flex gap-2 mb-2 animate-feed">
-                                            <input required placeholder="Item / الصنف" className="flex-1 p-3 border rounded-xl text-sm" value={it.name} onChange={e => {
+                                        <div key={idx} className="flex gap-2 mb-2">
+                                            <input required placeholder="Item / الوصف والشركة" className="flex-1 p-3 border rounded-xl text-sm" value={it.name} onChange={e => {
                                                 const n = [...items]; n[idx].name = e.target.value; setItems(n);
                                             }} />
-                                            <input required placeholder="Qty" className="w-20 p-3 border rounded-xl text-sm font-bold text-center" value={it.qty} onChange={e => {
+                                            <input required placeholder="العدد" className="w-20 p-3 border rounded-xl text-sm font-bold text-center" value={it.qty} onChange={e => {
                                                 const n = [...items]; n[idx].qty = e.target.value; setItems(n);
                                             }} />
                                         </div>
                                     ))}
-                                    <button type="button" onClick={() => setItems([...items, {name:"", qty:""}])} className="w-full py-2 border-2 border-dashed border-slate-200 rounded-xl text-[10px] font-bold text-slate-400 hover:bg-slate-50 transition-colors">+ Add Row / إضافة صنف</button>
+                                    <button type="button" onClick={() => setItems([...items, {name:"", qty:""}])} className="w-full py-2 border-2 border-dashed rounded-xl text-[10px] font-bold text-slate-400">+ Add Item / إضافة صنف</button>
                                 </div>
-                                <button type="submit" className="w-full py-5 bg-[#128C7E] text-white rounded-2xl font-black text-sm uppercase shadow-xl italic tracking-widest hover:bg-[#075e54] transition-all transform active:scale-95">
-                                    ارسل الطلب عبر الواتساب
-                                </button>
+                                <button type="submit" className="w-full py-5 bg-[#128C7E] text-white rounded-2xl font-black text-sm uppercase shadow-xl italic tracking-widest">ارسل الطلب عبر الواتساب</button>
                             </form>
                         </div>
                     )}
