@@ -35,7 +35,7 @@
         const { useState, useEffect } = React;
 
         const CONFIG = {
-            user: "Sudatnd", // Change this to your GitHub username
+            user: "tocontactmsg-ai", // Change this to your GitHub username
             repo: "De",      // Change this to your Repo name
             path: "ads",     // Change this to your folder name
             wa: "249901234567" // Your WhatsApp number for receiving requests
@@ -64,7 +64,7 @@
                 viewAll: isAr ? "عرض كافة العطاءات" : "View All Tenders",
                 aboutTitle: isAr ? "عن المنصة" : "About Platform",
                 aboutMain: isAr ? "منصة الدلالة هي حلقة الوصل الموثوقة بين المؤسسات الصحية والموردين في السودان." : "Eldelala is the reliable bridge between health institutions and suppliers in Sudan.",
-                aboutInstruction: isAr ? "يمكنك اضافة طلب بكتابة كل صنف مع ذكر وصفه والشركة المصنعة والعبوة ومن ثم اضافة العدد." : "You can add a request by writing each item with its description, manufacturer, and packaging, then add the quantity."
+                aboutInstruction: isAr ? "يمكنك اضافة طلب بكتابة كل الاصناف المطلوبة مع ذكر الشركة المصنعة والعبوة ومن ثم اضافة العدد." : "You can add a request by writing each item with its description, manufacturer, and packaging, then add the quantity."
             };
 
             useEffect(() => {
@@ -171,14 +171,14 @@
                     ) : (
                         <div className="card-tender p-8 shadow-2xl">
                             <form onSubmit={handlePost} className="space-y-4">
-                                <input required name="user" placeholder={isAr?"اسمك الكريم":"Name"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
+                                <input required name="user" placeholder={isAr?" اسم مقدم الطلب ":"Name"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
                                 <input required name="phone" placeholder={isAr?"رقم الهاتف":"Phone"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
-                                <input required name="hosp" placeholder={isAr?"المستشفى أو الجهة":"Hospital"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none font-bold" />
+                                <input required name="hosp" placeholder={isAr?" اسم الجهة":"Orgnization Name"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none font-bold" />
                                 <input required name="loc" placeholder={isAr?"الموقع":"Location"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
                                 <div className="pt-4 border-t">
                                     {items.map((it, idx) => (
                                         <div key={idx} className="flex gap-2 mb-2 items-center animate-feed">
-                                            <input required placeholder="Item / الوصف والشركة" className="flex-1 p-3 border rounded-xl text-sm" value={it.name} onChange={e => {const n = [...items]; n[idx].name = e.target.value; setItems(n);}} />
+                                            <input required placeholder="Item / اسم المنتج والشركة المصنعة والعبوة" className="flex-1 p-3 border rounded-xl text-sm" value={it.name} onChange={e => {const n = [...items]; n[idx].name = e.target.value; setItems(n);}} />
                                             <input required placeholder="العدد" className="w-16 p-3 border rounded-xl text-sm font-bold text-center" value={it.qty} onChange={e => {const n = [...items]; n[idx].qty = e.target.value; setItems(n);}} />
                                             {items.length > 1 && (
                                                 <button type="button" onClick={() => setItems(items.filter((_, i) => i !== idx))} className="w-8 h-8 flex items-center justify-center bg-red-50 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors">
