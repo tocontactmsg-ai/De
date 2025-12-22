@@ -17,12 +17,10 @@
     <style>
         body { font-family: 'Cairo', sans-serif; background: #f8fafc; color: #1e293b; }
         .title-main { color: #1e3a8a; } 
-        .title-accent { color: #007BE2; } 
-        .card-tender { background: white; border-radius: 2rem; border: 2px solid #1e3a8a; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .card-tender:hover { border-color: #10b981; }
+        .title-accent { color: #10b981; } 
+        .card-tender { background: white; border-radius: 2rem; border: 1px solid #f1f5f9; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .nav-active { color: #1e3a8a; border-bottom: 3px solid #1e3a8a; }
-        .search-input { width: 100%; padding: 1.25rem 3.5rem; background: white; border-radius: 1.5rem; border: 2px solid #f1f5f9; transition: all 0.2s; }
-        .search-input:focus { border-color: #1e3a8a; box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.1); outline: none; }
+        .search-input { width: 100%; padding: 1.25rem 3.5rem; background: white; border-radius: 1.5rem; border: 2px solid #f1f5f9; }
         .mono { font-family: 'Roboto Mono', monospace; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-feed { animation: fadeIn 0.4s ease forwards; }
@@ -35,10 +33,10 @@
         const { useState, useEffect } = React;
 
         const CONFIG = {
-            user: "tocontactmsg-ai", // Change this to your GitHub username
-            repo: "De",      // Change this to your Repo name
-            path: "ads",     // Change this to your folder name
-            wa: "249901234567" // Your WhatsApp number for receiving requests
+            user: "Sudatnd", 
+            repo: "De",      
+            path: "ads",     
+            wa: "249901234567" // Ensure this is your correct number
         };
 
         function App() {
@@ -64,7 +62,7 @@
                 viewAll: isAr ? "عرض كافة العطاءات" : "View All Tenders",
                 aboutTitle: isAr ? "عن المنصة" : "About Platform",
                 aboutMain: isAr ? "منصة الدلالة هي حلقة الوصل الموثوقة بين المؤسسات الصحية والموردين في السودان." : "Eldelala is the reliable bridge between health institutions and suppliers in Sudan.",
-                aboutInstruction: isAr ? "يمكنك اضافة طلب بكتابة كل الاصناف المطلوبة مع ذكر الشركة المصنعة والعبوة ومن ثم اضافة العدد." : "You can add a request by writing each item with its description, manufacturer, and packaging, then add the quantity."
+                aboutInstruction: isAr ? "يمكنك اضافة طلب بكتابة كل صنف مع ذكر وصفه والشركة المصنعة والعبوة ومن ثم قم باضافة العدد." : "You can add a request by writing each item with its description, manufacturer, and packaging, then add the quantity."
             };
 
             useEffect(() => {
@@ -88,10 +86,24 @@
                 return item.id.toString().toLowerCase().includes(query) || item.location.toLowerCase().includes(query) || item.items.some(i => i.name.toLowerCase().includes(query));
             });
 
+            const generatePDF = (tender) => {
+                const doc = new jspdf.jsPDF();
+                doc.setFontSize(22); doc.text("ELDELALA", 105, 20, {align:"center"});
+                doc.setFontSize(10); doc.text(`REF: ${tender.id} | Location: ${tender.location}`, 105, 30, {align:"center"});
+                doc.autoTable({
+                    startY: 40,
+                    head: [['#', 'Description', 'Qty']],
+                    body: tender.items.map((it, i) => [i+1, it.name, it.qty]),
+                    theme: 'striped',
+                    headStyles: { fillColor: [30, 58, 138] }
+                });
+                doc.save(`Eldelala-${tender.id}.pdf`);
+            };
+
             const shareTender = (tender) => {
                 const baseUrl = window.location.origin + window.location.pathname;
                 const shareLink = `${baseUrl}?ref=${tender.id}`;
-                const message = `📌 *عطاء طبي من الدلالة*\n*المرجع:* ${tender.id}\n*الموقع:* ${tender.location}\n\n🔗 *رابط التفاصيل:*\n${shareLink}`;
+                const message = `📌 *عطاء من الدلالة*\n*المرجع:* ${tender.id}\n*الموقع:* ${tender.location}\n\n🔗 *الرابط:*\n${shareLink}`;
                 window.open(`https://wa.me/?text=${encodeURIComponent(message)}`);
             };
 
@@ -100,7 +112,7 @@
                 const fd = new FormData(e.target);
                 const refCode = "EL-" + Math.floor(Math.random()*9000 + 1000);
                 const itemList = items.map((it, i) => `${i+1}. ${it.name} (${it.qty})`).join('\n');
-                const message = `📌 *طلب جديد - الدلالة*\n*المرجع:* *${refCode}*\n*الجهة:* *${fd.get("hosp")}*\n*الموقع:* *${fd.get("loc")}*\n*المرسل:* *${fd.get("user")}*\n*الهاتف:* *${fd.get("phone")}*\n----------\n*الأصناف:*\n${itemList}`;
+                const message = `📌 *طلب جديد*\n*المرجع:* *${refCode}*\n*الجهة:* *${fd.get("hosp")}*\n*الموقع:* *${fd.get("loc")}*\n*المرسل:* *${fd.get("user")}*\n*الهاتف:* *${fd.get("phone")}*\n----------\n*الأصناف:*\n${itemList}`;
                 window.open(`https://wa.me/${CONFIG.wa}?text=${encodeURIComponent(message)}`);
             };
 
@@ -140,12 +152,12 @@
                         <>
                             <div className="relative mb-8">
                                 <span className={`absolute ${isAr?'right-4':'left-4'} top-4 text-slate-400`}><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></span>
-                                <input type="text" placeholder={t.searchPlaceholder} className="search-input text-sm font-medium" value={search} onChange={(e) => setSearch(e.target.value)}/>
+                                <input type="text" placeholder={t.searchPlaceholder} className="search-input text-sm font-medium outline-none focus:border-blue-600" value={search} onChange={(e) => setSearch(e.target.value)}/>
                             </div>
                             <div className="space-y-6">
                                 {loading ? <div className="text-center py-10 animate-pulse text-blue-600 font-bold italic">Loading...</div> : 
                                  filteredTenders.map(tndr => (
-                                    <div key={tndr.id} className="card-tender p-6 shadow-xl animate-feed">
+                                    <div key={tndr.id} className="card-tender p-6 shadow-xl animate-feed border border-slate-100">
                                         <div className="flex justify-between mb-4">
                                             <div>
                                                 <span className="mono text-[10px] bg-slate-900 text-white px-3 py-1 rounded-full">{t.ref}: {tndr.id}</span>
@@ -161,8 +173,8 @@
                                         </div>
                                         <div className="grid grid-cols-3 gap-2 mt-6">
                                             <button onClick={() => shareTender(tndr)} className="bg-slate-100 text-slate-600 py-3 rounded-xl font-bold text-xs uppercase">{t.share}</button>
-                                            <button className="bg-red-50 text-red-600 py-3 rounded-xl font-bold text-xs uppercase">{t.pdf}</button>
-                                            <a href={`https://wa.me/${CONFIG.wa}?text=${encodeURIComponent(`Offer for ${tndr.id}`)}`} className="bg-blue-600 text-white py-3 rounded-xl font-black text-xs text-center shadow-lg uppercase">{t.bid}</a>
+                                            <button onClick={() => generatePDF(tndr)} className="bg-red-50 text-red-600 py-3 rounded-xl font-bold text-xs uppercase">{t.pdf}</button>
+                                            <a href={`https://wa.me/${CONFIG.wa}?text=${encodeURIComponent(`اريد تقديم عرض للعطاء رقم: ${tndr.id}`)}`} className="bg-blue-600 text-white py-3 rounded-xl font-black text-xs text-center shadow-lg uppercase">{t.bid}</a>
                                         </div>
                                     </div>
                                  ))}
@@ -171,14 +183,14 @@
                     ) : (
                         <div className="card-tender p-8 shadow-2xl">
                             <form onSubmit={handlePost} className="space-y-4">
-                                <input required name="user" placeholder={isAr?" اسم مقدم الطلب ":"Name"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
+                                <input required name="user" placeholder={isAr?"اسمك الكريم":"Name"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
                                 <input required name="phone" placeholder={isAr?"رقم الهاتف":"Phone"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
-                                <input required name="hosp" placeholder={isAr?" اسم الجهة":"Orgnization Name"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none font-bold" />
+                                <input required name="hosp" placeholder={isAr?"المستشفى أو الجهة":"Hospital"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none font-bold" />
                                 <input required name="loc" placeholder={isAr?"الموقع":"Location"} className="w-full p-4 bg-slate-50 border rounded-xl outline-none" />
                                 <div className="pt-4 border-t">
                                     {items.map((it, idx) => (
                                         <div key={idx} className="flex gap-2 mb-2 items-center animate-feed">
-                                            <input required placeholder="Item / اسم المنتج والشركة المصنعة والعبوة" className="flex-1 p-3 border rounded-xl text-sm" value={it.name} onChange={e => {const n = [...items]; n[idx].name = e.target.value; setItems(n);}} />
+                                            <input required placeholder="Item / الوصف والشركة" className="flex-1 p-3 border rounded-xl text-sm" value={it.name} onChange={e => {const n = [...items]; n[idx].name = e.target.value; setItems(n);}} />
                                             <input required placeholder="العدد" className="w-16 p-3 border rounded-xl text-sm font-bold text-center" value={it.qty} onChange={e => {const n = [...items]; n[idx].qty = e.target.value; setItems(n);}} />
                                             {items.length > 1 && (
                                                 <button type="button" onClick={() => setItems(items.filter((_, i) => i !== idx))} className="w-8 h-8 flex items-center justify-center bg-red-50 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors">
