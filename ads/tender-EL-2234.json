@@ -1,0 +1,10 @@
+{
+  "id": "EL-2234",
+  "location": "Atbara - River Nile State",
+  "items": [
+    { "name": "ECG Paper", "qty": "50" },
+    { "name": "Cardiac Monitor Cables", "qty": "10" },
+    { "name": "Disposable Syringes 10ml", "qty": "3000" }
+  ],
+  "date": "22/12/2025"
+}
