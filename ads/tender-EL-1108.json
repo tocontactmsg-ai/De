@@ -1,0 +1,10 @@
+{
+  "id": "EL-1108",
+  "location": "Dongola - Northern State",
+  "items": [
+    { "name": "Malaria RDT Kits", "qty": "500" },
+    { "name": "EDTA Tubes", "qty": "1000" },
+    { "name": "Alcohol Swabs", "qty": "2000" }
+  ],
+  "date": "22/12/2025"
+}
