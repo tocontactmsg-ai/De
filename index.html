@@ -265,9 +265,20 @@
 
             // Handle Post Request
             const handlePost = (e) => {
-                e.preventDefault();
-                const fd = new FormData(e.target);
-                const refCode = "EL-" + Math.floor(Math.random()*9000 + 1000);
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    
+    // كود مرجعي بسيط ومرتب: YYMMDDHHMM
+    const d = new Date();
+    const refCode = 
+        d.getFullYear().toString().slice(-2) +
+        (d.getMonth()+1).toString().padStart(2, '0') +
+        d.getDate().toString().padStart(2, '0') +
+        d.getHours().toString().padStart(2, '0') +
+        d.getMinutes().toString().padStart(2, '0');
+    // مثال: 2312151430 يعني 2023/12/15 الساعة 14:30
+    
+    const itemList = items.map((it, i) => `${i+1}. ${it.name} (${it.qty})`).join('\n');
                 const itemList = items.map((it, i) => `${i+1}. ${it.name} (${it.qty})`).join('\n');
                 const message = `📌 *طلب جديد*\n*المرجع:* *${refCode}*\n*الجهة:* *${fd.get("hosp")}*\n*الموقع:* *${fd.get("loc")}*\n*المرسل:* *${fd.get("user")}*\n*الهاتف:* *${fd.get("phone")}*\n----------\n*الأصناف:*\n${itemList}`;
                 window.open(`https://wa.me/${CONFIG.wa}?text=${encodeURIComponent(message)}`);
