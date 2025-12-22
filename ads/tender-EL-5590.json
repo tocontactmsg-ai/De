@@ -1,0 +1,10 @@
+{
+  "id": "EL-5590",
+  "location": "Kassala - City Center",
+  "items": [
+    { "name": "Paracetamol 500mg (Tabs)", "qty": "5000" },
+    { "name": "Amoxicillin 500mg (Caps)", "qty": "2000" },
+    { "name": "Ceftriaxone 1g Inj", "qty": "500" }
+  ],
+  "date": "22/12/2025"
+}
