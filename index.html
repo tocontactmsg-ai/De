@@ -19,7 +19,7 @@
         
         /* Brand Colors */
         .title-main { color: #1e3a8a; } /* Logo Deep Blue */
-        .title-accent { color: #10b981; } /* Logo Green */
+        .title-accent { color: #007BE2; } /* Logo light blue*/
         
         .card-tender { background: white; border-radius: 2rem; border: 1px solid #f1f5f9; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .card-tender:hover { transform: translateY(-4px); border-color: #10b981; }
@@ -76,6 +76,10 @@
                 aboutText: isAr 
                     ? "منصة الدلالة هي حلقة الوصل الموثوقة بين المؤسسات الصحية والموردين في السودان. نهدف لتسهيل الوصول للمستلزمات الطبية واللوجستية عبر نظام عطاءات آمن."
                     : "Eldelala is the reliable bridge between health institutions and suppliers in Sudan. We aim to simplify medical procurement through a secure bidding system."
+           aboutInstruction: isAr
+                    ? "يمكنك اضافة طلب بكتابة كل صنف مع ذكر وصفه والشركة المصنعة والعبوة ومن ثم قم باضافة العدد."
+                    : "You can add a request by writing each item with its description, manufacturer, and packaging, then add the quantity."
+         
             };
 
             useEffect(() => {
