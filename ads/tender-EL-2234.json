@@ -1,10 +1,11 @@
 {
-  "id": "EL-2234",
-  "location": "Atbara - River Nile State",
+  "id": "EL-12234",
+  "location": "Khartoum - omdurman",
   "items": [
-    { "name": "ECG Paper - roll", "qty": "15" },
-    { "name": "Cardiac Monitor Cables", "qty": "10" },
-    { "name": "Disposable Syringes 10ml - Box", "qty": "13" }
+    { "name": "lancet - box ", "qty": "2" },
+    { "name": "gloves - box ", "qty": "10" },
+    { "name": "Disposable Syringes 5ml - Box", "qty": "10" },
+    { "name": "Disposable Syringes 3ml - Box", "qty": "10" 
   ],
-  "date": "22/12/2025"
+  "date": "2/1/2026"
 }
