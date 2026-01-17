@@ -1,13 +1,13 @@
 {
-  "id": "EL-78890",
-  "location": "Khartoum - Bahri",
+  "id": "EL-123890",
+  "location": "Khartoum - khartoum",
   "items": [
     {
       "name": "first aid box ",
-      "qty": "4"
+      "qty": "1"
     },
     {
-      "name": "Minor Surgical Set",
+      "name": "CBC",
       "qty": "1"
     },
     {
@@ -15,7 +15,7 @@
       "qty": "1"
     },
     {
-      "name": "patient couch",
+      "name": "curtains",
       "qty": "4"
     }
   ],
