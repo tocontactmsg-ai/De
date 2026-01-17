@@ -1,11 +1,11 @@
 {
-  "id": "EL-12234",
+  "id": "EL-2345",
   "location": "Khartoum - omdurman",
   "items": [
-    { "name": "lancet - box ", "qty": "2" },
-    { "name": "gloves - box ", "qty": "10" },
-    { "name": "Disposable Syringes 5ml - Box", "qty": "10" },
-    { "name": "Disposable Syringes 3ml - Box", "qty": "10" }
+    { "name": "lab stool ", "qty": "2" },
+    { "name": "urine containers", "qty": "500" },
+    { "name": "stool containers ", "qty": "500" },
+    { "name": "centerfuge", "qty": "2" }
   ],
   "date": "2/1/2026"
 }
